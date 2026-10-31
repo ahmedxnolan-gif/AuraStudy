@@ -12,7 +12,7 @@ Welcome to **AuraStudy**! This web application acts as your personal AI tutor, h
 
 ## 🌐 Live Demo
 You can access and use the live application here:
-👉 **[https://ahmedxnolan-gif.github.io/AuraStudy/](https://ahmedxnolan-gif.github.io/AuraStudy/)**
+👉 **[https://ahmedxnolan-gif.github.io/AuraStudy/]https://ahmedxnolan-gif.github.io/AuraStudy/**
 
 ---
 
