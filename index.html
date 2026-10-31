@@ -1,100 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="emerald">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Study Tutor</title>
+<title>AuraStudy – AI Study Tutor</title>
+<meta name="description" content="Upload a lecture or paste your notes and get a friendly AI tutor, summaries, quizzes and chat.">
+<link rel="preconnect" href="https://generativelanguage.googleapis.com">
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{fontFamily:{sans:['system-ui','"Segoe UI"','Tahoma','Arial','sans-serif']},colors:{ink:'#16243a',teal:{600:'#0f766e',700:'#0b5f59'}}}}}</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 <style>
+:root,[data-theme=emerald]{--bg1:#020805;--bg2:#06241a;--bg3:#020805;--card:#08140d;--inset:#040d08;--line:#1b4d34;--soft:#0c2218;--soft2:#12301f;--acc:#15803d;--acch:#16a34a;--hi:#6ee7a8;--hdr:#030a06;--deep:#020a05}
+[data-theme=cyber]{--bg1:#050816;--bg2:#0b1d3a;--bg3:#050816;--card:#0a1228;--inset:#060b1c;--line:#16406b;--soft:#0d1d3a;--soft2:#123055;--acc:#0891b2;--acch:#06b6d4;--hi:#67e8f9;--hdr:#040712;--deep:#03060f}
+[data-theme=sunset]{--bg1:#120804;--bg2:#3a1606;--bg3:#120804;--card:#1c0e08;--inset:#130a05;--line:#6b2e12;--soft:#2a1409;--soft2:#3d1d0d;--acc:#c2410c;--acch:#ea580c;--hi:#fdba74;--hdr:#0d0603;--deep:#0a0402}
+[data-theme=royal]{--bg1:#0a0614;--bg2:#2a1250;--bg3:#0a0614;--card:#140c26;--inset:#0d081c;--line:#4a2a82;--soft:#1e1238;--soft2:#2d1b52;--acc:#7e22ce;--acch:#9333ea;--hi:#d8b4fe;--hdr:#080411;--deep:#05030c}
+[data-theme=ocean]{--bg1:#02101c;--bg2:#06355a;--bg3:#02101c;--card:#071a2b;--inset:#04101c;--line:#0f4c75;--soft:#0a2640;--soft2:#0f3a5e;--acc:#0369a1;--acch:#0284c7;--hi:#7dd3fc;--hdr:#020c15;--deep:#010811}
+[data-theme=mocha]{--bg1:#120c08;--bg2:#3b2a1e;--bg3:#120c08;--card:#1d140e;--inset:#140d09;--line:#5a4030;--soft:#2a1d14;--soft2:#3b2a1e;--acc:#92612e;--acch:#b07a3f;--hi:#e7c9a0;--hdr:#0e0805;--deep:#0a0604}
+[data-theme=ruby]{--bg1:#120305;--bg2:#4a0a14;--bg3:#120305;--card:#1c080c;--inset:#130508;--line:#6b1626;--soft:#2a0c12;--soft2:#40121c;--acc:#b91c1c;--acch:#dc2626;--hi:#fca5a5;--hdr:#0d0204;--deep:#0a0103}
+[data-theme=matrix]{--bg1:#000;--bg2:#00160a;--bg3:#000;--card:#020d05;--inset:#010802;--line:#0a5a22;--soft:#03170a;--soft2:#052a12;--acc:#16a34a;--acch:#22c55e;--hi:#4ade80;--hdr:#000;--deep:#000}
+[data-theme=neon]{--bg1:#0a0014;--bg2:#260045;--bg3:#00212e;--card:#0f0620;--inset:#08030f;--line:#5b1b8a;--soft:#1a0b33;--soft2:#2a1050;--acc:#c026d3;--acch:#e879f9;--hi:#22d3ee;--hdr:#07020d;--deep:#05010a}
+[data-theme=minimal]{--bg1:#0a0a0a;--bg2:#171717;--bg3:#0a0a0a;--card:#111;--inset:#0a0a0a;--line:#2a2a2a;--soft:#1a1a1a;--soft2:#242424;--acc:#3f3f46;--acch:#52525b;--hi:#e5e5e5;--hdr:#050505;--deep:#050505}
+
 html{color-scheme:dark}
-body{background:#020805 linear-gradient(160deg,#020805 0%,#06241a 50%,#020805 100%) fixed;min-height:100vh}
-.md h1,.md h2,.md h3{font-weight:600;color:#e2e8f0;margin:1.4em 0 .5em;line-height:1.3}
-.md h1{font-size:1.5rem}.md h2{font-size:1.25rem;border-bottom:1px solid #1b4d34;padding-bottom:.3em}.md h3{font-size:1.05rem}
+body{background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%) fixed;min-height:100vh;color:#e2e8f0;font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif}
+header,main{position:relative;z-index:1}
+:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:.75rem;padding:1.25rem}
+.field{background:var(--inset);color:#e2e8f0;border:1px solid var(--line);border-radius:.5rem;padding:.5rem .75rem;font-size:.875rem}
+.field:focus{border-color:var(--acc)}
+.field::placeholder{color:#64748b}
+.btn{background:var(--acc);color:#fff;border-radius:.5rem;font-weight:500;padding:.55rem 1.1rem;font-size:.875rem}
+.btn:hover{background:var(--acch)}.btn:disabled{opacity:.5;cursor:wait}
+.act{border:1px solid var(--line);border-radius:.5rem;padding:.4rem .8rem;font-size:.85rem;color:#cbd5e1}
+.act:hover{background:var(--soft2)}
+.hs{background:rgba(255,255,255,.1);color:#fff;border-radius:.5rem;padding:.5rem;font-size:.85rem}
+.hs option{background:var(--card);color:#e2e8f0}
+.seg{display:inline-flex;background:var(--inset);padding:.25rem;border-radius:.5rem;font-size:.875rem}
+.seg button{padding:.35rem .9rem;border-radius:.4rem;color:#94a3b8}
+.seg button.on{background:var(--acc);color:#fff}
+.drop{border:2px dashed var(--line)}.drop.over{border-color:var(--hi);background:var(--soft2)}
+.md h1,.md h2,.md h3{font-weight:600;color:#f1f5f9;margin:1.4em 0 .5em;line-height:1.3}
+.md h1{font-size:1.5rem}.md h2{font-size:1.25rem;border-bottom:1px solid var(--line);padding-bottom:.3em}.md h3{font-size:1.05rem}
 .md p{margin:.6em 0;line-height:1.8}.md ul{list-style:disc;padding-inline-start:1.4em;margin:.6em 0}.md ol{list-style:decimal;padding-inline-start:1.4em;margin:.6em 0}
-.md li{margin:.3em 0;line-height:1.7}.md strong{color:#6ee7a8}
-.md code{background:#0c2218;color:#bbf7d0;padding:.1em .35em;border-radius:4px;font-size:.9em;direction:ltr;unicode-bidi:isolate}
-.md pre{background:#020a05;border:1px solid #1b4d34;color:#d1fae5;padding:1em;border-radius:8px;overflow-x:auto;direction:ltr}.md pre code{background:none;padding:0}
-.md table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}.md th,.md td{border:1px solid #1b4d34;padding:.45em .7em;text-align:start}.md th{background:#0c2218}
-.md blockquote{border-inline-start:3px solid #34d399;padding-inline-start:1em;color:#94a3b8}
-.md hr{border:0;border-top:1px solid #1b4d34;margin:1.2em 0}
-textarea,input[type=text],select{background:#040d08;color:#e2e8f0}
-::placeholder{color:#64748b}
-#model option{background:#08140d;color:#e2e8f0}
-.drop.over{border-color:#34d399;background:#12301f}
-:focus-visible{outline:2px solid #34d399;outline-offset:2px}
-.act{border:1px solid #1b4d34;border-radius:8px;padding:.4rem .8rem;font-size:.85rem;color:#cbd5e1}
-.act:hover{background:#12301f}
-.tab,.lang,.mode{color:#94a3b8}
-.tab.on{background:#15803d;color:#fff}
-.lang.on,.mode.on{background:#15803d;color:#fff;box-shadow:none}
-.opt:hover:not(.sel){background:#0c2218}
-.opt.sel{border-color:#a7f3d0;background:#12301f}
+.md li{margin:.3em 0;line-height:1.7}.md strong{color:var(--hi)}
+.md code{background:var(--soft);color:var(--hi);padding:.1em .35em;border-radius:4px;font-size:.9em;direction:ltr;unicode-bidi:isolate}
+.md pre{background:var(--deep);border:1px solid var(--line);color:#e2e8f0;padding:1em;border-radius:8px;overflow-x:auto;direction:ltr}.md pre code{background:none;padding:0;color:inherit}
+.md table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}.md th,.md td{border:1px solid var(--line);padding:.45em .7em;text-align:start}.md th{background:var(--soft)}
+.md blockquote{border-inline-start:3px solid var(--acc);padding-inline-start:1em;color:#94a3b8}
+.md hr{border:0;border-top:1px solid var(--line);margin:1.2em 0}
+mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+mjx-container[display=true]{margin:.8em 0!important}
+.opt{display:block;width:100%;text-align:start;border:1px solid var(--line);border-radius:.5rem;padding:.55rem .75rem;margin-bottom:.5rem;font-size:.9rem;background:var(--inset)}
+.opt:hover:not(.sel){background:var(--soft)}
+.opt.sel{border-color:var(--hi);background:var(--soft2)}
 .opt.done{pointer-events:none}
 .opt.right{background:#14532d;border-color:#4ade80;color:#dcfce7}
 .opt.wrong{background:#3b0a0a;border-color:#ef4444;color:#fecaca}
+.ok{color:#4ade80}.no{color:#f87171}.sk{color:#fbbf24}
 </style>
 </head>
-<body class="font-sans text-slate-200">
-<header class="bg-[#030a06] border-b border-green-900/60 text-white">
-  <div class="max-w-4xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
-    <h1 class="text-lg font-semibold me-auto">Study Tutor</h1>
-    <select id="model" class="bg-white/10 rounded-lg px-2 py-2 text-sm" aria-label="Model">
-      <option class="text-ink" value="gemini-3.8-flash">gemini-3.8-flash</option>
-      <option class="text-ink" value="gemini-2.0-flash">gemini-2.0-flash</option>
+<body>
+<canvas id="rain" style="display:none;position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3"></canvas>
+
+<header class="border-b" style="background:var(--hdr);border-color:var(--line)">
+  <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
+    <h1 class="text-lg font-semibold me-auto">✨ AuraStudy</h1>
+    <select id="theme" class="hs" aria-label="Theme"></select>
+    <select id="model" class="hs" aria-label="Model">
+      <option value="gemini-2.5-flash">gemini-2.5-flash (recommended)</option>
     </select>
-    <input id="key" type="password" placeholder="Gemini API key" autocomplete="off"
-      class="bg-white/10 placeholder-white/50 rounded-lg px-3 py-2 text-sm w-full sm:w-64">
-    <button id="saveKey" class="bg-green-700 hover:bg-green-600 rounded-lg px-4 py-2 text-sm font-medium">Save key</button>
+    <input id="key" type="password" placeholder="Gemini API key" autocomplete="off" class="hs placeholder-white/50 w-full sm:w-56">
+    <button id="saveKey" class="btn">Save key</button>
   </div>
 </header>
 
 <main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <section class="bg-[#08140d] rounded-xl border border-green-900/50 p-5 space-y-4">
-    <div class="inline-flex rounded-lg bg-[#040d08] p-1 text-sm" role="group" aria-label="Mode">
-      <button class="mode px-4 py-1.5 rounded-md font-medium" data-m="guide">Study guide</button>
-      <button class="mode px-4 py-1.5 rounded-md font-medium" data-m="quiz">Quiz</button>
-    </div>
-    <div class="flex gap-2 text-sm" role="tablist">
-      <button id="tabPdf" class="tab px-4 py-2 rounded-lg font-medium" data-t="pdf">Upload PDF</button>
-      <button id="tabText" class="tab px-4 py-2 rounded-lg font-medium" data-t="text">Paste text</button>
+  <section class="card space-y-4">
+    <div class="flex flex-wrap gap-3">
+      <div class="seg" role="group" aria-label="Mode">
+        <button class="mode font-medium" data-m="guide">📖 Study guide</button>
+        <button class="mode font-medium" data-m="quiz">🧠 Quiz</button>
+      </div>
+      <div class="seg" role="tablist">
+        <button class="tab" data-t="pdf">Upload PDF</button>
+        <button class="tab" data-t="text">Paste text</button>
+      </div>
     </div>
 
     <div id="panePdf">
-      <label id="drop" class="drop flex flex-col items-center justify-center text-center border-2 border-dashed border-green-900 rounded-xl p-8 cursor-pointer transition">
+      <label id="drop" class="drop flex flex-col items-center justify-center text-center rounded-xl p-8 cursor-pointer transition">
         <span class="font-medium" id="dropLabel">Drop a PDF here, or click to choose one</span>
         <span class="text-sm text-slate-400 mt-1">Scanned PDFs work too. Up to about 18 MB.</span>
         <input id="file" type="file" accept="application/pdf" class="hidden">
       </label>
     </div>
     <div id="paneText" class="hidden">
-      <textarea id="text" rows="9" placeholder="Paste your lecture text or notes here…"
-        class="w-full rounded-xl border border-green-900 p-3 text-sm leading-relaxed focus:border-emerald-400"></textarea>
+      <textarea id="text" rows="9" placeholder="Paste your lecture text or notes here…" class="field w-full rounded-xl leading-relaxed"></textarea>
     </div>
 
     <div id="quizCtl" class="hidden flex-wrap items-center gap-4 text-sm">
       <label class="flex items-center gap-2">Questions
-        <select id="qCount" class="rounded-lg border border-green-900 px-2 py-1.5"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+        <select id="qCount" class="field"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
       </label>
       <label class="flex items-center gap-2">Type
-        <select id="qType" class="rounded-lg border border-green-900 px-2 py-1.5">
-          <option value="mcq">Multiple choice</option><option value="tf">True / False</option><option value="mixed">Mixed</option>
+        <select id="qType" class="field"><option value="mcq">Multiple choice</option><option value="tf">True / False</option><option value="mixed">Mixed</option></select>
+      </label>
+      <label class="flex items-center gap-2">Level
+        <select id="qLevel" class="field">
+          <option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option><option value="legendary">Legendary Lvl 🔥</option>
         </select>
       </label>
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-      <div class="inline-flex rounded-lg bg-[#040d08] p-1 text-sm" role="group" aria-label="Output language">
-        <button class="lang px-3 py-1.5 rounded-md" data-l="en">English</button>
-        <button class="lang px-3 py-1.5 rounded-md" data-l="ar-eg">عامية مصرية</button>
-        <button class="lang px-3 py-1.5 rounded-md" data-l="ar-msa">فصحى مبسطة</button>
+      <div class="seg" role="group" aria-label="Output language">
+        <button class="lang" data-l="en">English</button>
+        <button class="lang" data-l="ar-eg">عامية مصرية</button>
+        <button class="lang" data-l="ar-msa">فصحى مبسطة</button>
       </div>
-      <button id="go" class="ms-auto bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white rounded-lg px-5 py-2.5 font-medium">Create study guide</button>
+      <button id="go" class="btn ms-auto">Create study guide</button>
     </div>
     <p id="status" class="text-sm text-slate-400 min-h-[1.25rem]" role="status"></p>
   </section>
 
-  <section id="result" class="hidden bg-[#08140d] rounded-xl border border-green-900/50 p-5">
+  <section id="result" class="card hidden">
     <div class="flex flex-wrap gap-2 mb-2">
       <button id="copy" class="act">Copy</button>
       <button id="dlMd" class="act">Download .md</button>
@@ -103,83 +132,123 @@ textarea,input[type=text],select{background:#040d08;color:#e2e8f0}
     <article id="summary" class="md"></article>
   </section>
 
-  <section id="quizBox" class="hidden bg-[#08140d] rounded-xl border border-green-900/50 p-5">
-    <div id="score" class="hidden mb-5 rounded-xl bg-[#040d08] p-4 text-center"></div>
+  <section id="quizBox" class="card hidden">
+    <div id="qMeta" class="text-sm text-slate-400 mb-4"></div>
+    <div id="score" class="hidden mb-5 rounded-xl p-5 text-center" style="background:var(--inset);border:1px solid var(--line)"></div>
     <div id="qList" class="space-y-4"></div>
     <div class="flex flex-wrap gap-2 mt-5">
-      <button id="submitQuiz" class="bg-green-700 hover:bg-green-600 text-white rounded-lg px-5 py-2.5 font-medium">Submit &amp; check answers</button>
+      <button id="submitQuiz" class="btn">Submit &amp; check answers</button>
       <button id="retake" class="act hidden">Retake quiz</button>
     </div>
   </section>
 
-  <section id="chat" class="hidden bg-[#08140d] rounded-xl border border-green-900/50 p-5">
-    <h2 class="font-semibold mb-3">Ask a follow-up question</h2>
+  <section id="chat" class="card hidden">
+    <h2 class="font-semibold mb-3">💬 Ask your tutor</h2>
+    <div id="chips" class="flex flex-wrap gap-2 mb-3">
+      <button class="act" data-q="Explain this in simpler words, like I'm a beginner.">Simpler please</button>
+      <button class="act" data-q="Give me a real-life example that makes this clear.">Give an example</button>
+      <button class="act" data-q="What are the most likely exam questions on this material?">Likely exam questions</button>
+      <button class="act" data-q="Summarize the whole material in 5 bullet points.">5-point summary</button>
+    </div>
     <div id="log" class="space-y-3 mb-4"></div>
     <div class="flex gap-2">
-      <input id="q" type="text" placeholder="e.g. Explain the second formula with an example"
-        class="flex-1 rounded-lg border border-green-900 px-3 py-2 text-sm focus:border-emerald-400">
-      <button id="send" class="bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white rounded-lg px-4 py-2 text-sm font-medium">Send</button>
+      <input id="q" type="text" placeholder="Ask anything about the material…" class="field flex-1">
+      <button id="send" class="btn">Send</button>
     </div>
   </section>
 </main>
 
+<footer class="max-w-4xl mx-auto px-4 pb-8 text-xs text-slate-400 flex flex-wrap gap-x-4 gap-y-1" style="position:relative;z-index:1">
+  <span>🔒 Everything is saved only in this browser.</span>
+  <button id="clearSession" class="underline">Clear saved study session</button>
+  <button id="forgetKey" class="underline">Forget API key</button>
+  <span id="persistWarn" class="text-amber-400"></span>
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
-const LS = { key:'gemini_key', model:'gemini_model', lang:'gemini_lang' };
+const LS = { key:'gemini_key', model:'gemini_model', lang:'gemini_lang', theme:'aura_theme', session:'aura_session_v1' };
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k) }catch(e){} }
+};
 const LANGS = {
   'en': 'English',
   'ar-eg': 'Egyptian Arabic colloquial (العامية المصرية), friendly and easy, keeping technical terms in English in brackets next to the Arabic',
   'ar-msa': 'Simplified Modern Standard Arabic (فصحى مبسطة), clear and easy, keeping technical terms in English in brackets next to the Arabic'
 };
-let state = { tab:'pdf', lang:'en', mode:'guide', docParts:[], history:[], summary:'', hasGuide:false, quiz:null, picks:[] };
-
-const store = {
-  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
-  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+const THEMES = { emerald:'Forest Emerald', cyber:'Midnight Cyber', sunset:'Sunset Orange', royal:'Royal Purple', ocean:'Deep Ocean',
+  mocha:'Dark Mocha', ruby:'Ruby Red', matrix:'Matrix Code', neon:'Cyber Neon', minimal:'Pure Minimal' };
+const LEVELS = {
+  easy:['Easy','basic recall and simple understanding; clear, direct questions with obviously wrong distractors'],
+  medium:['Medium','understanding and applying concepts; plausible distractors'],
+  hard:['Hard','multi-step reasoning, applying ideas to new situations, calculations where relevant, and very close distractors'],
+  legendary:['Legendary 🔥','extremely challenging: deep, multi-concept, tricky questions with subtle traps (common misconceptions, near-identical options, edge cases, "which statement is NOT true"), requiring true mastery. No simple recall questions']
 };
+let state = { tab:'pdf', lang:'en', mode:'guide', history:[], summary:'', hasGuide:false, ready:false, sig:'', quiz:null, picks:[], level:'medium', qlang:'en' };
+let restoring = false, wiping = false, saveT = 0;
+const dirOf = l => (l || state.lang) === 'en' ? 'ltr' : 'rtl';
 
-// ---- setup ----
+$('theme').innerHTML = Object.entries(THEMES).map(([k,v]) => `<option value="${k}">🎨 ${v}</option>`).join('');
 $('key').value = store.get(LS.key) || '';
-if (store.get(LS.model)) $('model').value = store.get(LS.model);
-state.lang = store.get(LS.lang) || 'en';
-$('saveKey').onclick = () => {
-  store.set(LS.key, $('key').value.trim());
-  store.set(LS.model, $('model').value);
-  setStatus('Key and model saved in this browser.');
-};
+const MODELS = ['gemini-2.5-flash'];
+$('model').value = MODELS[0];
+store.set(LS.model, MODELS[0]);
+
+$('saveKey').onclick = () => { store.set(LS.key, $('key').value.trim()); store.set(LS.model, $('model').value); setStatus('Key saved locally in this browser.'); };
 $('model').onchange = () => store.set(LS.model, $('model').value);
+
+let rainId = 0;
+function rain(on){
+  const c = $('rain'); cancelAnimationFrame(rainId);
+  if (!on || matchMedia('(prefers-reduced-motion: reduce)').matches) { c.style.display = 'none'; return; }
+  c.style.display = 'block'; c.width = innerWidth; c.height = innerHeight;
+  const x = c.getContext('2d'), cols = Math.floor(c.width / 16), drops = Array.from({length:cols}, () => Math.random() * c.height / 16);
+  const chars = '01アイウエオカキクケコ{}<>=+∑∫πλ'; let last = 0;
+  const draw = t => {
+    rainId = requestAnimationFrame(draw); if (t - last < 60) return; last = t;
+    x.fillStyle = 'rgba(0,0,0,.08)'; x.fillRect(0, 0, c.width, c.height);
+    x.fillStyle = '#22c55e'; x.font = '14px monospace';
+    drops.forEach((y, i) => { x.fillText(chars[Math.random() * chars.length | 0], i * 16, y * 16); drops[i] = y * 16 > c.height && Math.random() > .975 ? 0 : y + 1; });
+  };
+  rainId = requestAnimationFrame(draw);
+}
+function setTheme(t){
+  if (!THEMES[t]) t = 'emerald';
+  document.documentElement.dataset.theme = t; store.set(LS.theme, t); $('theme').value = t; rain(t === 'matrix');
+}
+$('theme').onchange = e => setTheme(e.target.value);
+addEventListener('resize', () => { if (document.documentElement.dataset.theme === 'matrix') rain(true); });
+setTheme(store.get(LS.theme) || 'emerald');
 
 function setTab(t){
   state.tab = t;
-  $('panePdf').classList.toggle('hidden', t!=='pdf');
-  $('paneText').classList.toggle('hidden', t!=='text');
-  $('tabPdf').classList.toggle('on', t==='pdf');
-  $('tabText').classList.toggle('on', t==='text');
+  $('panePdf').classList.toggle('hidden', t !== 'pdf'); $('paneText').classList.toggle('hidden', t !== 'text');
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  save();
 }
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t));
-setTab('pdf');
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t)); setTab('pdf');
 
 function setLang(l){
   state.lang = l; store.set(LS.lang, l);
-  document.querySelectorAll('.lang').forEach(b => b.classList.toggle('on', b.dataset.l===l));
+  document.querySelectorAll('.lang').forEach(b => b.classList.toggle('on', b.dataset.l === l));
 }
 document.querySelectorAll('.lang').forEach(b => b.onclick = () => setLang(b.dataset.l));
-setLang(state.lang);
+setLang(store.get(LS.lang) || 'en');
 
-function setStatus(m, err){
-  $('status').textContent = m;
-  $('status').className = 'text-sm min-h-[1.25rem] ' + (err ? 'text-red-400' : 'text-slate-400');
-}
+function setStatus(m, err){ $('status').textContent = m; $('status').className = 'text-sm min-h-[1.25rem] ' + (err ? 'text-red-400' : 'text-slate-400'); }
+function busy(b, msg){ $('go').disabled = b; $('go').classList.toggle('animate-pulse', b); if (msg) setStatus(msg); }
+addEventListener('offline', () => setStatus('You are offline. Reconnect and try again.', true));
 
-// ---- PDF input ----
 let pdfData = null;
 function loadPdf(f){
   if (!f) return;
   if (f.type !== 'application/pdf') return setStatus('Please choose a PDF file.', true);
   if (f.size > 18*1024*1024) return setStatus('This PDF is over 18 MB. Split it or paste the text instead.', true);
   const r = new FileReader();
-  r.onload = () => { pdfData = r.result.split(',')[1]; $('dropLabel').textContent = f.name; setStatus('PDF ready.'); };
+  r.onload = () => { pdfData = r.result.split(',')[1]; $('dropLabel').textContent = f.name; setStatus('PDF ready.'); idb.set('pdf', { name: f.name, data: pdfData }); save(); };
+  r.onerror = () => setStatus('Could not read that file.', true);
   r.readAsDataURL(f);
 }
 $('file').onchange = e => loadPdf(e.target.files[0]);
@@ -188,38 +257,20 @@ const drop = $('drop');
 ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
 drop.addEventListener('drop', e => loadPdf(e.dataTransfer.files[0]));
 
-// ---- Gemini ----
-const systemPrompt = () => `You are a friendly, patient personal tutor helping a student study. Explain things simply, like a kind teacher, using short sentences and concrete examples. Stay faithful to the provided material; if something is not in it, say so before adding outside knowledge. Write all of your answers in ${LANGS[state.lang]}. Use clean Markdown.`;
-
-const GUIDE_PROMPT = `Read the study material and write a study guide with exactly these sections as "##" headings:
-## Executive Summary
-(5-8 sentences, the big picture in plain language)
-## Key Terms
-(a list of important terms, each with a simple definition)
-## Lecture Breakdown
-(the lecture split into logical parts with "###" sub-headings; explain each part simply and use bullet points)
-## Core Formulas & Concepts
-(formulas, rules, laws or core ideas, each with a one-line explanation; put formulas in code formatting. If there are none, list the 3-5 most important concepts instead)
-Start with one short, warm sentence greeting the student.`;
-
-async function callGemini(contents, opts = {}){
-  const key = $('key').value.trim() || store.get(LS.key);
-  if (!key) throw new Error('Add your Gemini API key at the top first.');
-  const model = $('model').value;
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json', 'x-goog-api-key': key },
-    body: JSON.stringify({ systemInstruction:{ parts:[{ text: opts.system || systemPrompt() }] }, contents, ...(opts.gen ? { generationConfig: opts.gen } : {}) })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || ('Request failed (' + res.status + ')'));
-  const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
-  if (!text) throw new Error('The model returned no text' + (data.promptFeedback?.blockReason ? ' (blocked: ' + data.promptFeedback.blockReason + ')' : '.'));
-  return text;
+function getParts(){
+  if (state.tab === 'pdf') {
+    if (!pdfData) { setStatus('Choose a PDF first.', true); return null; }
+    return [{ inlineData:{ mimeType:'application/pdf', data: pdfData } }];
+  }
+  const t = $('text').value.trim();
+  if (t.length < 50) { setStatus('Paste a bit more text (at least a few sentences).', true); return null; }
+  return [{ text: 'STUDY MATERIAL:\n\n' + t }];
 }
+const sigOf = p => p[0].inlineData ? 'pdf' + p[0].inlineData.data.length : 'txt' + p[0].text.length + p[0].text.slice(0, 60);
 
-// Built-in Markdown renderer (escapes all HTML first, so output is safe)
 function md2html(src){
+  const maths = [];
+  src = src.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$(?!\s)[^$\n]*[^$\s]\$/g, m => { maths.push(m); return '\u0000' + (maths.length - 1) + '\u0001'; });
   const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const inline = t => esc(t).replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
@@ -253,186 +304,279 @@ function md2html(src){
       const body = rows.slice(/^[\s|:-]+$/.test(rows[1] || '') ? 2 : 1);
       out += '<table><thead><tr>' + cells(rows[0]).map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>'
         + body.map(r => '<tr>' + cells(r).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
-    } else if (!l.trim()) {
-      flushP(); closeL();
-    } else {
-      closeL(); para.push(l.trim());
-    }
+    } else if (!l.trim()) { flushP(); closeL(); }
+    else { closeL(); para.push(l.trim()); }
     i++;
   }
-  flushP(); closeL(); return out;
+  flushP(); closeL();
+  return out.replace(/\u0000(\d+)\u0001/g, (_, k) => esc(maths[+k]));
 }
+const inlineHtml = t => md2html(String(t)).replace(/^<p>|<\/p>$/g, '');
+function typeset(el){ if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {}); }
+function render(el, md, dir){ el.innerHTML = md2html(md); el.dir = dirOf(dir); typeset(el); }
 
-function render(el, md){
-  el.innerHTML = md2html(md);
-  el.dir = state.lang === 'en' ? 'ltr' : 'rtl';
-}
+const systemPrompt = () => `You are a friendly, patient personal tutor helping a student study. Explain things simply, like a kind teacher, using short sentences and concrete examples. Stay faithful to the provided material. Write all of your answers in ${LANGS[state.lang]}. Use clean Markdown. Write every math expression or formula in LaTeX: inline as $...$ and display equations as $$...$$.`;
 
-function getParts(){
-  if (state.tab === 'pdf') {
-    if (!pdfData) { setStatus('Choose a PDF first.', true); return null; }
-    return [{ inlineData:{ mimeType:'application/pdf', data: pdfData } }];
+async function gem(contents, opts = {}){
+  const key = ($('key').value || store.get(LS.key) || '').trim();
+  if (!key) throw new Error('Add your Gemini API key at the top first.');
+  if (!navigator.onLine) throw new Error('You appear to be offline. Check your connection.');
+  const body = JSON.stringify({ systemInstruction:{ parts:[{ text: opts.system || systemPrompt() }] }, contents, ...(opts.gen ? { generationConfig: opts.gen } : {}) });
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+  
+  try {
+    const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key': key }, body });
+    if (!res.ok) {
+      let m = ''; try { m = (await res.json()).error?.message || ''; } catch (_) {}
+      throw new Error(m || 'Request failed with status ' + res.status);
+    }
+    const d = await res.json();
+    const t = d.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
+    if (!t) throw new Error('The model returned no text.');
+    return t;
+  } catch (e) {
+    throw e;
   }
-  const t = $('text').value.trim();
-  if (t.length < 50) { setStatus('Paste a bit more text (at least a few sentences).', true); return null; }
-  return [{ text: 'STUDY MATERIAL:\n\n' + t }];
 }
 
-$('go').onclick = async () => {
-  if (state.mode === 'quiz') return makeQuiz();
-  const parts = getParts(); if (!parts) return;
-  state.docParts = parts; state.history = [];
-  $('go').disabled = true; setStatus('Your tutor is reading the material…');
-  try {
-    const first = { role:'user', parts:[...parts, { text: GUIDE_PROMPT }] };
-    const out = await callGemini([first]);
-    state.history = [first, { role:'model', parts:[{ text: out }] }];
-    state.summary = out;
-    render($('summary'), out);
-    state.hasGuide = true; showPanels();
-    $('log').innerHTML = '';
-    setStatus('Done.');
-    $('result').scrollIntoView({ behavior:'smooth' });
-  } catch (e) { setStatus(e.message, true); }
-  $('go').disabled = false;
-};
-
-// ---- Chat ----
-function bubble(role, md){
-  const d = document.createElement('div');
-  d.className = role === 'user'
-    ? 'bg-green-700 text-white rounded-xl px-4 py-2 text-sm ms-auto max-w-[85%] w-fit'
-    : 'bg-[#040d08] rounded-xl px-4 py-3 text-sm max-w-full md';
-  if (role === 'user') { d.textContent = md; d.dir = 'auto'; } else render(d, md);
-  $('log').appendChild(d); d.scrollIntoView({ behavior:'smooth', block:'nearest' });
-  return d;
-}
-async function ask(){
-  const q = $('q').value.trim();
-  if (!q || !state.history.length) return;
-  $('q').value = ''; $('send').disabled = true;
-  bubble('user', q);
-  const wait = bubble('model', '…');
-  const turn = { role:'user', parts:[{ text: q }] };
-  try {
-    const out = await callGemini([...state.history, turn]);
-    state.history.push(turn, { role:'model', parts:[{ text: out }] });
-    render(wait, out);
-  } catch (e) { wait.textContent = e.message; wait.classList.add('text-red-400'); }
-  $('send').disabled = false; $('q').focus();
-}
-$('send').onclick = ask;
-$('q').addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
-
-// ---- Mode switching ----
 function showPanels(){
   const g = state.mode === 'guide';
   $('result').classList.toggle('hidden', !(g && state.hasGuide));
-  $('chat').classList.toggle('hidden', !(g && state.hasGuide));
   $('quizBox').classList.toggle('hidden', g || !state.quiz);
+  $('chat').classList.toggle('hidden', !state.ready);
 }
 function setMode(m){
   state.mode = m;
   document.querySelectorAll('.mode').forEach(b => b.classList.toggle('on', b.dataset.m === m));
-  $('quizCtl').classList.toggle('hidden', m !== 'quiz');
-  $('quizCtl').classList.toggle('flex', m === 'quiz');
+  $('quizCtl').classList.toggle('hidden', m !== 'quiz'); $('quizCtl').classList.toggle('flex', m === 'quiz');
   $('go').textContent = m === 'quiz' ? 'Generate quiz' : 'Create study guide';
-  showPanels();
+  showPanels(); save();
 }
 document.querySelectorAll('.mode').forEach(b => b.onclick = () => setMode(b.dataset.m));
 setMode('guide');
 
-// ---- Quiz ----
-const QUIZ_SYSTEM = () => `You are an exam writer creating a quiz from study material. Write every question, option and explanation in ${LANGS[state.lang]}. Base questions only on the material. Return ONLY valid JSON, no markdown fences, in exactly this shape:
+const GUIDE_PROMPT = `Read the study material and write a study guide with exactly these sections as "##" headings:
+## Executive Summary
+(5-8 sentences, the big picture in plain language)
+## Key Terms
+(a list of important terms, each with a simple definition)
+## Lecture Breakdown
+(the lecture split into logical parts with "###" sub-headings; explain each part simply and use bullet points)
+## Core Formulas & Concepts
+(formulas, rules, laws or core ideas, each with a one-line explanation; write formulas in LaTeX)
+Start with one short, warm sentence greeting the student.`;
+
+$('go').onclick = async () => {
+  if (state.mode === 'quiz') return makeQuiz();
+  const parts = getParts(); if (!parts) return;
+  const art = $('summary'); art.innerHTML = '';
+  busy(true, '⏳ Your tutor is reading the material…');
+  try {
+    const first = { role:'user', parts:[...parts, { text: GUIDE_PROMPT }] };
+    const out = await gem([first]);
+    state.history = [first, { role:'model', parts:[{ text: out }] }];
+    state.summary = out; state.sig = sigOf(parts); state.ready = true; state.hasGuide = true;
+    $('log').innerHTML = ''; render(art, out); showPanels(); setStatus('Done ✓'); save();
+  } catch (e) {
+    if (!art.innerHTML) { state.hasGuide = false; showPanels(); }
+    setStatus(e.message, true);
+  }
+  busy(false);
+};
+
+const QUIZ_SYSTEM = () => `You are an expert exam writer creating a quiz from study material. Write every question, option and explanation in ${LANGS[state.lang]}. Base questions only on the material. Difficulty: ${LEVELS[$('qLevel').value][0]} - ${LEVELS[$('qLevel').value][1]}. Return ONLY valid JSON, no markdown fences, in exactly this shape:
 {"questions":[{"type":"mcq","question":"...","options":["..."],"answer":0,"explanation":"..."}]}
-Rules: "type" is "mcq" or "tf". "answer" is the zero-based index of the correct option. mcq questions have exactly 4 options with one correct answer; vary the position of the correct answer. tf questions have exactly 2 options in this order: ${state.lang === 'en' ? '["True","False"]' : '["صح","خطأ"]'}. Each explanation is 1-2 simple sentences saying why the answer is correct.`;
+Rules: "type" is "mcq" or "tf". "answer" is the zero-based index of the correct option. mcq questions have exactly 4 options with one correct answer; vary the position of the correct answer. tf questions have exactly 2 options.`;
+const fix = s => typeof s === 'string' ? s.replace(/\f/g,'\\f').replace(/\x08/g,'\\b').replace(/\t/g,'\\t').replace(/\r/g,'\\r') : s;
 
 async function makeQuiz(){
   const parts = getParts(); if (!parts) return;
-  const n = $('qCount').value, type = $('qType').value;
-  const kind = type === 'mcq' ? 'all multiple-choice (mcq)' : type === 'tf' ? 'all true/false (tf)' : 'a mix of mcq and tf, about half each';
-  $('go').disabled = true; setStatus('Writing your quiz…');
+  const n = $('qCount').value, type = $('qType').value, lv = $('qLevel').value;
+  const kind = type === 'mcq' ? 'all multiple-choice (mcq)' : type === 'tf' ? 'all true/false (tf)' : 'a mix of mcq and tf';
+  busy(true, '⏳ Writing your ' + LEVELS[lv][0] + ' quiz…');
   try {
-    const raw = await callGemini(
-      [{ role:'user', parts:[...parts, { text: `Create exactly ${n} questions: ${kind}.` }] }],
+    const raw = await gem([{ role:'user', parts:[...parts, { text: `Create exactly ${n} questions: ${kind}.` }] }],
       { system: QUIZ_SYSTEM(), gen:{ responseMimeType:'application/json' } });
     const data = JSON.parse(raw.replace(/^\s*```(?:json)?|```\s*$/g, '').trim());
     const qs = (data.questions || []).filter(q => q && q.question && Array.isArray(q.options) && q.options.length >= 2
-      && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length);
+      && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length)
+      .map(q => ({ question: fix(q.question), options: q.options.map(fix), answer: q.answer, explanation: fix(q.explanation || '') }));
     if (!qs.length) throw new Error('The quiz came back empty. Try again.');
-    state.quiz = qs; renderQuiz();
-    setStatus('Quiz ready: ' + qs.length + ' questions.');
+    state.quiz = qs; state.level = lv; state.qlang = state.lang;
+    const sig = sigOf(parts);
+    if (!state.ready || state.sig !== sig) {
+      state.history = [{ role:'user', parts:[...parts, { text:'This is my study material.' }] },
+        { role:'model', parts:[{ text:'Got it!' }] }];
+      if (state.sig !== sig) { state.hasGuide = false; state.summary = ''; $('summary').innerHTML = ''; }
+      state.sig = sig; state.ready = true; $('log').innerHTML = '';
+    }
+    renderQuiz(); setStatus('Quiz ready: ' + qs.length + ' questions ✓');
     $('quizBox').scrollIntoView({ behavior:'smooth' });
   } catch (e) {
     setStatus(e instanceof SyntaxError ? 'The AI returned an unreadable quiz. Try again.' : e.message, true);
   }
-  $('go').disabled = false;
+  busy(false);
 }
 
 let checked = false;
 function renderQuiz(){
   checked = false; state.picks = state.quiz.map(() => -1);
+  $('qMeta').textContent = LEVELS[state.level][0] + ' · ' + state.quiz.length + ' questions';
   $('score').classList.add('hidden'); $('retake').classList.add('hidden'); $('submitQuiz').classList.remove('hidden');
-  const list = $('qList'); list.innerHTML = ''; list.dir = state.lang === 'en' ? 'ltr' : 'rtl';
-  $('score').dir = list.dir;
+  const list = $('qList'); list.innerHTML = ''; list.dir = dirOf(state.qlang); $('score').dir = list.dir;
   state.quiz.forEach((q, i) => {
     const card = document.createElement('div');
-    card.className = 'rounded-xl border border-green-900/50 p-4';
-    const h = document.createElement('p');
-    h.className = 'font-medium mb-3 leading-relaxed'; h.textContent = (i + 1) + '. ' + q.question;
-    card.appendChild(h);
+    card.className = 'rounded-xl p-4'; card.style.cssText = 'border:1px solid var(--line)';
+    const h = document.createElement('p'); h.className = 'font-medium mb-3 leading-relaxed';
+    h.innerHTML = (i + 1) + '. ' + inlineHtml(q.question); card.appendChild(h);
     q.options.forEach((o, j) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.dataset.j = j; b.textContent = o;
-      b.className = 'opt block w-full text-start rounded-lg border border-green-900 px-3 py-2 mb-2 text-sm';
-      b.onclick = () => {
-        if (checked) return;
-        state.picks[i] = j;
-        card.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', +x.dataset.j === j));
-      };
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.dataset.j = j; b.innerHTML = inlineHtml(o);
+      b.onclick = () => { if (checked) return; state.picks[i] = j; card.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', +x.dataset.j === j)); save(); };
       card.appendChild(b);
     });
-    const ex = document.createElement('p');
-    ex.className = 'exp hidden text-sm mt-2 rounded-lg bg-[#040d08] p-3 leading-relaxed'; ex.textContent = q.explanation || '';
-    card.appendChild(ex);
-    list.appendChild(card);
+    const ex = document.createElement('div'); ex.className = 'exp hidden text-sm mt-2 rounded-lg p-3 leading-relaxed'; ex.style.background = 'var(--soft)';
+    card.appendChild(ex); list.appendChild(card);
   });
-  showPanels();
+  showPanels(); typeset(list); save();
+}
+
+function perf(pct, lv, en){
+  if (lv === 'legendary' && pct >= 90) return en ? 'LEGENDARY! 🔥 You have truly mastered this material.' : 'أسطوري! 🔥 أنت متقن للمادة فعلاً.';
+  if (pct >= 90) return en ? 'Outstanding! You clearly know this material.' : 'رائع! واضح أنك متمكن من المادة.';
+  if (pct >= 75) return en ? 'Great job!' : 'عمل جيد جداً!';
+  return en ? 'Keep going!' : 'واصل والمرة القادمة أفضل!';
 }
 
 $('submitQuiz').onclick = () => {
   if (!state.quiz || checked) return;
+  const sk = state.picks.filter(p => p < 0).length;
+  if (sk && !confirm(sk + ' question(s) unanswered. Submit anyway?')) return;
+  gradeQuiz(); $('quizBox').scrollIntoView({ behavior:'smooth' });
+};
+
+function gradeQuiz(){
   const skipped = state.picks.filter(p => p < 0).length;
-  if (skipped && !confirm(skipped + ' question(s) unanswered. Submit anyway?')) return;
-  checked = true; let score = 0;
+  checked = true; let score = 0; const en = state.qlang === 'en';
+  const T = { ok: en ? '✓ Correct' : '✓ إجابة صحيحة', no: en ? '✗ Incorrect' : '✗ إجابة خاطئة', sk: en ? '– Not answered' : '– لم تجب',
+              you: en ? 'Your answer' : 'إجابتك', right: en ? 'Correct answer' : 'الإجابة الصحيحة' };
   document.querySelectorAll('#qList > div').forEach((card, i) => {
-    const q = state.quiz[i], p = state.picks[i];
-    if (p === q.answer) score++;
+    const q = state.quiz[i], p = state.picks[i], good = p === q.answer; if (good) score++;
     card.querySelectorAll('.opt').forEach((b, j) => {
       b.classList.add('done'); b.classList.remove('sel');
       if (j === q.answer) b.classList.add('right'); else if (j === p) b.classList.add('wrong');
     });
-    card.querySelector('.exp').classList.remove('hidden');
+    const cls = good ? 'ok' : p < 0 ? 'sk' : 'no';
+    let html = '<div class="font-semibold ' + cls + '">' + (good ? T.ok : p < 0 ? T.sk : T.no) + '</div>';
+    if (!good) html += (p >= 0 ? '<div>' + T.you + ': ' + inlineHtml(q.options[p]) + '</div>' : '') + '<div>' + T.right + ': ' + inlineHtml(q.options[q.answer]) + '</div>';
+    if (q.explanation) html += '<div class="mt-1 text-slate-300">💡 ' + inlineHtml(q.explanation) + '</div>';
+    const ex = card.querySelector('.exp'); ex.innerHTML = html; ex.classList.remove('hidden');
   });
-  const total = state.quiz.length, pct = Math.round(score / total * 100), en = state.lang === 'en';
-  const msg = pct >= 80 ? (en ? 'Excellent work!' : 'ممتاز! عمل رائع.')
-    : pct >= 50 ? (en ? 'Good start. Review the explanations below.' : 'بداية جيدة. راجع الشرح أدناه.')
-    : (en ? 'Keep going. Read the explanations and try again.' : 'واصل المحاولة. اقرأ الشرح وأعد الاختبار.');
-  $('score').innerHTML = '<div class="text-4xl font-semibold" dir="ltr">' + score + '/' + total + '</div><div class="text-slate-400 mt-1">' + pct + '% · ' + msg + '</div>';
+  const total = state.quiz.length, pct = Math.round(score / total * 100), wrong = total - score - skipped, lv = state.level;
+  const chip = (c, t) => '<span class="rounded-full px-3 py-1 ' + c + '" style="background:var(--soft)">' + t + '</span>';
+  $('score').innerHTML =
+    '<div class="text-sm uppercase tracking-wide text-slate-400">' + LEVELS[lv][0] + '</div>' +
+    '<div class="text-5xl font-semibold my-1" dir="ltr">' + score + '/' + total + '</div>' +
+    '<div class="h-2 rounded-full overflow-hidden my-3" style="background:var(--soft)"><div class="h-full" style="width:' + pct + '%;background:var(--hi)"></div></div>' +
+    '<div class="text-lg font-medium" dir="ltr">' + pct + '%</div>' +
+    '<div class="flex flex-wrap justify-center gap-2 text-sm my-3">' + chip('ok', '✓ ' + score + ' ' + (en ? 'correct' : 'صحيحة')) + chip('no', '✗ ' + wrong + ' ' + (en ? 'wrong' : 'خاطئة')) + chip('sk', '– ' + skipped + ' ' + (en ? 'skipped' : 'متروكة')) + '</div>' +
+    '<p class="font-medium">' + perf(pct, lv, en) + '</p>';
   $('score').classList.remove('hidden'); $('retake').classList.remove('hidden'); $('submitQuiz').classList.add('hidden');
-  $('score').scrollIntoView({ behavior:'smooth', block:'center' });
-};
+  typeset($('qList')); save();
+}
 $('retake').onclick = () => { renderQuiz(); $('quizBox').scrollIntoView({ behavior:'smooth' }); };
 
-// ---- Utilities ----
+function bubble(role, text, quiet){
+  const d = document.createElement('div');
+  d.className = role === 'user' ? 'rounded-xl px-4 py-2 text-sm ms-auto max-w-[85%] w-fit text-white' : 'rounded-xl px-4 py-3 text-sm max-w-full md';
+  d.style.background = role === 'user' ? 'var(--acc)' : 'var(--inset)';
+  if (role === 'user') { d.textContent = text; d.dir = 'auto'; } else { d.innerHTML = md2html(text); d.dir = dirOf(); }
+  $('log').appendChild(d); if (!quiet) d.scrollIntoView({ behavior:'smooth', block:'nearest' }); return d;
+}
+async function ask(text){
+  const q = (text ?? $('q').value).trim();
+  if (!q || !state.ready || $('send').disabled) return;
+  $('q').value = ''; $('send').disabled = true;
+  bubble('user', q); const b = bubble('model', '…');
+  const turn = { role:'user', parts:[{ text: q }] };
+  try {
+    const out = await gem([...state.history, turn]);
+    state.history.push(turn, { role:'model', parts:[{ text: out }] }); render(b, out); save();
+  } catch (e) { b.textContent = e.message; b.style.color = '#f87171'; }
+  $('send').disabled = false; $('q').focus();
+}
+$('send').onclick = () => ask();
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) ask(); });
+document.querySelectorAll('#chips button').forEach(b => b.onclick = () => ask(b.dataset.q));
+
+const idb = {
+  open(){ return new Promise((res, rej) => { const r = indexedDB.open('aurastudy', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  async get(k){ try { const d = await this.open(); return await new Promise(res => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); } catch (e) { return undefined; } },
+  async set(k, v){ try { const d = await this.open(); await new Promise(res => { const t = d.transaction('kv', 'readwrite'); v === undefined ? t.objectStore('kv').delete(k) : t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) {} }
+};
+
+function save(){ clearTimeout(saveT); saveT = setTimeout(saveNow, 300); }
+const stripHist = h => h.map(t => ({ role: t.role, parts: t.parts.map(p => p.inlineData ? { text: '__PDF__' } : p) }));
+
+function saveNow(){
+  if (restoring || wiping) return;
+  const data = { mode: state.mode, tab: state.tab, text: $('text').value, qCount: $('qCount').value, qType: $('qType').value, qLevel: $('qLevel').value,
+    summary: state.summary, hasGuide: state.hasGuide, ready: state.ready, sig: state.sig, history: JSON.parse(JSON.stringify(stripHist(state.history))),
+    quiz: state.quiz, picks: state.picks, checked, level: state.level, qlang: state.qlang };
+  try { localStorage.setItem(LS.session, JSON.stringify(data)); }
+  catch (e) {}
+}
+
+async function restore(){
+  let d = null; try { d = JSON.parse(store.get(LS.session) || 'null'); } catch (e) {}
+  const pdf = await idb.get('pdf');
+  if (pdf && pdf.data) { pdfData = pdf.data; $('dropLabel').textContent = pdf.name + ' (saved)'; }
+  if (!d) return;
+  restoring = true;
+  try {
+    $('text').value = d.text || '';
+    ['qCount','qType','qLevel'].forEach(k => { if (d[k]) $(k).value = d[k]; });
+    setTab(d.tab || 'pdf');
+    state.summary = d.summary || ''; state.hasGuide = !!d.hasGuide && !!state.summary; state.sig = d.sig || '';
+    state.history = (d.history || []).map(t => ({ role: t.role, parts: t.parts.map(p => p.text === '__PDF__'
+      ? (pdfData ? { inlineData:{ mimeType:'application/pdf', data: pdfData } } : { text:'[PDF Data]' }) : p) }));
+    state.ready = !!d.ready && state.history.length >= 2;
+    if (state.hasGuide) render($('summary'), state.summary);
+    $('log').innerHTML = '';
+    state.history.slice(2).forEach(t => bubble(t.role === 'user' ? 'user' : 'model', t.parts.map(p => p.text || '').join(''), true));
+    typeset($('log'));
+    if (Array.isArray(d.quiz) && d.quiz.length) {
+      state.quiz = d.quiz; state.level = d.level || 'medium'; state.qlang = d.qlang || 'en'; renderQuiz();
+      if (Array.isArray(d.picks) && d.picks.length === d.quiz.length) {
+        state.picks = d.picks;
+        document.querySelectorAll('#qList > div').forEach((card, i) => card.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', +x.dataset.j === state.picks[i])));
+      }
+      if (d.checked) gradeQuiz();
+    }
+    setMode(d.mode || 'guide');
+  } catch (e) {}
+  restoring = false;
+}
+
+$('key').addEventListener('input', () => store.set(LS.key, $('key').value.trim()));
+$('text').addEventListener('input', save);
+['qCount','qType','qLevel'].forEach(id => $(id).addEventListener('change', save));
+addEventListener('pagehide', saveNow);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveNow(); });
+
+$('clearSession').onclick = async () => {
+  if (!confirm('Clear the saved study session?')) return;
+  wiping = true; store.del(LS.session); await idb.set('pdf', undefined); location.reload();
+};
+$('forgetKey').onclick = () => { store.del(LS.key); $('key').value = ''; setStatus('API key removed from this browser.'); };
+
+restore();
+
 $('copy').onclick = async () => {
-  try { await navigator.clipboard.writeText(state.summary); $('copy').textContent = 'Copied'; }
-  catch(e){ $('copy').textContent = 'Copy failed'; }
+  try { await navigator.clipboard.writeText(state.summary); $('copy').textContent = 'Copied'; } catch (e) { $('copy').textContent = 'Copy failed'; }
   setTimeout(() => $('copy').textContent = 'Copy', 1500);
 };
 function download(name, type){
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([state.summary], { type }));
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([state.summary], { type }));
   a.download = name; a.click(); URL.revokeObjectURL(a.href);
 }
 $('dlMd').onclick = () => download('study-guide.md', 'text/markdown;charset=utf-8');
