@@ -3,29 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generative Language Study Tool</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>AuraStudy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3333ff;
+            --secondary-color: #6666ff;
+            --accent-color: #00ffff;
+            --background-color: #121212;
+            --text-color: #ffffff;
+            --error-color: #ff6666;
+            --success-color: #66ff66;
+        }
+        .glassmorphism {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        .neon-text {
+            background-color: rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 2px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .interactive-ai {
+            background-color: rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body>
-    <div id="app">
-        <header>
-            <h1>Generative Language Study Tool</h1>
-            <button id="settingsBtn">Settings</button>
-        </header>
-        <div id="settings" class="hidden">
-            <h2>Settings</h2>
-            <label for="apiKey">API Key:</label>
-            <input type="text" id="apiKey" placeholder="Enter your API Key">
-            <button id="saveKey">Save Key</button>
+<body class="bg-background-color text-text-color font-sans">
+    <div class="container mx-auto p-6">
+        <div class="flex justify-center">
+            <h1 class="text-4xl font-bold glassmorphism">AuraStudy</h1>
         </div>
-        <div id="log"></div>
-        <textarea id="text" placeholder="Type your message here..."></textarea>
-        <button id="send">Send</button>
-        <button id="clear">Clear</button>
-        <button id="guide">Guide Mode</button>
-        <button id="quiz">Quiz Mode</button>
-        <button id="download">Download Study Guide</button>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Upload Study Material</div>
+            <div class="mt-4">
+                <input type="file" id="fileInput" class="file-input" accept=".pdf, .txt, .docx">
+            </div>
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Study Material Modes</div>
+            <div class="mt-4">
+                <button id="generateGuideBtn" class="btn">Generate Structured Study Guide</button>
+                <button id="generateQuizBtn" class="btn">Generate Multi-Tier Interactive Quiz</button>
+            </div>
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Interactive AI Tutor</div>
+            <div class="mt-4">
+                <div class="flex flex-wrap gap-4">
+                    <div class="interactive-ai cursor-pointer" data-question="What is the capital of France?">What is the capital of France?</div>
+                    <div class="interactive-ai cursor-pointer" data-question="What is the largest planet in our solar system?">What is the largest planet in our solar system?</div>
+                    <div class="interactive-ai cursor-pointer" data-question="What is the chemical symbol for water?">What is the chemical symbol for water?</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="app.js"></script>
+    <script>
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        document.getElementById('generateGuideBtn').addEventListener('click', generateStudyGuide);
+        document.getElementById('generateQuizBtn').addEventListener('click', generateInteractiveQuiz);
+
+        const fileInput = document.getElementById('fileInput');
+        const generateGuideBtn = document.getElementById('generateGuideBtn');
+        const generateQuizBtn = document.getElementById('generateQuizBtn');
+        const interactiveAIs = document.querySelectorAll('.interactive-ai');
+
+        interactiveAIs.forEach(ai => {
+            ai.addEventListener('click', handleInteractiveAI);
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Securely communicate with serverless backend to handle file upload
+                fetch('/api/upload', {
+                    method: 'POST',
+                    body: new FormData(event.target)
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          alert('File uploaded successfully');
+                      } else {
+                          alert('Error uploading file');
+                      }
+                  }).catch(error => {
+                      console.error('Error:', error);
+                  });
+            }
+        }
+
+        function generateStudyGuide() {
+            // Securely communicate with serverless backend to generate structured study guide
+            fetch('/api/generateGuide', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode: 'guide' })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Structured study guide generated successfully');
+                  } else {
+                      alert('Error generating study guide');
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function generateInteractiveQuiz() {
+            // Securely communicate with serverless backend to generate interactive quiz
+            fetch('/api/generateQuiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode: 'quiz' })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Interactive quiz generated successfully');
+                  } else {
+                      alert('Error generating quiz');
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+              });
+        }
+
+        function handleInteractiveAI(event) {
+            const question = event.target.getAttribute('data-question');
+            // Securely communicate with serverless backend to get AI answer
+            fetch('/api/aiAnswer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: question })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert(`Answer: ${data.answer}`);
+                  } else {
+                      alert('Error getting AI answer');
+                  }
+              }).catch(error => {
+                  console.error('Error:', error);
+              });
+        }
+    </script>
 </body>
 </html>
