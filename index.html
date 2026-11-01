@@ -1,655 +1,357 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="emerald">
+<html lang="en" data-theme="cyber">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AuraStudy – AI Study Tutor</title>
-<meta name="description" content="Upload a lecture or paste your notes and get a friendly AI tutor, summaries, quizzes and chat.">
-<link rel="preconnect" href="https://generativelanguage.googleapis.com">
+<title>AuraStudy – AI Cyber Tutor</title>
+<meta name="description" content="Upload a lecture, notes, or images and get an advanced AI study tutor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 <style>
-:root,[data-theme=emerald]{--bg1:#020805;--bg2:#06241a;--bg3:#020805;--card:#08140d;--inset:#040d08;--line:#1b4d34;--soft:#0c2218;--soft2:#12301f;--acc:#15803d;--acch:#16a34a;--hi:#6ee7a8;--hdr:#030a06;--deep:#020a05}
-[data-theme=cyber]{--bg1:#050816;--bg2:#0b1d3a;--bg3:#050816;--card:#0a1228;--inset:#060b1c;--line:#16406b;--soft:#0d1d3a;--soft2:#123055;--acc:#0891b2;--acch:#06b6d4;--hi:#67e8f9;--hdr:#040712;--deep:#03060f}
-[data-theme=sunset]{--bg1:#120804;--bg2:#3a1606;--bg3:#120804;--card:#1c0e08;--inset:#130a05;--line:#6b2e12;--soft:#2a1409;--soft2:#3d1d0d;--acc:#c2410c;--acch:#ea580c;--hi:#fdba74;--hdr:#0d0603;--deep:#0a0402}
-[data-theme=royal]{--bg1:#0a0614;--bg2:#2a1250;--bg3:#0a0614;--card:#140c26;--inset:#0d081c;--line:#4a2a82;--soft:#1e1238;--soft2:#2d1b52;--acc:#7e22ce;--acch:#9333ea;--hi:#d8b4fe;--hdr:#080411;--deep:#05030c}
-[data-theme=ocean]{--bg1:#02101c;--bg2:#06355a;--bg3:#02101c;--card:#071a2b;--inset:#04101c;--line:#0f4c75;--soft:#0a2640;--soft2:#0f3a5e;--acc:#0369a1;--acch:#0284c7;--hi:#7dd3fc;--hdr:#020c15;--deep:#010811}
-[data-theme=mocha]{--bg1:#120c08;--bg2:#3b2a1e;--bg3:#120c08;--card:#1d140e;--inset:#140d09;--line:#5a4030;--soft:#2a1d14;--soft2:#3b2a1e;--acc:#92612e;--acch:#b07a3f;--hi:#e7c9a0;--hdr:#0e0805;--deep:#0a0604}
-[data-theme=ruby]{--bg1:#120305;--bg2:#4a0a14;--bg3:#120305;--card:#1c080c;--inset:#130508;--line:#6b1626;--soft:#2a0c12;--soft2:#40121c;--acc:#b91c1c;--acch:#dc2626;--hi:#fca5a5;--hdr:#0d0204;--deep:#0a0103}
-[data-theme=matrix]{--bg1:#000;--bg2:#00160a;--bg3:#000;--card:#020d05;--inset:#010802;--line:#0a5a22;--soft:#03170a;--soft2:#052a12;--acc:#16a34a;--acch:#22c55e;--hi:#4ade80;--hdr:#000;--deep:#000}
-[data-theme=neon]{--bg1:#0a0014;--bg2:#260045;--bg3:#00212e;--card:#0f0620;--inset:#08030f;--line:#5b1b8a;--soft:#1a0b33;--soft2:#2a1050;--acc:#c026d3;--acch:#e879f9;--hi:#22d3ee;--hdr:#07020d;--deep:#05010a}
-[data-theme=minimal]{--bg1:#0a0a0a;--bg2:#171717;--bg3:#0a0a0a;--card:#111;--inset:#0a0a0a;--line:#2a2a2a;--soft:#1a1a1a;--soft2:#242424;--acc:#3f3f46;--acch:#52525b;--hi:#e5e5e5;--hdr:#050505;--deep:#050505}
+:root {
+  --bg-dark: #050811;
+  --panel: rgba(13, 20, 36, 0.75);
+  --border: rgba(0, 240, 255, 0.25);
+  --cyan: #00f0ff;
+  --pink: #ff0055;
+  --purple: #7000ff;
+  --text-main: #e2e8f0;
+  --text-muted: #64748b;
+}
 
-html{color-scheme:dark}
-body{background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%) fixed;min-height:100vh;color:#e2e8f0;font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif}
-header,main{position:relative;z-index:1}
-:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:.75rem;padding:1.25rem}
-.field{background:var(--inset);color:#e2e8f0;border:1px solid var(--line);border-radius:.5rem;padding:.5rem .75rem;font-size:.875rem}
-.field:focus{border-color:var(--acc)}
-.field::placeholder{color:#64748b}
-.btn{background:var(--acc);color:#fff;border-radius:.5rem;font-weight:500;padding:.55rem 1.1rem;font-size:.875rem}
-.btn:hover{background:var(--acch)}.btn:disabled{opacity:.5;cursor:wait}
-.act{border:1px solid var(--line);border-radius:.5rem;padding:.4rem .8rem;font-size:.85rem;color:#cbd5e1}
-.act:hover{background:var(--soft2)}
-.hs{background:rgba(255,255,255,.1);color:#fff;border-radius:.5rem;padding:.5rem;font-size:.85rem}
-.hs option{background:var(--card);color:#e2e8f0}
-.seg{display:inline-flex;background:var(--inset);padding:.25rem;border-radius:.5rem;font-size:.875rem}
-.seg button{padding:.35rem .9rem;border-radius:.4rem;color:#94a3b8}
-.seg button.on{background:var(--acc);color:#fff}
-.drop{border:2px dashed var(--line)}.drop.over{border-color:var(--hi);background:var(--soft2)}
-.md h1,.md h2,.md h3{font-weight:600;color:#f1f5f9;margin:1.4em 0 .5em;line-height:1.3}
-.md h1{font-size:1.5rem}.md h2{font-size:1.25rem;border-bottom:1px solid var(--line);padding-bottom:.3em}.md h3{font-size:1.05rem}
-.md p{margin:.6em 0;line-height:1.8}.md ul{list-style:disc;padding-inline-start:1.4em;margin:.6em 0}.md ol{list-style:decimal;padding-inline-start:1.4em;margin:.6em 0}
-.md li{margin:.3em 0;line-height:1.7}.md strong{color:var(--hi)}
-.md code{background:var(--soft);color:var(--hi);padding:.1em .35em;border-radius:4px;font-size:.9em;direction:ltr;unicode-bidi:isolate}
-.md pre{background:var(--deep);border:1px solid var(--line);color:#e2e8f0;padding:1em;border-radius:8px;overflow-x:auto;direction:ltr}.md pre code{background:none;padding:0;color:inherit}
-.md table{border-collapse:collapse;width:100%;display:block;overflow-x:auto}.md th,.md td{border:1px solid var(--line);padding:.45em .7em;text-align:start}.md th{background:var(--soft)}
-.md blockquote{border-inline-start:3px solid var(--acc);padding-inline-start:1em;color:#94a3b8}
-.md hr{border:0;border-top:1px solid var(--line);margin:1.2em 0}
-mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
-mjx-container[display=true]{margin:.8em 0!important}
-.opt{display:block;width:100%;text-align:start;border:1px solid var(--line);border-radius:.5rem;padding:.55rem .75rem;margin-bottom:.5rem;font-size:.9rem;background:var(--inset)}
-.opt:hover:not(.sel){background:var(--soft)}
-.opt.sel{border-color:var(--hi);background:var(--soft2)}
-.opt.done{pointer-events:none}
-.opt.right{background:#14532d;border-color:#4ade80;color:#dcfce7}
-.opt.wrong{background:#3b0a0a;border-color:#ef4444;color:#fecaca}
-.ok{color:#4ade80}.no{color:#f87171}.sk{color:#fbbf24}
+body {
+  background: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(112, 0, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
+  color: var(--text-main);
+  font-family: 'JetBrains Mono', monospace;
+  min-height: 100vh;
+}
+
+h1, h2, h3, .cyber-font {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.glass-panel {
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.03);
+  border-radius: 0.75rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-cyber {
+  background: linear-gradient(135deg, rgba(112, 0, 255, 0.8), rgba(0, 240, 255, 0.8));
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  border: 1px solid var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-cyber:hover:not(:disabled) {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.7), 0 0 10px rgba(255, 0, 85, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-cyber:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.field-cyber {
+  background: rgba(4, 8, 18, 0.8);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.875rem;
+}
+
+.field-cyber:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.seg-btn {
+  background: rgba(10, 16, 30, 0.6);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.seg-btn.on {
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--cyan);
+  border-color: var(--cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+.md h1, .md h2, .md h3 { color: var(--cyan); margin: 1.2em 0 0.4em; }
+.md h2 { border-bottom: 1px dashed var(--border); padding-bottom: 0.3em; }
+.md code { background: rgba(0, 240, 255, 0.1); color: var(--pink); padding: 0.2em 0.4em; border-radius: 4px; }
+.md pre { background: #02040a; border: 1px solid var(--border); padding: 1em; border-radius: 8px; }
+.md strong { color: var(--cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
 </style>
 </head>
-<body>
-<canvas id="rain" style="display:none;position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3"></canvas>
+<body class="p-4 md:p-6">
 
-<header class="border-b" style="background:var(--hdr);border-color:var(--line)">
-  <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-    <h1 class="text-lg font-semibold me-auto">✨ AuraStudy</h1>
-    <select id="theme" class="hs" aria-label="Theme"></select>
-    <select id="model" class="hs" aria-label="Model">
-      <option value="gemini-3.8-flash">gemini-3.8-flash (recommended)</option>
-      <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-      <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (fastest)</option>
-    </select>
-    <input id="key" type="password" placeholder="Gemini API key" autocomplete="off" class="hs placeholder-white/50 w-full sm:w-56">
-    <button id="saveKey" class="btn">Save key</button>
+<header class="max-w-5xl mx-auto mb-6 flex justify-between items-center glass-panel px-6 py-4">
+  <h1 class="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500">
+    ⚡ AURA_STUDY // AI TUTOR
+  </h1>
+  <div class="text-xs text-cyan-400 tracking-widest border border-cyan-500/30 px-3 py-1 rounded-full bg-cyan-950/40">
+    SYSTEM ONLINE // SECURED BACKEND
   </div>
 </header>
 
-<main class="max-w-4xl mx-auto px-4 py-6 space-y-6">
-  <section class="card space-y-4">
-    <div class="flex flex-wrap gap-3">
-      <div class="seg" role="group" aria-label="Mode">
-        <button class="mode font-medium" data-m="guide">📖 Study guide</button>
-        <button class="mode font-medium" data-m="quiz">🧠 Quiz</button>
+<main class="max-w-5xl mx-auto space-y-6">
+  <!-- Control Center Panel -->
+  <section class="glass-panel p-6 space-y-5">
+    <div class="flex flex-wrap gap-4 items-center justify-between">
+      <div class="flex gap-2">
+        <button class="mode seg-btn px-4 py-2 rounded-lg text-sm font-semibold" data-m="guide">📖 STUDY GUIDE</button>
+        <button class="mode seg-btn px-4 py-2 rounded-lg text-sm font-semibold" data-m="quiz">🧠 CYBER QUIZ</button>
       </div>
-      <div class="seg" role="tablist">
-        <button class="tab" data-t="pdf">Upload PDF</button>
-        <button class="tab" data-t="text">Paste text</button>
+
+      <div class="flex gap-2">
+        <button class="tab seg-btn px-3 py-1.5 rounded-md text-xs" data-t="pdf">PDF FILE</button>
+        <button class="tab seg-btn px-3 py-1.5 rounded-md text-xs" data-t="text">RAW TEXT</button>
       </div>
     </div>
 
+    <!-- PDF Drag Drop Area -->
     <div id="panePdf">
-      <label id="drop" class="drop flex flex-col items-center justify-center text-center rounded-xl p-8 cursor-pointer transition">
-        <span class="font-medium" id="dropLabel">Drop a PDF here, or click to choose one</span>
-        <span class="text-sm text-slate-400 mt-1">Scanned PDFs work too. Up to about 18 MB.</span>
+      <label id="drop" class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-400 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition bg-black/40">
+        <span class="font-semibold text-cyan-300" id="dropLabel">DROP LECTURE PDF HERE OR CLICK TO BROWSE</span>
+        <span class="text-xs text-slate-400 mt-2">Supports PDFs up to 18 MB</span>
         <input id="file" type="file" accept="application/pdf" class="hidden">
       </label>
     </div>
+
+    <!-- Text Area Input -->
     <div id="paneText" class="hidden">
-      <textarea id="text" rows="9" placeholder="Paste your lecture text or notes here…" class="field w-full rounded-xl leading-relaxed"></textarea>
+      <textarea id="text" rows="6" placeholder="Paste lecture notes or text content here..." class="field-cyber w-full"></textarea>
     </div>
 
-    <div id="quizCtl" class="hidden flex-wrap items-center gap-4 text-sm">
-      <label class="flex items-center gap-2">Questions
-        <select id="qCount" class="field"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
+    <!-- Image Upload Bar (Camera/Gallery) -->
+    <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-800">
+      <label class="btn-cyber px-4 py-2 text-xs rounded-lg cursor-pointer flex items-center gap-2">
+        📷 ADD IMAGE (GALLERY / CAMERA)
+        <input id="imgFile" type="file" accept="image/*" class="hidden">
       </label>
-      <label class="flex items-center gap-2">Type
-        <select id="qType" class="field"><option value="mcq">Multiple choice</option><option value="tf">True / False</option><option value="mixed">Mixed</option></select>
+      
+      <div id="imgPreviewBox" class="hidden flex items-center gap-3 bg-black/60 px-3 py-1.5 rounded-lg border border-cyan-500/30">
+        <img id="imgPreview" class="w-10 h-10 object-cover rounded border border-cyan-400">
+        <button id="removeImg" class="text-xs text-pink-500 hover:underline">REMOVE</button>
+      </div>
+    </div>
+
+    <!-- Quiz Config Controls -->
+    <div id="quizCtl" class="hidden flex-wrap gap-4 text-xs">
+      <label class="flex items-center gap-2">COUNT: 
+        <select id="qCount" class="field-cyber py-1"><option>5</option><option selected>10</option><option>15</option></select>
       </label>
-      <label class="flex items-center gap-2">Level
-        <select id="qLevel" class="field">
-          <option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option><option value="legendary">Legendary Lvl 🔥</option>
+      <label class="flex items-center gap-2">TYPE: 
+        <select id="qType" class="field-cyber py-1"><option value="mcq">MCQ</option><option value="tf">True/False</option></select>
+      </label>
+      <label class="flex items-center gap-2">LEVEL: 
+        <select id="qLevel" class="field-cyber py-1">
+          <option value="easy">EASY</option><option value="medium" selected>MEDIUM</option>
+          <option value="hard">HARD</option><option value="legendary">LEGENDARY 🔥</option>
         </select>
       </label>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3">
-      <div class="seg" role="group" aria-label="Output language">
-        <button class="lang" data-l="en">English</button>
-        <button class="lang" data-l="ar-eg">عامية مصرية</button>
-        <button class="lang" data-l="ar-msa">فصحى مبسطة</button>
+    <!-- Language & Submit Section -->
+    <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+      <div class="flex gap-2">
+        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="en">English</button>
+        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="ar-eg">عامية مصرية</button>
+        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="ar-msa">فصحى</button>
       </div>
-      <button id="go" class="btn ms-auto">Create study guide</button>
+      
+      <button id="go" class="btn-cyber px-6 py-2.5 rounded-lg text-sm">INITIALIZE PROCESS</button>
     </div>
-    <p id="status" class="text-sm text-slate-400 min-h-[1.25rem]" role="status"></p>
+    
+    <p id="status" class="text-xs text-cyan-400 min-h-[1.2rem]"></p>
   </section>
 
-  <section id="result" class="card hidden">
-    <div class="flex flex-wrap gap-2 mb-2">
-      <button id="copy" class="act">Copy</button>
-      <button id="dlMd" class="act">Download .md</button>
-      <button id="dlTxt" class="act">Download .txt</button>
-    </div>
-    <article id="summary" class="md"></article>
+  <!-- Output & Result Section -->
+  <section id="result" class="glass-panel p-6 hidden">
+    <article id="summary" class="md space-y-4"></article>
   </section>
 
-  <section id="quizBox" class="card hidden">
-    <div id="qMeta" class="text-sm text-slate-400 mb-4"></div>
-    <div id="score" class="hidden mb-5 rounded-xl p-5 text-center" style="background:var(--inset);border:1px solid var(--line)"></div>
-    <div id="qList" class="space-y-4"></div>
-    <div class="flex flex-wrap gap-2 mt-5">
-      <button id="submitQuiz" class="btn">Submit &amp; check answers</button>
-      <button id="retake" class="act hidden">Retake quiz</button>
+  <!-- Quiz Box -->
+  <section id="quizBox" class="glass-panel p-6 hidden">
+    <div id="qMeta" class="text-xs text-cyan-400 mb-4"></div>
+    <div id="score" class="hidden mb-5 p-4 rounded-lg bg-black/50 border border-cyan-500/40 text-center"></div>
+    <div id="qList" class="space-y-6"></div>
+    <div class="flex gap-3 mt-6">
+      <button id="submitQuiz" class="btn-cyber px-5 py-2 text-xs rounded">SUBMIT ANSWERS</button>
+      <button id="retake" class="seg-btn px-5 py-2 text-xs rounded hidden">RETAKE</button>
     </div>
   </section>
 
-  <section id="chat" class="card hidden">
-    <h2 class="font-semibold mb-3">💬 Ask your tutor</h2>
-    <div id="chips" class="flex flex-wrap gap-2 mb-3">
-      <button class="act" data-q="Explain this in simpler words, like I'm a beginner.">Simpler please</button>
-      <button class="act" data-q="Give me a real-life example that makes this clear.">Give an example</button>
-      <button class="act" data-q="What are the most likely exam questions on this material?">Likely exam questions</button>
-      <button class="act" data-q="Summarize the whole material in 5 bullet points.">5-point summary</button>
-    </div>
-    <div id="log" class="space-y-3 mb-4"></div>
+  <!-- Chat System -->
+  <section id="chat" class="glass-panel p-6 hidden space-y-4">
+    <h2 class="text-lg font-bold text-cyan-400">💬 ASK CYBER TUTOR</h2>
+    <div id="log" class="space-y-3 max-h-96 overflow-y-auto p-2"></div>
     <div class="flex gap-2">
-      <input id="q" type="text" placeholder="Ask anything about the material…" class="field flex-1">
-      <button id="send" class="btn">Send</button>
+      <input id="q" type="text" placeholder="Ask questions about the uploaded material..." class="field-cyber flex-1">
+      <button id="send" class="btn-cyber px-5 py-2 text-xs rounded">SEND</button>
     </div>
   </section>
 </main>
 
-<footer class="max-w-4xl mx-auto px-4 pb-8 text-xs text-slate-400 flex flex-wrap gap-x-4 gap-y-1" style="position:relative;z-index:1">
-  <span>🔒 Everything is saved only in this browser.</span>
-  <button id="clearSession" class="underline">Clear saved study session</button>
-  <button id="forgetKey" class="underline">Forget API key</button>
-  <span id="persistWarn" class="text-amber-400"></span>
-</footer>
-
 <script>
 const $ = id => document.getElementById(id);
-const LS = { key:'gemini_key', model:'gemini_model', lang:'gemini_lang', theme:'aura_theme', session:'aura_session_v1' };
-const store = {
-  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
-  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} },
-  del(k){ try{ localStorage.removeItem(k) }catch(e){} }
-};
-const LANGS = {
-  'en': 'English',
-  'ar-eg': 'Egyptian Arabic colloquial (العامية المصرية), friendly and easy, keeping technical terms in English in brackets next to the Arabic',
-  'ar-msa': 'Simplified Modern Standard Arabic (فصحى مبسطة), clear and easy, keeping technical terms in English in brackets next to the Arabic'
-};
-const THEMES = { emerald:'Forest Emerald', cyber:'Midnight Cyber', sunset:'Sunset Orange', royal:'Royal Purple', ocean:'Deep Ocean',
-  mocha:'Dark Mocha', ruby:'Ruby Red', matrix:'Matrix Code', neon:'Cyber Neon', minimal:'Pure Minimal' };
-const LEVELS = {
-  easy:['Easy','basic recall and simple understanding; clear, direct questions with obviously wrong distractors'],
-  medium:['Medium','understanding and applying concepts; plausible distractors'],
-  hard:['Hard','multi-step reasoning, applying ideas to new situations, calculations where relevant, and very close distractors'],
-  legendary:['Legendary 🔥','extremely challenging: deep, multi-concept, tricky questions with subtle traps (common misconceptions, near-identical options, edge cases, "which statement is NOT true"), requiring true mastery. No simple recall questions']
-};
-let state = { tab:'pdf', lang:'en', mode:'guide', history:[], summary:'', hasGuide:false, ready:false, sig:'', quiz:null, picks:[], level:'medium', qlang:'en' };
-let restoring = false, wiping = false, saveT = 0;
-const dirOf = l => (l || state.lang) === 'en' ? 'ltr' : 'rtl';
-
-// ---------- setup ----------
-$('theme').innerHTML = Object.entries(THEMES).map(([k,v]) => `<option value="${k}">🎨 ${v}</option>`).join('');
-$('key').value = store.get(LS.key) || '';
-const MODELS = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];   // current stable models only
-{ const m = store.get(LS.model); $('model').value = MODELS.includes(m) ? m : MODELS[0]; store.set(LS.model, $('model').value); }   // old saved names (e.g. 2.5 / 1.5) are replaced
-$('saveKey').onclick = () => { store.set(LS.key, $('key').value.trim()); store.set(LS.model, $('model').value); setStatus('Key and model saved in this browser.'); refreshModels(); };
-$('model').onchange = () => store.set(LS.model, $('model').value);
-
-let rainId = 0;
-function rain(on){
-  const c = $('rain'); cancelAnimationFrame(rainId);
-  if (!on || matchMedia('(prefers-reduced-motion: reduce)').matches) { c.style.display = 'none'; return; }
-  c.style.display = 'block'; c.width = innerWidth; c.height = innerHeight;
-  const x = c.getContext('2d'), cols = Math.floor(c.width / 16), drops = Array.from({length:cols}, () => Math.random() * c.height / 16);
-  const chars = '01アイウエオカキクケコ{}<>=+∑∫πλ'; let last = 0;
-  const draw = t => {
-    rainId = requestAnimationFrame(draw); if (t - last < 60) return; last = t;
-    x.fillStyle = 'rgba(0,0,0,.08)'; x.fillRect(0, 0, c.width, c.height);
-    x.fillStyle = '#22c55e'; x.font = '14px monospace';
-    drops.forEach((y, i) => { x.fillText(chars[Math.random() * chars.length | 0], i * 16, y * 16); drops[i] = y * 16 > c.height && Math.random() > .975 ? 0 : y + 1; });
-  };
-  rainId = requestAnimationFrame(draw);
-}
-function setTheme(t){
-  if (!THEMES[t]) t = 'emerald';
-  document.documentElement.dataset.theme = t; store.set(LS.theme, t); $('theme').value = t; rain(t === 'matrix');
-}
-$('theme').onchange = e => setTheme(e.target.value);
-addEventListener('resize', () => { if (document.documentElement.dataset.theme === 'matrix') rain(true); });
-setTheme(store.get(LS.theme) || 'emerald');
+let state = { tab:'pdf', lang:'en', mode:'guide', history:[], summary:'', hasGuide:false, ready:false, quiz:null, picks:[], level:'medium', qlang:'en' };
+let pdfData = null, imageData = null;
 
 function setTab(t){
   state.tab = t;
-  $('panePdf').classList.toggle('hidden', t !== 'pdf'); $('paneText').classList.toggle('hidden', t !== 'text');
+  $('panePdf').classList.toggle('hidden', t !== 'pdf');
+  $('paneText').classList.toggle('hidden', t !== 'text');
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
-  save();
 }
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t)); setTab('pdf');
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t));
 
 function setLang(l){
-  state.lang = l; store.set(LS.lang, l);
+  state.lang = l;
   document.querySelectorAll('.lang').forEach(b => b.classList.toggle('on', b.dataset.l === l));
 }
 document.querySelectorAll('.lang').forEach(b => b.onclick = () => setLang(b.dataset.l));
-setLang(store.get(LS.lang) || 'en');
 
-function setStatus(m, err){ $('status').textContent = m; $('status').className = 'text-sm min-h-[1.25rem] ' + (err ? 'text-red-400' : 'text-slate-400'); }
-function busy(b, msg){ $('go').disabled = b; $('go').classList.toggle('animate-pulse', b); if (msg) setStatus(msg); }
-addEventListener('offline', () => setStatus('You are offline. Reconnect and try again.', true));
-
-// ---------- PDF input ----------
-let pdfData = null;
-function loadPdf(f){
-  if (!f) return;
-  if (f.type !== 'application/pdf') return setStatus('Please choose a PDF file.', true);
-  if (f.size > 18*1024*1024) return setStatus('This PDF is over 18 MB. Split it or paste the text instead.', true);
-  const r = new FileReader();
-  r.onload = () => { pdfData = r.result.split(',')[1]; $('dropLabel').textContent = f.name; setStatus('PDF ready.'); idb.set('pdf', { name: f.name, data: pdfData }); save(); };
-  r.onerror = () => setStatus('Could not read that file.', true);
-  r.readAsDataURL(f);
-}
-$('file').onchange = e => loadPdf(e.target.files[0]);
-const drop = $('drop');
-['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
-['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => loadPdf(e.dataTransfer.files[0]));
-
-function getParts(){
-  if (state.tab === 'pdf') {
-    if (!pdfData) { setStatus('Choose a PDF first.', true); return null; }
-    return [{ inlineData:{ mimeType:'application/pdf', data: pdfData } }];
-  }
-  const t = $('text').value.trim();
-  if (t.length < 50) { setStatus('Paste a bit more text (at least a few sentences).', true); return null; }
-  return [{ text: 'STUDY MATERIAL:\n\n' + t }];
-}
-const sigOf = p => p[0].inlineData ? 'pdf' + p[0].inlineData.data.length : 'txt' + p[0].text.length + p[0].text.slice(0, 60);
-
-// ---------- Markdown + math ----------
-function md2html(src){
-  const maths = [];
-  src = src.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$(?!\s)[^$\n]*[^$\s]\$/g, m => { maths.push(m); return '\u0000' + (maths.length - 1) + '\u0001'; });
-  const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const inline = t => esc(t).replace(/`([^`]+)`/g,'<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
-    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g,'$1<em>$2</em>');
-  const isRow = l => /^\s*\|.*\|\s*$/.test(l);
-  const cells = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim());
-  const lines = src.replace(/\r/g,'').split('\n');
-  let out = '', i = 0, list = null, para = [];
-  const flushP = () => { if (para.length) { out += '<p>' + inline(para.join(' ')) + '</p>'; para = []; } };
-  const closeL = () => { if (list) { out += '</' + list + '>'; list = null; } };
-  while (i < lines.length) {
-    const l = lines[i]; let m;
-    if (/^```/.test(l)) {
-      flushP(); closeL(); const code = []; i++;
-      while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
-      out += '<pre><code>' + esc(code.join('\n')) + '</code></pre>';
-    } else if ((m = l.match(/^(#{1,6})\s+(.*)/))) {
-      flushP(); closeL(); const n = Math.min(m[1].length, 3); out += '<h' + n + '>' + inline(m[2]) + '</h' + n + '>';
-    } else if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) {
-      flushP(); closeL(); out += '<hr>';
-    } else if ((m = l.match(/^\s*[-*+]\s+(.*)/))) {
-      flushP(); if (list !== 'ul') { closeL(); out += '<ul>'; list = 'ul'; } out += '<li>' + inline(m[1]) + '</li>';
-    } else if ((m = l.match(/^\s*\d+[.)]\s+(.*)/))) {
-      flushP(); if (list !== 'ol') { closeL(); out += '<ol>'; list = 'ol'; } out += '<li>' + inline(m[1]) + '</li>';
-    } else if (/^\s*>/.test(l)) {
-      flushP(); closeL(); out += '<blockquote>' + inline(l.replace(/^\s*>\s?/,'')) + '</blockquote>';
-    } else if (isRow(l)) {
-      flushP(); closeL(); const rows = [];
-      while (i < lines.length && isRow(lines[i])) rows.push(lines[i++]);
-      i--;
-      const body = rows.slice(/^[\s|:-]+$/.test(rows[1] || '') ? 2 : 1);
-      out += '<table><thead><tr>' + cells(rows[0]).map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>'
-        + body.map(r => '<tr>' + cells(r).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
-    } else if (!l.trim()) { flushP(); closeL(); }
-    else { closeL(); para.push(l.trim()); }
-    i++;
-  }
-  flushP(); closeL();
-  return out.replace(/\u0000(\d+)\u0001/g, (_, k) => esc(maths[+k]));
-}
-const inlineHtml = t => md2html(String(t)).replace(/^<p>|<\/p>$/g, '');
-function typeset(el){ if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {}); }
-function render(el, md, dir){ el.innerHTML = md2html(md); el.dir = dirOf(dir); typeset(el); }
-let pend = null, raf = 0;
-function live(el, t){   // throttled progressive render while streaming
-  pend = [el, t]; if (raf) return;
-  raf = requestAnimationFrame(() => { raf = 0; pend[0].innerHTML = md2html(pend[1]); pend[0].dir = dirOf(); });
-}
-
-// ---------- Gemini ----------
-const systemPrompt = () => `You are a friendly, patient personal tutor helping a student study. Explain things simply, like a kind teacher, using short sentences and concrete examples. Stay faithful to the provided material; if something is not in it, say so before adding outside knowledge. Write all of your answers in ${LANGS[state.lang]}. Use clean Markdown. Write every math expression or formula in LaTeX: inline as $...$ and display equations as $$...$$ (never inside code blocks).`;
-const NETERR = 'Could not reach Gemini ("Failed to fetch"). Check your internet connection, turn off any ad-blocker or VPN for this page, and make sure your API key is saved.';
-function friendly(s, msg){
-  const m = (msg || '').toLowerCase();
-  if (s === 400 && m.includes('api key')) return 'Your API key looks invalid. Check it at the top and save it again.';
-  if (s === 400) return 'Gemini rejected the request: ' + (msg || 'bad request') + (/size|large/.test(m) ? ' Try a smaller PDF.' : '');
-  if (s === 401 || s === 403) return 'Your API key was not accepted (or this model is not allowed for it). Check the key.';
-  if (s === 404) return 'That model is not available for your key. Pick another one from the model dropdown.';
-  if (s === 413) return 'The file is too large. Try a smaller PDF or paste the text.';
-  if (s === 429) return 'Rate limit reached. Wait a minute and try again, or switch to gemini-3.5-flash-lite.';
-  if (s >= 500) return 'Gemini is busy right now. Please try again in a moment.';
-  return msg || ('Request failed (' + s + ')');
-}
-async function gem(contents, opts = {}, onText){
-  const key = ($('key').value || store.get(LS.key) || '').trim();
-  if (!key) throw new Error('Add your Gemini API key at the top first.');
-  if (!navigator.onLine) throw new Error('You appear to be offline. Check your connection.');
-  const stream = !!onText, tried = new Set([$('model').value]);
-  const body = JSON.stringify({ systemInstruction:{ parts:[{ text: opts.system || systemPrompt() }] }, contents, ...(opts.gen ? { generationConfig: opts.gen } : {}) });
-  let err;
-  for (let a = 0; a < 3; a++) {
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + $('model').value + (stream ? ':streamGenerateContent?alt=sse' : ':generateContent');
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 180000); let full = '';
-    try {
-      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key': key }, body, signal: ctrl.signal });
-      if (!res.ok) {
-        let m = ''; try { m = (await res.json()).error?.message || ''; } catch (_) {}
-        const e = new Error(friendly(res.status, m)); e.retry = [500,502,503,504].includes(res.status);
-        e.modelMissing = res.status === 404 || (res.status === 400 && /model/i.test(m) && /not found|not supported|unsupported/i.test(m)); throw e;
-      }
-      if (!stream) {
-        const d = await res.json();
-        const t = d.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
-        if (!t) throw new Error('The model returned no text' + (d.promptFeedback?.blockReason ? ' (blocked: ' + d.promptFeedback.blockReason + ')' : '. Try again.'));
-        return t;
-      }
-      const rd = res.body.getReader(), dec = new TextDecoder(); let buf = '';
-      for (;;) {
-        const { done, value } = await rd.read(); if (done) break;
-        buf += dec.decode(value, { stream:true }); const ls = buf.split('\n'); buf = ls.pop();
-        for (const l of ls) {
-          if (!l.startsWith('data:')) continue;
-          try { const j = JSON.parse(l.slice(5)); const t = j.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || ''; if (t) { full += t; onText(full); } } catch (_) {}
-        }
-      }
-      if (!full) throw new Error('The model returned no text. Try again.');
-      return full;
-    } catch (e) {
-      const net = e instanceof TypeError;
-      err = e.name === 'AbortError' ? new Error('The request took too long and was stopped. Try again, or use a smaller file.') : net ? new Error(NETERR) : e;
-      if (e.modelMissing && !full) {   // model unavailable for this key: automatically try the next current model
-        const next = [...$('model').options].map(o => o.value).find(v => !tried.has(v));
-        if (next) { tried.add(next); $('model').value = next; store.set(LS.model, next); setStatus('That model is unavailable for your key. Switched to ' + next + '…'); a--; continue; }
-      }
-      if (full || !(net || e.retry) || a === 2) throw err;
-      setStatus('Connection hiccup, retrying…'); await new Promise(r => setTimeout(r, 1200 * (a + 1)));
-    } finally { clearTimeout(timer); }
-  }
-  throw err;
-}
-
-// ---------- Panels & modes ----------
-function showPanels(){
-  const g = state.mode === 'guide';
-  $('result').classList.toggle('hidden', !(g && state.hasGuide));
-  $('quizBox').classList.toggle('hidden', g || !state.quiz);
-  $('chat').classList.toggle('hidden', !state.ready);
-}
 function setMode(m){
   state.mode = m;
   document.querySelectorAll('.mode').forEach(b => b.classList.toggle('on', b.dataset.m === m));
-  $('quizCtl').classList.toggle('hidden', m !== 'quiz'); $('quizCtl').classList.toggle('flex', m === 'quiz');
-  $('go').textContent = m === 'quiz' ? 'Generate quiz' : 'Create study guide';
-  showPanels(); save();
+  $('quizCtl').classList.toggle('hidden', m !== 'quiz');
+  $('go').textContent = m === 'quiz' ? 'GENERATE QUIZ' : 'CREATE STUDY GUIDE';
 }
 document.querySelectorAll('.mode').forEach(b => b.onclick = () => setMode(b.dataset.m));
-setMode('guide');
 
-// ---------- Study guide ----------
-const GUIDE_PROMPT = `Read the study material and write a study guide with exactly these sections as "##" headings:
-## Executive Summary
-(5-8 sentences, the big picture in plain language)
-## Key Terms
-(a list of important terms, each with a simple definition)
-## Lecture Breakdown
-(the lecture split into logical parts with "###" sub-headings; explain each part simply and use bullet points)
-## Core Formulas & Concepts
-(formulas, rules, laws or core ideas, each with a one-line explanation; write formulas in LaTeX. If there are none, list the 3-5 most important concepts instead)
-Start with one short, warm sentence greeting the student.`;
+$('file').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { pdfData = r.result.split(',')[1]; $('dropLabel').textContent = f.name; };
+  r.readAsDataURL(f);
+};
+
+$('imgFile').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    imageData = { inlineData: { mimeType: f.type, data: r.result.split(',')[1] } };
+    $('imgPreview').src = r.result;
+    $('imgPreviewBox').classList.remove('hidden');
+  };
+  r.readAsDataURL(f);
+};
+
+$('removeImg').onclick = () => {
+  imageData = null;
+  $('imgFile').value = '';
+  $('imgPreviewBox').classList.add('hidden');
+};
+
+async function callBackend(contents, systemPrompt, onText) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents, systemInstruction: systemPrompt })
+  });
+
+  if (!response.ok) throw new Error('Backend error processing your request.');
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value);
+    fullText += chunk;
+    if (onText) onText(fullText);
+  }
+  return fullText;
+}
 
 $('go').onclick = async () => {
-  if (state.mode === 'quiz') return makeQuiz();
-  const parts = getParts(); if (!parts) return;
-  const art = $('summary'); art.innerHTML = '';
-  busy(true, '⏳ Your tutor is reading the material…');
+  const parts = [];
+  if (state.tab === 'pdf' && pdfData) parts.push({ inlineData: { mimeType: 'application/pdf', data: pdfData } });
+  if (state.tab === 'text' && $('text').value) parts.push({ text: $('text').value });
+  if (imageData) parts.push(imageData);
+
+  if (!parts.length) return alert('Please upload a PDF, paste text, or attach an image.');
+
+  $('status').textContent = 'Processing request via backend...';
+  $('result').classList.remove('hidden');
+  
   try {
-    const first = { role:'user', parts:[...parts, { text: GUIDE_PROMPT }] };
-    const out = await gem([first], {}, t => { state.hasGuide = true; showPanels(); live(art, t); });
-    state.history = [first, { role:'model', parts:[{ text: out }] }];
-    state.summary = out; state.sig = sigOf(parts); state.ready = true;
-    $('log').innerHTML = ''; render(art, out); showPanels(); setStatus('Done ✓'); save();
-  } catch (e) {
-    if (!art.innerHTML) { state.hasGuide = false; showPanels(); }
-    setStatus(e.message, true);
+    const text = await callBackend(
+      [{ role: 'user', parts }],
+      'You are a high-tech AI study assistant. Explain concepts clearly with Markdown formatting.',
+      t => { $('summary').innerHTML = t; }
+    );
+    $('status').textContent = 'Completed successfully ✓';
+  } catch (err) {
+    $('status').textContent = err.message;
   }
-  busy(false);
 };
-
-// ---------- Quiz ----------
-const QUIZ_SYSTEM = () => `You are an expert exam writer creating a quiz from study material. Write every question, option and explanation in ${LANGS[state.lang]}. Base questions only on the material. Difficulty: ${LEVELS[$('qLevel').value][0]} - ${LEVELS[$('qLevel').value][1]}. Return ONLY valid JSON, no markdown fences, in exactly this shape:
-{"questions":[{"type":"mcq","question":"...","options":["..."],"answer":0,"explanation":"..."}]}
-Rules: "type" is "mcq" or "tf". "answer" is the zero-based index of the correct option. mcq questions have exactly 4 options with one correct answer; vary the position of the correct answer. tf questions have exactly 2 options in this order: ${state.lang === 'en' ? '["True","False"]' : '["صح","خطأ"]'}. Each explanation is 1-3 simple sentences saying why the answer is correct (and, when useful, why the tempting wrong answer is wrong). Write math in LaTeX with $...$; JSON needs every backslash doubled: write \\\\frac, not \\frac.`;
-const fix = s => typeof s === 'string' ? s.replace(/\f/g,'\\f').replace(/\x08/g,'\\b').replace(/\t/g,'\\t').replace(/\r/g,'\\r') : s;
-
-async function makeQuiz(){
-  const parts = getParts(); if (!parts) return;
-  const n = $('qCount').value, type = $('qType').value, lv = $('qLevel').value;
-  const kind = type === 'mcq' ? 'all multiple-choice (mcq)' : type === 'tf' ? 'all true/false (tf)' : 'a mix of mcq and tf, about half each';
-  busy(true, '⏳ Writing your ' + LEVELS[lv][0] + ' quiz…');
-  try {
-    const raw = await gem([{ role:'user', parts:[...parts, { text: `Create exactly ${n} questions: ${kind}.` }] }],
-      { system: QUIZ_SYSTEM(), gen:{ responseMimeType:'application/json' } });
-    const data = JSON.parse(raw.replace(/^\s*```(?:json)?|```\s*$/g, '').trim());
-    const qs = (data.questions || []).filter(q => q && q.question && Array.isArray(q.options) && q.options.length >= 2
-      && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length)
-      .map(q => ({ question: fix(q.question), options: q.options.map(fix), answer: q.answer, explanation: fix(q.explanation || '') }));
-    if (!qs.length) throw new Error('The quiz came back empty. Try again.');
-    state.quiz = qs; state.level = lv; state.qlang = state.lang;
-    const sig = sigOf(parts);
-    if (!state.ready || state.sig !== sig) {   // give the chat the same material
-      state.history = [{ role:'user', parts:[...parts, { text:'This is my study material. I will ask you questions about it.' }] },
-        { role:'model', parts:[{ text:'Got it! I have read the material. What would you like to know?' }] }];
-      if (state.sig !== sig) { state.hasGuide = false; state.summary = ''; $('summary').innerHTML = ''; }
-      state.sig = sig; state.ready = true; $('log').innerHTML = '';
-    }
-    renderQuiz(); setStatus('Quiz ready: ' + qs.length + ' questions ✓');
-    $('quizBox').scrollIntoView({ behavior:'smooth' });
-  } catch (e) {
-    setStatus(e instanceof SyntaxError ? 'The AI returned an unreadable quiz. Try again (or use fewer questions).' : e.message, true);
-  }
-  busy(false);
-}
-
-let checked = false;
-function renderQuiz(){
-  checked = false; state.picks = state.quiz.map(() => -1);
-  $('qMeta').textContent = LEVELS[state.level][0] + ' · ' + state.quiz.length + ' questions';
-  $('score').classList.add('hidden'); $('retake').classList.add('hidden'); $('submitQuiz').classList.remove('hidden');
-  const list = $('qList'); list.innerHTML = ''; list.dir = dirOf(state.qlang); $('score').dir = list.dir;
-  state.quiz.forEach((q, i) => {
-    const card = document.createElement('div');
-    card.className = 'rounded-xl p-4'; card.style.cssText = 'border:1px solid var(--line)';
-    const h = document.createElement('p'); h.className = 'font-medium mb-3 leading-relaxed';
-    h.innerHTML = (i + 1) + '. ' + inlineHtml(q.question); card.appendChild(h);
-    q.options.forEach((o, j) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.dataset.j = j; b.innerHTML = inlineHtml(o);
-      b.onclick = () => { if (checked) return; state.picks[i] = j; card.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', +x.dataset.j === j)); save(); };
-      card.appendChild(b);
-    });
-    const ex = document.createElement('div'); ex.className = 'exp hidden text-sm mt-2 rounded-lg p-3 leading-relaxed'; ex.style.background = 'var(--soft)';
-    card.appendChild(ex); list.appendChild(card);
-  });
-  showPanels(); typeset(list); save();
-}
-
-function perf(pct, lv, en){
-  if (lv === 'legendary' && pct >= 90) return en ? 'LEGENDARY! 🔥 You have truly mastered this material.' : 'أسطوري! 🔥 أنت متقن للمادة فعلاً.';
-  if (pct >= 90) return en ? 'Outstanding! You clearly know this material.' : 'رائع! واضح أنك متمكن من المادة.';
-  if (pct >= 75) return en ? 'Great job! Review the few you missed and you are there.' : 'عمل جيد جداً! راجع الأسئلة القليلة التي أخطأت فيها وستتقنها.';
-  if (pct >= 50) return en ? 'Good start. Read the explanations below and try again.' : 'بداية جيدة. اقرأ الشرح أدناه وأعد المحاولة.';
-  return lv === 'legendary'
-    ? (en ? 'Legendary is brutal, so do not worry. Study the explanations and come back stronger.' : 'المستوى الأسطوري صعب جداً، لا تقلق. ادرس الشرح وعد أقوى.')
-    : (en ? 'Keep going! Review the material and the explanations, then retake the quiz.' : 'واصل! راجع المادة والشرح ثم أعد الاختبار.');
-}
-
-$('submitQuiz').onclick = () => {
-  if (!state.quiz || checked) return;
-  const sk = state.picks.filter(p => p < 0).length;
-  if (sk && !confirm(sk + ' question(s) unanswered. Submit anyway?')) return;
-  gradeQuiz(); $('quizBox').scrollIntoView({ behavior:'smooth' });
-};
-function gradeQuiz(){
-  const skipped = state.picks.filter(p => p < 0).length;
-  checked = true; let score = 0; const en = state.qlang === 'en';
-  const T = { ok: en ? '✓ Correct' : '✓ إجابة صحيحة', no: en ? '✗ Incorrect' : '✗ إجابة خاطئة', sk: en ? '– Not answered' : '– لم تجب',
-              you: en ? 'Your answer' : 'إجابتك', right: en ? 'Correct answer' : 'الإجابة الصحيحة' };
-  document.querySelectorAll('#qList > div').forEach((card, i) => {
-    const q = state.quiz[i], p = state.picks[i], good = p === q.answer; if (good) score++;
-    card.querySelectorAll('.opt').forEach((b, j) => {
-      b.classList.add('done'); b.classList.remove('sel');
-      if (j === q.answer) b.classList.add('right'); else if (j === p) b.classList.add('wrong');
-    });
-    const cls = good ? 'ok' : p < 0 ? 'sk' : 'no';
-    let html = '<div class="font-semibold ' + cls + '">' + (good ? T.ok : p < 0 ? T.sk : T.no) + '</div>';
-    if (!good) html += (p >= 0 ? '<div>' + T.you + ': ' + inlineHtml(q.options[p]) + '</div>' : '') + '<div>' + T.right + ': ' + inlineHtml(q.options[q.answer]) + '</div>';
-    if (q.explanation) html += '<div class="mt-1 text-slate-300">💡 ' + inlineHtml(q.explanation) + '</div>';
-    const ex = card.querySelector('.exp'); ex.innerHTML = html; ex.classList.remove('hidden');
-  });
-  const total = state.quiz.length, pct = Math.round(score / total * 100), wrong = total - score - skipped, lv = state.level;
-  const chip = (c, t) => '<span class="rounded-full px-3 py-1 ' + c + '" style="background:var(--soft)">' + t + '</span>';
-  $('score').innerHTML =
-    '<div class="text-sm uppercase tracking-wide text-slate-400">' + LEVELS[lv][0] + '</div>' +
-    '<div class="text-5xl font-semibold my-1" dir="ltr">' + score + '/' + total + '</div>' +
-    '<div class="h-2 rounded-full overflow-hidden my-3" style="background:var(--soft)"><div class="h-full" style="width:' + pct + '%;background:var(--hi)"></div></div>' +
-    '<div class="text-lg font-medium" dir="ltr">' + pct + '%</div>' +
-    '<div class="flex flex-wrap justify-center gap-2 text-sm my-3">' + chip('ok', '✓ ' + score + ' ' + (en ? 'correct' : 'صحيحة')) + chip('no', '✗ ' + wrong + ' ' + (en ? 'wrong' : 'خاطئة')) + chip('sk', '– ' + skipped + ' ' + (en ? 'skipped' : 'متروكة')) + '</div>' +
-    '<p class="font-medium">' + perf(pct, lv, en) + '</p>' +
-    '<p class="text-sm text-slate-400 mt-2">' + (en ? 'Scroll down to read the explanation for every question.' : 'مرر للأسفل لقراءة شرح كل سؤال.') + '</p>';
-  $('score').classList.remove('hidden'); $('retake').classList.remove('hidden'); $('submitQuiz').classList.add('hidden');
-  typeset($('qList')); save();
-}
-$('retake').onclick = () => { renderQuiz(); $('quizBox').scrollIntoView({ behavior:'smooth' }); };
-
-// ---------- Chat ----------
-function bubble(role, text, quiet){
-  const d = document.createElement('div');
-  d.className = role === 'user' ? 'rounded-xl px-4 py-2 text-sm ms-auto max-w-[85%] w-fit text-white' : 'rounded-xl px-4 py-3 text-sm max-w-full md';
-  d.style.background = role === 'user' ? 'var(--acc)' : 'var(--inset)';
-  if (role === 'user') { d.textContent = text; d.dir = 'auto'; } else { d.innerHTML = md2html(text); d.dir = dirOf(); }
-  $('log').appendChild(d); if (!quiet) d.scrollIntoView({ behavior:'smooth', block:'nearest' }); return d;
-}
-async function ask(text){
-  const q = (text ?? $('q').value).trim();
-  if (!q || !state.ready || $('send').disabled) return;
-  $('q').value = ''; $('send').disabled = true;
-  bubble('user', q); const b = bubble('model', '…');
-  const turn = { role:'user', parts:[{ text: q }] };
-  try {
-    const out = await gem([...state.history, turn], {}, t => live(b, t));
-    state.history.push(turn, { role:'model', parts:[{ text: out }] }); render(b, out); save();
-  } catch (e) { b.textContent = e.message; b.style.color = '#f87171'; }
-  $('send').disabled = false; $('q').focus();
-}
-$('send').onclick = () => ask();
-$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) ask(); });
-document.querySelectorAll('#chips button').forEach(b => b.onclick = () => ask(b.dataset.q));
-
-// ---------- Persistence (localStorage + IndexedDB for the PDF) ----------
-const idb = {
-  open(){ return new Promise((res, rej) => { const r = indexedDB.open('aurastudy', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
-  async get(k){ try { const d = await this.open(); return await new Promise(res => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); } catch (e) { return undefined; } },
-  async set(k, v){ try { const d = await this.open(); await new Promise(res => { const t = d.transaction('kv', 'readwrite'); v === undefined ? t.objectStore('kv').delete(k) : t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) {} }
-};
-function save(){ clearTimeout(saveT); saveT = setTimeout(saveNow, 300); }
-const stripHist = h => h.map(t => ({ role: t.role, parts: t.parts.map(p => p.inlineData ? { text: '__PDF__' } : { text: String(p.text || '') }) }));
-function saveNow(){
-  if (restoring || wiping) return;
-  const data = { mode: state.mode, tab: state.tab, text: $('text').value, qCount: $('qCount').value, qType: $('qType').value, qLevel: $('qLevel').value,
-    summary: state.summary, hasGuide: state.hasGuide, ready: state.ready, sig: state.sig, history: stripHist(state.history),
-    quiz: state.quiz, picks: state.picks, checked, level: state.level, qlang: state.qlang };
-  try { localStorage.setItem(LS.session, JSON.stringify(data)); }
-  catch (e) {   // storage full: trim old chat turns and the pasted-text copy, then retry
-    try { data.text = ''; data.history = data.history.slice(0, 2).concat(data.history.slice(-8)); localStorage.setItem(LS.session, JSON.stringify(data)); setStatus('Storage is nearly full, so older chat messages were trimmed.'); } catch (_) {}
-  }
-}
-async function restore(){
-  let d = null; try { d = JSON.parse(store.get(LS.session) || 'null'); } catch (e) {}
-  const pdf = await idb.get('pdf');
-  if (pdf && pdf.data) { pdfData = pdf.data; $('dropLabel').textContent = pdf.name + ' (saved)'; }
-  if (!d) return;
-  restoring = true;
-  try {
-    $('text').value = d.text || '';
-    ['qCount','qType','qLevel'].forEach(k => { if (d[k]) $(k).value = d[k]; });
-    setTab(d.tab || 'pdf');
-    state.summary = d.summary || ''; state.hasGuide = !!d.hasGuide && !!state.summary; state.sig = d.sig || '';
-    state.history = (d.history || []).map(t => ({ role: t.role, parts: t.parts.map(p => p.text === '__PDF__'
-      ? (pdfData ? { inlineData:{ mimeType:'application/pdf', data: pdfData } } : { text:'[The original PDF is no longer attached. Use the rest of this conversation as the material.]' }) : p) }));
-    state.ready = !!d.ready && state.history.length >= 2;
-    if (state.hasGuide) render($('summary'), state.summary);
-    $('log').innerHTML = '';
-    state.history.slice(2).forEach(t => bubble(t.role === 'user' ? 'user' : 'model', t.parts.map(p => p.text || '').join(''), true));
-    typeset($('log'));
-    if (Array.isArray(d.quiz) && d.quiz.length) {
-      state.quiz = d.quiz; state.level = d.level || 'medium'; state.qlang = d.qlang || 'en'; renderQuiz();
-      if (Array.isArray(d.picks) && d.picks.length === d.quiz.length) {
-        state.picks = d.picks;
-        document.querySelectorAll('#qList > div').forEach((card, i) => card.querySelectorAll('.opt').forEach(x => x.classList.toggle('sel', +x.dataset.j === state.picks[i])));
-      }
-      if (d.checked) gradeQuiz();
-    }
-    setMode(d.mode || 'guide');
-    if (state.ready || state.quiz) setStatus('Welcome back! Your last session was restored.');
-  } catch (e) { console.warn('Restore failed', e); }
-  restoring = false;
-}
-
-async function refreshModels(){   // ask Google which models this key can actually use
-  const key = ($('key').value || '').trim(); if (key.length < 20) return;
-  try {
-    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers:{ 'x-goog-api-key': key } });
-    if (!r.ok) return; const d = await r.json();
-    const names = new Set((d.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent')).map(m => m.name.replace('models/', '')));
-    const avail = MODELS.filter(m => names.has(m)); if (!avail.length) return;   // otherwise keep the full list
-    const sel = $('model'), cur = sel.value;
-    sel.innerHTML = avail.map(m => '<option value="' + m + '">' + m + '</option>').join('');
-    sel.value = avail.includes(cur) ? cur : avail[0]; store.set(LS.model, sel.value);
-  } catch (e) {}
-}
-let keyT = 0;
-$('key').addEventListener('input', () => { store.set(LS.key, $('key').value.trim()); clearTimeout(keyT); keyT = setTimeout(refreshModels, 800); });
-$('text').addEventListener('input', save);
-['qCount','qType','qLevel'].forEach(id => $(id).addEventListener('change', save));
-addEventListener('pagehide', saveNow);
-document.addEventListener('visibilitychange', () => { if (document.hidden) saveNow(); });
-$('clearSession').onclick = async () => {
-  if (!confirm('Clear the saved study session (guide, quiz, chat and PDF) from this browser? Your API key and theme stay.')) return;
-  wiping = true; store.del(LS.session); await idb.set('pdf', undefined); location.reload();
-};
-$('forgetKey').onclick = () => { store.del(LS.key); $('key').value = ''; setStatus('API key removed from this browser.'); };
-try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); }
-catch (e) { $('persistWarn').textContent = '⚠️ Your browser is blocking storage (private mode?), so nothing will be remembered.'; }
-try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
-restore(); refreshModels();
-
-// ---------- Utilities ----------
-$('copy').onclick = async () => {
-  try { await navigator.clipboard.writeText(state.summary); $('copy').textContent = 'Copied'; } catch (e) { $('copy').textContent = 'Copy failed'; }
-  setTimeout(() => $('copy').textContent = 'Copy', 1500);
-};
-function download(name, type){
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([state.summary], { type }));
-  a.download = name; a.click(); URL.revokeObjectURL(a.href);
-}
-$('dlMd').onclick = () => download('study-guide.md', 'text/markdown;charset=utf-8');
-$('dlTxt').onclick = () => download('study-guide.txt', 'text/plain;charset=utf-8');
 </script>
 </body>
 </html>
+
+<!-- 
+================================================================================
+القسم الثاني: كود السيرفر الخلفي (Serverless Function) 
+قم بإنشاء مجلد باسم "api" وضع داخله ملفاً باسم "chat.js" بهذا المحتوى تماماً:
+================================================================================
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { contents, systemInstruction } = req.body;
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-1.5-flash',
+      systemInstruction: systemInstruction || 'You are an AI study assistant.'
+    });
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
+    const result = await model.generateContentStream({ contents });
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      res.write(chunkText);
+    }
+
+    res.end();
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+-->
