@@ -1,215 +1,31 @@
-const settings = document.getElementById('settings');
-const settingsBtn = document.getElementById('settingsBtn');
-const apiKeyInput = document.getElementById('apiKey');
-const saveKeyBtn = document.getElementById('saveKey');
-const log = document.getElementById('log');
-const text = document.getElementById('text');
-const sendBtn = document.getElementById('send');
-const clearBtn = document.getElementById('clear');
-const guideBtn = document.getElementById('guide');
-const quizBtn = document.getElementById('quiz');
-const downloadBtn = document.getElementById('download');
-
-const API_KEY = 'AIzaSyA3rJHlZp0KJhQp7FyXWgRJ0YwqyPn8FyM';
-
-let mode = 'guide';
-let isGuideMode = true;
-let isQuizMode = false;
-let isDownloading = false;
-
-const saveNow = () => {
-    const state = {
-        mode,
-        log: Array.from(log.children).map(div => div.outerHTML),
-        quiz: isQuizMode,
-        apiKey: apiKeyInput.value
-    };
-    localStorage.setItem('state', JSON.stringify(state));
-};
-
-const restore = () => {
-    const state = JSON.parse(localStorage.getItem('state'));
-    if (state) {
-        mode = state.mode;
-        Array.from(state.log).forEach(div => log.innerHTML += div);
-        isQuizMode = state.quiz;
-        apiKeyInput.value = state.apiKey;
-        if (isQuizMode) {
-            quizBtn.classList.add('active');
-            guideBtn.classList.remove('active');
-            setMode('quiz');
-        } else {
-            guideBtn.classList.add('active');
-            quizBtn.classList.remove('active');
-            setMode('guide');
-        }
-    }
-};
-
-const ask = async (text) => {
-    const response = await fetch('https://generativeapi.com/v1/generateText', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKeyInput.value}`
-        },
-        body: JSON.stringify({
-            model: 'gemini-pro',
-            prompt: text
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    return data.text;
-};
-
-const bubble = (role, text, quiet = false) => {
-    const div = document.createElement('div');
-    div.classList.add('bubble', role);
-    if (!quiet) {
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
-    }
-    return div;
-};
-
-const live = (b, t) => {
-    b.innerHTML += t;
-};
-
-const render = (b, text) => {
-    b.innerHTML = text;
-};
-
-const save = () => {
-    clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(saveNow, 1000);
-};
-
-const refreshModels = async () => {
-    const response = await fetch('https://generativeapi.com/v1/listModels', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${apiKeyInput.value}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    const models = data.models;
-    const select = document.getElementById('modelSelect');
-    select.innerHTML = '';
-    models.forEach(model => {
-        const option = document.createElement('option');
-        option.value = model;
-        option.textContent = model;
-        select.appendChild(option);
-    });
-};
-
-let saveTimeout;
-
-document.addEventListener('DOMContentLoaded', () => {
-    restore();
-    sendBtn.addEventListener('click', () => {
-        const textValue = text.value.trim();
-        if (textValue) {
-            const userBubble = bubble('user', textValue);
-            text.value = '';
-            ask(textValue).then(response => {
-                const modelBubble = bubble('model', response);
-                log.appendChild(userBubble);
-                log.appendChild(modelBubble);
-                log.scrollTop = log.scrollHeight;
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
-    });
-
-    text.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            sendBtn.click();
-        }
-    });
-
-    clearBtn.addEventListener('click', () => {
-        log.innerHTML = '';
-    });
-
-    guideBtn.addEventListener('click', () => {
-        setMode('guide');
-    });
-
-    quizBtn.addEventListener('click', () => {
-        setMode('quiz');
-    });
-
-    settingsBtn.addEventListener('click', () => {
-        settings.classList.toggle('hidden');
-    });
-
-    saveKeyBtn.addEventListener('click', () => {
-        saveNow();
-    });
-
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            saveNow();
-        }
-    });
-});
-
-const setMode = (newMode) => {
-    if (newMode === 'guide') {
-        isGuideMode = true;
-        isQuizMode = false;
-        mode = 'guide';
-        guideBtn.classList.add('active');
-        quizBtn.classList.remove('active');
-        log.innerHTML = '';
-    } else if (newMode === 'quiz') {
-        isGuideMode = false;
-        isQuizMode = true;
-        mode = 'quiz';
-        guideBtn.classList.remove('active');
-        quizBtn.classList.add('active');
-        // Reset quiz state here if needed
-    }
-};
-
-downloadBtn.addEventListener('click', async () => {
-    if (isDownloading) return;
-    isDownloading = true;
-
-    const response = await fetch('https://generativeapi.com/v1/getStudyGuide', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${apiKeyInput.value}`
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    const guide = data.guide;
-
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([guide], { type: 'text/plain' }));
-    link.download = 'study_guide.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    isDownloading = false;
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative Language Study Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Generative Language Study Tool</h1>
+            <button id="settingsBtn">Settings</button>
+        </header>
+        <div id="settings" class="hidden">
+            <h2>Settings</h2>
+            <label for="apiKey">API Key:</label>
+            <input type="text" id="apiKey" placeholder="Enter your API Key">
+            <button id="saveKey">Save Key</button>
+        </div>
+        <div id="log"></div>
+        <textarea id="text" placeholder="Type your message here..."></textarea>
+        <button id="send">Send</button>
+        <button id="clear">Clear</button>
+        <button id="guide">Guide Mode</button>
+        <button id="quiz">Quiz Mode</button>
+        <button id="download">Download Study Guide</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
