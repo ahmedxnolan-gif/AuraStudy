@@ -3,218 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraStudy – AI Study Companion</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>AuraStudy</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #0b0f19;
-            --card-bg: rgba(18, 24, 38, 0.7);
-            --neon-blue: #00f3ff;
-            --neon-purple: #9d4edd;
-            --neon-pink: #ff007f;
-            --text-main: #e2e8f0;
+            --primary-color: #3333ff;
+            --secondary-color: #6666ff;
+            --accent-color: #00ffff;
+            --background-color: #121212;
+            --text-color: #ffffff;
+            --error-color: #ff6666;
+            --success-color: #66ff66;
         }
-
-        body {
-            background-color: var(--bg-base);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 243, 255, 0.08) 0%, transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(157, 78, 221, 0.08) 0%, transparent 25%);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-        }
-
         .glassmorphism {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 243, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
         }
-
-        .glassmorphism:hover {
-            border-color: rgba(0, 243, 255, 0.4);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        .neon-text {
+            background-color: rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 2px 10px;
+            border-radius: 5px;
+            display: inline-block;
         }
-
-        .neon-title {
-            color: #fff;
-            text-shadow: 
-                0 0 5px rgba(0, 243, 255, 0.6),
-                0 0 10px rgba(0, 243, 255, 0.4),
-                0 0 20px rgba(0, 243, 255, 0.2);
+        .interactive-ai {
+            background-color: rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
         }
-
-        .cyber-btn {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1) 0%, rgba(157, 78, 221, 0.2) 100%);
-            border: 1px solid var(--neon-blue);
-            color: #fff;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .scrollbar-custom::-webkit-scrollbar {
+            width: 10px;
         }
-
-        .cyber-btn:hover {
-            background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-purple) 100%);
-            box-shadow: 0 0 15px var(--neon-blue);
-            color: #000;
-            font-weight: bold;
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: #121212;
         }
-
-        .chip-interactive {
-            background: rgba(157, 78, 221, 0.15);
-            border: 1px solid rgba(157, 78, 221, 0.4);
-            transition: all 0.2s ease;
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: #6666ff;
+            border-radius: 5px;
         }
-
-        .chip-interactive:hover {
-            background: rgba(0, 243, 255, 0.25);
-            border-color: var(--neon-blue);
-            transform: translateY(-2px);
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+            background: #3333ff;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
-
-    <div class="max-w-5xl mx-auto space-y-8">
-        
-        <!-- Header -->
-        <header class="text-center py-6 glassmorphism rounded-2xl">
-            <h1 class="text-5xl font-extrabold tracking-wider neon-title flex items-center justify-center gap-3">
-                <i class="fa-solid fa-brain text-cyan-400"></i> AuraStudy
-            </h1>
-            <p class="text-gray-400 mt-2 text-sm md:text-base">Next-Gen Cyberpunk AI Study Companion</p>
-        </header>
-
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <!-- Upload Section -->
-            <section class="glassmorphism rounded-2xl p-6 space-y-4">
-                <h2 class="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-                    <i class="fa-solid fa-file-arrow-up"></i> Upload Study Material
-                </h2>
-                <p class="text-xs text-gray-400">Supported formats: PDF, TXT, DOCX (Max 15MB)</p>
-                
-                <div class="border-2 border-dashed border-cyan-500/30 rounded-xl p-6 text-center hover:border-cyan-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-cyan-400 mb-2"></i>
-                    <p id="fileNameDisplay" class="text-sm text-gray-300">Click or Drag & Drop file here</p>
-                    <input type="file" id="fileInput" class="hidden" accept=".pdf, .txt, .docx">
-                </div>
-            </section>
-
-            <!-- Modes Section -->
-            <section class="glassmorphism rounded-2xl p-6 space-y-4 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-purple-400 flex items-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generation Modes
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-1">Choose how you want to process your uploaded notes.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <button id="generateGuideBtn" class="w-full py-3 px-4 rounded-xl cyber-btn flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-book-open"></i> Generate Study Guide
-                    </button>
-                    <button id="generateQuizBtn" class="w-full py-3 px-4 rounded-xl cyber-btn flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-gamepad"></i> Generate Interactive Quiz
-                    </button>
-                </div>
-            </section>
-
+<body class="bg-background-color text-text-color font-sans scrollbar-custom">
+    <div class="container mx-auto p-6">
+        <div class="flex justify-center">
+            <h1 class="text-4xl font-bold glassmorphism">AuraStudy</h1>
         </div>
-
-        <!-- Interactive AI Tutor Section -->
-        <section class="glassmorphism rounded-2xl p-6 space-y-6">
-            <h2 class="text-2xl font-bold text-pink-400 flex items-center gap-2">
-                <i class="fa-solid fa-robot"></i> Interactive AI Tutor
-            </h2>
-
-            <!-- Prompt Chips -->
-            <div class="flex flex-wrap gap-3">
-                <button class="chip-interactive px-4 py-2 rounded-lg text-sm text-cyan-300 flex items-center gap-2" data-question="Explain this topic in simple terms with an example.">
-                    <i class="fa-solid fa-lightbulb"></i> Explain Simply
-                </button>
-                <button class="chip-interactive px-4 py-2 rounded-lg text-sm text-purple-300 flex items-center gap-2" data-question="What are the most likely exam questions for this?">
-                    <i class="fa-solid fa-graduation-cap"></i> Exam Questions
-                </button>
-                <button class="chip-interactive px-4 py-2 rounded-lg text-sm text-pink-300 flex items-center gap-2" data-question="Summarize the core concepts into 5 bullet points.">
-                    <i class="fa-solid fa-list-check"></i> 5-Point Summary
-                </button>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Upload Study Material</div>
+            <div class="mt-4">
+                <input type="file" id="fileInput" class="file-input" accept=".pdf, .txt, .docx">
             </div>
-
-            <!-- Chat Output Box -->
-            <div id="chatBox" class="bg-black/40 border border-gray-800 rounded-xl p-4 h-48 overflow-y-auto space-y-3 text-sm">
-                <div class="text-gray-500 italic">System ready. Select a prompt or ask a question to start...</div>
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Text Input</div>
+            <div class="mt-4">
+                <textarea id="textInput" class="w-full h-40 bg-background-color text-text-color border-2 border-primary-color rounded-lg p-4"></textarea>
             </div>
-
-            <!-- Input Area -->
-            <div class="flex gap-2">
-                <input type="text" id="userInput" placeholder="Ask your AI tutor anything..." class="flex-1 bg-gray-900/80 border border-cyan-500/30 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-cyan-400">
-                <button id="sendBtn" class="cyber-btn px-6 py-2 rounded-xl text-sm font-semibold">
-                    Send
-                </button>
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Summarize File / Text</div>
+            <div class="mt-4 flex items-center">
+                <button id="summarizeBtn" class="btn">Summarize</button>
+                <select id="languageSelect" class="ml-4">
+                    <option value="en">English (Professional)</option>
+                    <option value="egy">Egyptian Arabic</option>
+                </select>
             </div>
-        </section>
-
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Generate Quiz</div>
+            <div class="mt-4 flex items-center">
+                <button id="generateQuizBtn" class="btn">Generate Quiz</button>
+                <select id="quizTypeSelect" class="ml-4">
+                    <option value="mcq">Multiple Choice Questions (MCQ / اختياري)</option>
+                    <option value="essay">Essay Questions (مقالي)</option>
+                    <option value="tf">True / False (صح وغلط)</option>
+                </select>
+                <input type="number" id="numQuestionsInput" class="ml-4 px-2 py-1 bg-background-color text-text-color border-2 border-primary-color rounded-lg" value="5">
+            </div>
+        </div>
+        <div class="mt-8">
+            <div class="text-2xl font-bold glassmorphism">Output Workspace</div>
+            <div class="mt-4">
+                <div id="outputArea" class="w-full h-40 bg-background-color text-text-color border-2 border-primary-color rounded-lg p-4 overflow-y-auto"></div>
+            </div>
+        </div>
     </div>
-
     <script>
-        // DOM Elements
-        const fileInput = document.getElementById('fileInput');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const chatBox = document.getElementById('chatBox');
-        const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+        document.getElementById('summarizeBtn').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            const textInput = document.getElementById('textInput');
+            const languageSelect = document.getElementById('languageSelect');
+            const outputArea = document.getElementById('outputArea');
 
-        // File Selection Listener
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fileNameDisplay.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
-                appendMessage('System', `File "${file.name}" ready for processing.`, 'cyan');
+            if (fileInput.files.length > 0) {
+                // Handle PDF text reading fallback
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    summarizeText(e.target.result, languageSelect.value, outputArea);
+                };
+                reader.readAsText(fileInput.files[0]);
+            } else if (textInput.value.trim() !== '') {
+                summarizeText(textInput.value, languageSelect.value, outputArea);
+            } else {
+                alert('Please upload a file or enter text to summarize.');
             }
         });
 
-        // Chat Helper Function
-        function appendMessage(sender, text, color = 'white') {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `p-2 rounded-lg bg-gray-800/50 border-l-2 border-${color}-400`;
-            msgDiv.innerHTML = `<strong class="text-${color}-400">${sender}:</strong> ${text}`;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        document.getElementById('generateQuizBtn').addEventListener('click', () => {
+            const quizTypeSelect = document.getElementById('quizTypeSelect');
+            const numQuestionsInput = document.getElementById('numQuestionsInput');
+            const outputArea = document.getElementById('outputArea');
+
+            const quizType = quizTypeSelect.value;
+            const numQuestions = parseInt(numQuestionsInput.value, 10);
+            if (isNaN(numQuestions) || numQuestions <= 0) {
+                alert('Please enter a valid number of questions.');
+                return;
+            }
+            generateQuiz(quizType, numQuestions, outputArea);
+        });
+
+        function summarizeText(text, language, outputArea) {
+            // Mock function to simulate text summarization
+            outputArea.textContent = `Summarized text in ${language}:\n${text}`;
         }
 
-        // Handle Chip Clicks
-        document.querySelectorAll('.chip-interactive').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const question = chip.getAttribute('data-question');
-                appendMessage('You', question, 'purple');
-                simulateResponse(question);
-            });
-        });
-
-        // Handle Manual Input Send
-        sendBtn.addEventListener('click', () => {
-            const text = userInput.value.trim();
-            if (text) {
-                appendMessage('You', text, 'purple');
-                userInput.value = '';
-                simulateResponse(text);
+        function generateQuiz(quizType, numQuestions, outputArea) {
+            // Mock function to simulate quiz generation
+            const quiz = [];
+            for (let i = 1; i <= numQuestions; i++) {
+                quiz.push({
+                    question: `Question ${i}`,
+                    answer: `Answer ${i}`
+                });
             }
-        });
-
-        // Simulated AI Response (Connects to backend later)
-        function simulateResponse(query) {
-            appendMessage('AI Tutor', 'Processing request...', 'gray');
-            setTimeout(() => {
-                chatBox.lastChild.remove(); // remove loading message
-                appendMessage('AI Tutor', `Ready to analyze "${query}". (Backend connection active).`, 'pink');
-            }, 1000);
+            outputArea.textContent = `Generated ${quizType} quiz with ${numQuestions} questions:\n${JSON.stringify(quiz, null, 2)}`;
         }
     </script>
 </body>
