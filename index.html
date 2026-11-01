@@ -1,356 +1,164 @@
+```html
 <!DOCTYPE html>
-<html lang="en" data-theme="cyber">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AuraStudy – AI Cyber Tutor</title>
-<meta name="description" content="Upload a lecture, notes, or images and get an advanced AI study tutor.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
-<style>
-:root {
-  --bg-dark: #050811;
-  --panel: rgba(13, 20, 36, 0.75);
-  --border: rgba(0, 240, 255, 0.25);
-  --cyan: #00f0ff;
-  --pink: #ff0055;
-  --purple: #7000ff;
-  --text-main: #e2e8f0;
-  --text-muted: #64748b;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Chat App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // IndexedDB helper functions
+    const idb = {
+      open: () => {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open("pdf-chat", 1);
+          request.onupgradeneeded = () => {
+            request.result.createObjectStore("pdf", { keyPath: "id" });
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      },
+      set: (store, data) => {
+        return idb.open().then(db => {
+          return new Promise((resolve, reject) => {
+            const transaction = db.transaction([store], "readwrite");
+            const storeRef = transaction.objectStore(store);
+            const request = storeRef.put({ id: "pdf", ...data });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+          });
+        });
+      },
+      get: (store) => {
+        return idb.open().then(db => {
+          return new Promise((resolve, reject) => {
+            const transaction = db.transaction([store], "readonly");
+            const storeRef = transaction.objectStore(store);
+            const request = storeRef.get("pdf");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          });
+        });
+      }
+    };
 
-body {
-  background: var(--bg-dark);
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(112, 0, 255, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
-  color: var(--text-main);
-  font-family: 'JetBrains Mono', monospace;
-  min-height: 100vh;
-}
-
-h1, h2, h3, .cyber-font {
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 0.05em;
-}
-
-.glass-panel {
-  background: var(--panel);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.03);
-  border-radius: 0.75rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.btn-cyber {
-  background: linear-gradient(135deg, rgba(112, 0, 255, 0.8), rgba(0, 240, 255, 0.8));
-  color: #fff;
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  border: 1px solid var(--cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-  transition: all 0.2s ease;
-}
-
-.btn-cyber:hover:not(:disabled) {
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.7), 0 0 10px rgba(255, 0, 85, 0.5);
-  transform: translateY(-1px);
-}
-
-.btn-cyber:disabled {
-  opacity: 0.5;
-  cursor: wait;
-}
-
-.field-cyber {
-  background: rgba(4, 8, 18, 0.8);
-  border: 1px solid var(--border);
-  color: var(--cyan);
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.9rem;
-  font-size: 0.875rem;
-}
-
-.field-cyber:focus {
-  outline: none;
-  border-color: var(--cyan);
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-}
-
-.seg-btn {
-  background: rgba(10, 16, 30, 0.6);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  transition: all 0.2s ease;
-}
-
-.seg-btn.on {
-  background: rgba(0, 240, 255, 0.15);
-  color: var(--cyan);
-  border-color: var(--cyan);
-  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
-}
-
-.md h1, .md h2, .md h3 { color: var(--cyan); margin: 1.2em 0 0.4em; }
-.md h2 { border-bottom: 1px dashed var(--border); padding-bottom: 0.3em; }
-.md code { background: rgba(0, 240, 255, 0.1); color: var(--pink); padding: 0.2em 0.4em; border-radius: 4px; }
-.md pre { background: #02040a; border: 1px solid var(--border); padding: 1em; border-radius: 8px; }
-.md strong { color: var(--cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
-
-.opt {
-  display: block; width: 100%; text-align: left;
-  border: 1px solid var(--border); border-radius: 0.5rem;
-  padding: 0.6rem 0.9rem; margin-bottom: 0.5rem; font-size: 0.9rem;
-  background: rgba(4, 8, 18, 0.6); color: var(--text-main);
-}
-.opt:hover:not(.done) { background: rgba(0, 240, 255, 0.1); border-color: var(--cyan); }
-.opt.sel { border-color: var(--cyan); background: rgba(0, 240, 255, 0.2); }
-.opt.right { background: rgba(20, 83, 45, 0.6); border-color: #4ade80; color: #dcfce7; }
-.opt.wrong { background: rgba(59, 10, 10, 0.6); border-color: #ef4444; color: #fecaca; }
-.ok { color: #4ade80; }
-.no { color: #f87171; }
-.sk { color: #fbbf24; }
-</style>
+    // Global variable to hold PDF content
+    let pdfData;
+  </script>
 </head>
-<body class="p-4 md:p-6">
-
-<header class="max-w-5xl mx-auto mb-6 flex justify-between items-center glass-panel px-6 py-4">
-  <h1 class="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500">
-    ⚡ AURA_STUDY // AI TUTOR
-  </h1>
-  <div class="text-xs text-cyan-400 tracking-widest border border-cyan-500/30 px-3 py-1 rounded-full bg-cyan-950/40">
-    SECURE BACKEND MODE
-  </div>
-</header>
-
-<main class="max-w-5xl mx-auto space-y-6">
-  <!-- Control Center Panel -->
-  <section class="glass-panel p-6 space-y-5">
-    <div class="flex flex-wrap gap-4 items-center justify-between">
-      <div class="flex gap-2">
-        <button class="mode seg-btn px-4 py-2 rounded-lg text-sm font-semibold" data-m="guide">📖 STUDY GUIDE</button>
-        <button class="mode seg-btn px-4 py-2 rounded-lg text-sm font-semibold" data-m="quiz">🧠 CYBER QUIZ</button>
-      </div>
-
-      <div class="flex gap-2">
-        <button class="tab seg-btn px-3 py-1.5 rounded-md text-xs" data-t="pdf">PDF FILE</button>
-        <button class="tab seg-btn px-3 py-1.5 rounded-md text-xs" data-t="text">RAW TEXT</button>
-      </div>
-    </div>
-
-    <!-- PDF Drag Drop Area -->
-    <div id="panePdf">
-      <label id="drop" class="border-2 border-dashed border-cyan-500/30 hover:border-cyan-400 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition bg-black/40">
-        <span class="font-semibold text-cyan-300" id="dropLabel">DROP LECTURE PDF HERE OR CLICK TO BROWSE</span>
-        <span class="text-xs text-slate-400 mt-2">Supports PDFs up to 18 MB</span>
-        <input id="file" type="file" accept="application/pdf" class="hidden">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+  <header class="bg-white shadow-md p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">PDF Chat App</h1>
+    <div class="flex space-x-2">
+      <input type="file" id="pdfUpload" accept="application/pdf" class="hidden" />
+      <label for="pdfUpload" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
+        Upload PDF
       </label>
+      <button id="chatButton" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        Start Chat
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 p-6">
+    <div id="dropZone" class="border-2 border-dashed border-gray-400 p-10 text-center cursor-pointer hover:border-blue-500 rounded-lg mb-6">
+      <p id="dropLabel" class="text-gray-600">Drag and drop a PDF here, or click to upload</p>
     </div>
 
-    <!-- Text Area Input -->
-    <div id="paneText" class="hidden">
-      <textarea id="text" rows="6" placeholder="Paste lecture notes or text content here..." class="field-cyber w-full"></textarea>
+    <div id="chatContainer" class="hidden bg-white p-4 rounded-lg shadow-sm h-96 overflow-y-auto">
+      <div id="messages" class="space-y-4"></div>
     </div>
+  </main>
 
-    <!-- Image Upload Bar (Camera/Gallery) - Works seamlessly across all devices -->
-    <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-800">
-      <label class="btn-cyber px-4 py-2 text-xs rounded-lg cursor-pointer flex items-center gap-2">
-        📷 ADD IMAGE (GALLERY / CAMERA)
-        <input id="imgFile" type="file" accept="image/*" class="hidden">
-      </label>
-      
-      <div id="imgPreviewBox" class="hidden flex items-center gap-3 bg-black/60 px-3 py-1.5 rounded-lg border border-cyan-500/30">
-        <img id="imgPreview" class="w-10 h-10 object-cover rounded border border-cyan-400">
-        <button id="removeImg" class="text-xs text-pink-500 hover:underline">REMOVE</button>
-      </div>
-    </div>
+  <script>
+    // Drag and drop handling
+    const dropZone = document.getElementById("dropZone");
+    const dropLabel = document.getElementById("dropLabel");
+    const chatContainer = document.getElementById("chatContainer");
+    const messages = document.getElementById("messages");
+    const chatButton = document.getElementById("chatButton");
 
-    <!-- Quiz Config Controls -->
-    <div id="quizCtl" class="hidden flex-wrap gap-4 text-xs">
-      <label class="flex items-center gap-2">COUNT: 
-        <select id="qCount" class="field-cyber py-1"><option>5</option><option selected>10</option><option>15</option></select>
-      </label>
-      <label class="flex items-center gap-2">TYPE: 
-        <select id="qType" class="field-cyber py-1"><option value="mcq">Multiple Choice</option><option value="tf">True / False</option></select>
-      </label>
-      <label class="flex items-center gap-2">LEVEL: 
-        <select id="qLevel" class="field-cyber py-1">
-          <option value="easy">EASY</option><option value="medium" selected>MEDIUM</option>
-          <option value="hard">HARD</option><option value="legendary">LEGENDARY 🔥</option>
-        </select>
-      </label>
-    </div>
+    // Initialize chat
+    function initChat() {
+      chatContainer.classList.remove("hidden");
+      messages.innerHTML = "";
+      const message = document.createElement("div");
+      message.classList.add("bg-blue-100", "p-3", "rounded-lg", "text-blue-800");
+      message.textContent = "Welcome! You can now chat with the uploaded PDF.";
+      messages.appendChild(message);
+    }
 
-    <!-- Language & Submit Section -->
-    <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
-      <div class="flex gap-2">
-        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="en">English</button>
-        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="ar-eg">عامية مصرية</button>
-        <button class="lang seg-btn px-3 py-1.5 rounded-md text-xs" data-l="ar-msa">فصحى</button>
-      </div>
-      
-      <button id="go" class="btn-cyber px-6 py-2.5 rounded-lg text-sm">INITIALIZE PROCESS</button>
-    </div>
-    
-    <p id="status" class="text-xs text-cyan-400 min-h-[1.2rem]" role="status"></p>
-  </section>
+    // Handle file upload via drop zone
+    function upload(event) {
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      if (!file || !file.type.startsWith("application/pdf")) return;
 
-  <!-- Output & Result Section -->
-  <section id="result" class="glass-panel p-6 hidden">
-    <div class="flex gap-4 mb-4 text-xs">
-      <button id="copy" class="text-cyan-400 hover:underline">COPY TEXT</button>
-      <button id="dlMd" class="text-cyan-400 hover:underline">DOWNLOAD .MD</button>
-    </div>
-    <article id="summary" class="md space-y-4"></article>
-  </section>
+      const reader = new FileReader();
+      reader.onload = e => {
+        const data = e.target.result;
+        idb.set("pdf", { data: data, name: file.name }).then(() => {
+          dropLabel.textContent = file.name + " (saved)";
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    }
 
-  <!-- Quiz Box -->
-  <section id="quizBox" class="glass-panel p-6 hidden">
-    <div id="qMeta" class="text-xs text-cyan-400 mb-4"></div>
-    <div id="score" class="hidden mb-5 p-4 rounded-lg bg-black/50 border border-cyan-500/40 text-center"></div>
-    <div id="qList" class="space-y-6"></div>
-    <div class="flex gap-3 mt-6">
-      <button id="submitQuiz" class="btn-cyber px-5 py-2 text-xs rounded">SUBMIT ANSWERS</button>
-      <button id="retake" class="seg-btn px-5 py-2 text-xs rounded hidden">RETAKE QUIZ</button>
-    </div>
-  </section>
+    // Handle file upload via input button
+    document.getElementById("pdfUpload").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith("application/pdf")) return;
 
-  <!-- Chat System -->
-  <section id="chat" class="glass-panel p-6 hidden space-y-4">
-    <h2 class="text-lg font-bold text-cyan-400">💬 ASK CYBER TUTOR</h2>
-    <div id="log" class="space-y-3 max-h-96 overflow-y-auto p-2"></div>
-    <div class="flex gap-2">
-      <input id="q" type="text" placeholder="Ask questions about the uploaded material..." class="field-cyber flex-1">
-      <button id="send" class="btn-cyber px-5 py-2 text-xs rounded">SEND</button>
-    </div>
-  </section>
-</main>
+      const reader = new FileReader();
+      reader.onload = e => {
+        const data = e.target.result;
+        idb.set("pdf", { data: data, name: file.name }).then(() => {
+          dropLabel.textContent = file.name + " (saved)";
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
 
-<script>
-const $ = id => document.getElementById(id);
-let state = { tab:'pdf', lang:'en', mode:'guide', history:[], summary:'', hasGuide:false, ready:false, quiz:null, picks:[], level:'medium', qlang:'en' };
-let pdfData = null, imageData = null;
+    // Restore PDF on page load
+    window.addEventListener("load", async () => {
+      try {
+        const pdf = await idb.get("pdf");
+        if (pdf && pdf.data) {
+          pdfData = pdf.data;
+          dropLabel.textContent = pdf.name + " (saved)";
+        }
+      } catch (e) {
+        console.error("Failed to restore PDF:", e);
+      }
+    });
 
-function setTab(t){
-  state.tab = t;
-  $('panePdf').classList.toggle('hidden', t !== 'pdf');
-  $('paneText').classList.toggle('hidden', t !== 'text');
-  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.t === t));
-}
-document.querySelectorAll('.tab').forEach(b => b.onclick = () => setTab(b.dataset.t));
+    // Strip history function (placeholder replacement)
+    function stripHist(h) {
+      return h.map(t => ({
+        role: t.role,
+        parts: t.parts.map(p => p.inlineData ? { text: "__PDF__" } : p)
+      }));
+    }
 
-function setLang(l){
-  state.lang = l;
-  document.querySelectorAll('.lang').forEach(b => b.classList.toggle('on', b.dataset.l === l));
-}
-document.querySelectorAll('.lang').forEach(b => b.onclick = () => setLang(b.dataset.l));
+    // Chat button click
+    chatButton.addEventListener("click", initChat);
 
-function setMode(m){
-  state.mode = m;
-  document.querySelectorAll('.mode').forEach(b => b.classList.toggle('on', b.dataset.m === m));
-  $('quizCtl').classList.toggle('hidden', m !== 'quiz');
-  $('go').textContent = m === 'quiz' ? 'GENERATE QUIZ' : 'CREATE STUDY GUIDE';
-}
-document.querySelectorAll('.mode').forEach(b => b.onclick = () => setMode(b.dataset.m));
+    // Drop zone event listeners
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("bg-blue-50");
+    });
 
-// File Loaders
-$('file').onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => { pdfData = r.result.split(',')[1]; $('dropLabel').textContent = f.name; };
-  r.readAsDataURL(f);
-};
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("bg-blue-50");
+    });
 
-// Image Loader (Gallery / Camera on all devices)
-$('imgFile').onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    imageData = { inlineData: { mimeType: f.type, data: r.result.split(',')[1] } };
-    $('imgPreview').src = r.result;
-    $('imgPreviewBox').classList.remove('hidden');
-  };
-  r.readAsDataURL(f);
-};
-
-$('removeImg').onclick = () => {
-  imageData = null;
-  $('imgFile').value = '';
-  $('imgPreviewBox').classList.add('hidden');
-};
-
-// Markdown & Math Renderer
-function md2html(src){
-  const maths = [];
-  src = src.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$(?!\s)[^$\n]*[^$\s]\$/g, m => { maths.push(m); return '\u0000' + (maths.length - 1) + '\u0001'; });
-  const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const inline = t => esc(t).replace(/`([^`]+)`/g,'<code>$1$</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-  return esc(src).replace(/\n/g, '<br>').replace(/\u0000(\d+)\u0001/g, (_, k) => esc(maths[+k]));
-}
-function typeset(el){ if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {}); }
-
-// Secure Backend Connector
-async function callBackend(contents, systemPrompt, onText) {
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents, systemInstruction: systemPrompt })
-  });
-
-  if (!response.ok) throw new Error('Backend error communicating with server.');
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let fullText = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value);
-    fullText += chunk;
-    if (onText) onText(fullText);
-  }
-  return fullText;
-}
-
-// Main Action Handler
-$('go').onclick = async () => {
-  const parts = [];
-  if (state.tab === 'pdf' && pdfData) parts.push({ inlineData: { mimeType: 'application/pdf', data: pdfData } });
-  if (state.tab === 'text' && $('text').value) parts.push({ text: $('text').value });
-  if (imageData) parts.push(imageData);
-
-  if (!parts.length) return alert('Please upload a PDF, paste text, or attach an image.');
-
-  $('status').textContent = 'Processing via secure backend...';
-  $('result').classList.remove('hidden');
-  
-  try {
-    const text = await callBackend(
-      [{ role: 'user', parts }],
-      'You are a high-tech AI study assistant. Explain concepts clearly.',
-      t => { $('summary').innerHTML = md2html(t); typeset($('summary')); }
-    );
-    state.summary = text;
-    state.ready = true;
-    $('status').textContent = 'Process completed successfully ✓';
-  } catch (err) {
-    $('status').textContent = err.message;
-  }
-};
-
-$('copy').onclick = async () => {
-  await navigator.clipboard.writeText(state.summary);
-  alert('Copied to clipboard!');
-};
-</script>
+    dropZone.addEventListener("drop", upload);
+    dropZone.addEventListener("click", () => {
+      document.getElementById("pdfUpload").click();
+    });
+  </script>
 </body>
 </html>
+```
