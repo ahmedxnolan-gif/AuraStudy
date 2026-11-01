@@ -102,6 +102,20 @@ h1, h2, h3, .cyber-font {
 .md code { background: rgba(0, 240, 255, 0.1); color: var(--pink); padding: 0.2em 0.4em; border-radius: 4px; }
 .md pre { background: #02040a; border: 1px solid var(--border); padding: 1em; border-radius: 8px; }
 .md strong { color: var(--cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); }
+
+.opt {
+  display: block; width: 100%; text-align: left;
+  border: 1px solid var(--border); border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem; margin-bottom: 0.5rem; font-size: 0.9rem;
+  background: rgba(4, 8, 18, 0.6); color: var(--text-main);
+}
+.opt:hover:not(.done) { background: rgba(0, 240, 255, 0.1); border-color: var(--cyan); }
+.opt.sel { border-color: var(--cyan); background: rgba(0, 240, 255, 0.2); }
+.opt.right { background: rgba(20, 83, 45, 0.6); border-color: #4ade80; color: #dcfce7; }
+.opt.wrong { background: rgba(59, 10, 10, 0.6); border-color: #ef4444; color: #fecaca; }
+.ok { color: #4ade80; }
+.no { color: #f87171; }
+.sk { color: #fbbf24; }
 </style>
 </head>
 <body class="p-4 md:p-6">
@@ -111,7 +125,7 @@ h1, h2, h3, .cyber-font {
     ⚡ AURA_STUDY // AI TUTOR
   </h1>
   <div class="text-xs text-cyan-400 tracking-widest border border-cyan-500/30 px-3 py-1 rounded-full bg-cyan-950/40">
-    SYSTEM ONLINE // SECURED BACKEND
+    SECURE BACKEND MODE
   </div>
 </header>
 
@@ -144,7 +158,7 @@ h1, h2, h3, .cyber-font {
       <textarea id="text" rows="6" placeholder="Paste lecture notes or text content here..." class="field-cyber w-full"></textarea>
     </div>
 
-    <!-- Image Upload Bar (Camera/Gallery) -->
+    <!-- Image Upload Bar (Camera/Gallery) - Works seamlessly across all devices -->
     <div class="flex flex-wrap items-center gap-4 pt-2 border-t border-slate-800">
       <label class="btn-cyber px-4 py-2 text-xs rounded-lg cursor-pointer flex items-center gap-2">
         📷 ADD IMAGE (GALLERY / CAMERA)
@@ -163,7 +177,7 @@ h1, h2, h3, .cyber-font {
         <select id="qCount" class="field-cyber py-1"><option>5</option><option selected>10</option><option>15</option></select>
       </label>
       <label class="flex items-center gap-2">TYPE: 
-        <select id="qType" class="field-cyber py-1"><option value="mcq">MCQ</option><option value="tf">True/False</option></select>
+        <select id="qType" class="field-cyber py-1"><option value="mcq">Multiple Choice</option><option value="tf">True / False</option></select>
       </label>
       <label class="flex items-center gap-2">LEVEL: 
         <select id="qLevel" class="field-cyber py-1">
@@ -184,11 +198,15 @@ h1, h2, h3, .cyber-font {
       <button id="go" class="btn-cyber px-6 py-2.5 rounded-lg text-sm">INITIALIZE PROCESS</button>
     </div>
     
-    <p id="status" class="text-xs text-cyan-400 min-h-[1.2rem]"></p>
+    <p id="status" class="text-xs text-cyan-400 min-h-[1.2rem]" role="status"></p>
   </section>
 
   <!-- Output & Result Section -->
   <section id="result" class="glass-panel p-6 hidden">
+    <div class="flex gap-4 mb-4 text-xs">
+      <button id="copy" class="text-cyan-400 hover:underline">COPY TEXT</button>
+      <button id="dlMd" class="text-cyan-400 hover:underline">DOWNLOAD .MD</button>
+    </div>
     <article id="summary" class="md space-y-4"></article>
   </section>
 
@@ -199,7 +217,7 @@ h1, h2, h3, .cyber-font {
     <div id="qList" class="space-y-6"></div>
     <div class="flex gap-3 mt-6">
       <button id="submitQuiz" class="btn-cyber px-5 py-2 text-xs rounded">SUBMIT ANSWERS</button>
-      <button id="retake" class="seg-btn px-5 py-2 text-xs rounded hidden">RETAKE</button>
+      <button id="retake" class="seg-btn px-5 py-2 text-xs rounded hidden">RETAKE QUIZ</button>
     </div>
   </section>
 
@@ -241,6 +259,7 @@ function setMode(m){
 }
 document.querySelectorAll('.mode').forEach(b => b.onclick = () => setMode(b.dataset.m));
 
+// File Loaders
 $('file').onchange = e => {
   const f = e.target.files[0];
   if (!f) return;
@@ -249,6 +268,7 @@ $('file').onchange = e => {
   r.readAsDataURL(f);
 };
 
+// Image Loader (Gallery / Camera on all devices)
 $('imgFile').onchange = e => {
   const f = e.target.files[0];
   if (!f) return;
@@ -267,6 +287,17 @@ $('removeImg').onclick = () => {
   $('imgPreviewBox').classList.add('hidden');
 };
 
+// Markdown & Math Renderer
+function md2html(src){
+  const maths = [];
+  src = src.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$(?!\s)[^$\n]*[^$\s]\$/g, m => { maths.push(m); return '\u0000' + (maths.length - 1) + '\u0001'; });
+  const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline = t => esc(t).replace(/`([^`]+)`/g,'<code>$1$</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  return esc(src).replace(/\n/g, '<br>').replace(/\u0000(\d+)\u0001/g, (_, k) => esc(maths[+k]));
+}
+function typeset(el){ if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([el]).catch(() => {}); }
+
+// Secure Backend Connector
 async function callBackend(contents, systemPrompt, onText) {
   const response = await fetch('/api/chat', {
     method: 'POST',
@@ -274,7 +305,7 @@ async function callBackend(contents, systemPrompt, onText) {
     body: JSON.stringify({ contents, systemInstruction: systemPrompt })
   });
 
-  if (!response.ok) throw new Error('Backend error processing your request.');
+  if (!response.ok) throw new Error('Backend error communicating with server.');
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -290,6 +321,7 @@ async function callBackend(contents, systemPrompt, onText) {
   return fullText;
 }
 
+// Main Action Handler
 $('go').onclick = async () => {
   const parts = [];
   if (state.tab === 'pdf' && pdfData) parts.push({ inlineData: { mimeType: 'application/pdf', data: pdfData } });
@@ -298,60 +330,27 @@ $('go').onclick = async () => {
 
   if (!parts.length) return alert('Please upload a PDF, paste text, or attach an image.');
 
-  $('status').textContent = 'Processing request via backend...';
+  $('status').textContent = 'Processing via secure backend...';
   $('result').classList.remove('hidden');
   
   try {
     const text = await callBackend(
       [{ role: 'user', parts }],
-      'You are a high-tech AI study assistant. Explain concepts clearly with Markdown formatting.',
-      t => { $('summary').innerHTML = t; }
+      'You are a high-tech AI study assistant. Explain concepts clearly.',
+      t => { $('summary').innerHTML = md2html(t); typeset($('summary')); }
     );
-    $('status').textContent = 'Completed successfully ✓';
+    state.summary = text;
+    state.ready = true;
+    $('status').textContent = 'Process completed successfully ✓';
   } catch (err) {
     $('status').textContent = err.message;
   }
 };
+
+$('copy').onclick = async () => {
+  await navigator.clipboard.writeText(state.summary);
+  alert('Copied to clipboard!');
+};
 </script>
 </body>
 </html>
-
-<!-- 
-================================================================================
-القسم الثاني: كود السيرفر الخلفي (Serverless Function) 
-قم بإنشاء مجلد باسم "api" وضع داخله ملفاً باسم "chat.js" بهذا المحتوى تماماً:
-================================================================================
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { contents, systemInstruction } = req.body;
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction: systemInstruction || 'You are an AI study assistant.'
-    });
-
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Transfer-Encoding', 'chunked');
-
-    const result = await model.generateContentStream({ contents });
-
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      res.write(chunkText);
-    }
-
-    res.end();
-  } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-}
--->
