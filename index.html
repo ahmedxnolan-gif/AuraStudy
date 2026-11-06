@@ -178,7 +178,7 @@ textarea.field{min-height:140px;resize:vertical}
 
 <div class="app">
   <header>
-    <div class="logo">AURA STUDY <span>by NOLAN</span><small>ULTRA-FAST LIGHTNING ENGINE</small></div>
+    <div class="logo">AURA STUDY <span>by NOLAN</span><small>SAVED API KEY EDITION</small></div>
     <div class="themes" id="themes">
       <button class="sw on" data-t="babyblue" title="Baby Blue & Graphite"></button>
       <button class="sw" data-t="sapphire" title="Deep Sapphire"></button>
@@ -217,17 +217,17 @@ textarea.field{min-height:140px;resize:vertical}
         </div>
         <label class="lbl" for="topic">Focus Topic (Optional)</label>
         <input id="topic" class="field" dir="auto" placeholder="e.g. Chapter 3, Organic Reactions...">
-        <details class="set"><summary>Gemini AI Config (Turbo)</summary>
+        <details class="set" open><summary>Gemini AI Config (Auto-saved)</summary>
           <label class="lbl" for="model">Model Engine</label>
           <select id="model" class="field">
-            <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (Lightning Fast)</option>
+            <option value="gemini-3.8-flash" selected>gemini-3.8-flash (Recommended)</option>
             <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-            <option value="gemini-3.8-flash">gemini-3.8-flash (Standard)</option>
+            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
           </select>
           <label class="lbl" for="key">Gemini API Key</label>
-          <input id="key" type="password" class="field" placeholder="Paste Key Here" dir="ltr">
+          <input id="key" type="password" class="field" placeholder="Paste Key Here (Saved Automatically)" dir="ltr">
         </details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material (Fast)</span></button>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material Thoroughly</span></button>
       </section>
 
       <section class="card">
@@ -271,7 +271,7 @@ textarea.field{min-height:140px;resize:vertical}
       <div id="out" class="out">
         <div class="idle">
           <div class="t">AURA STUDY BY NOLAN</div>
-          <p style="max-width:380px">Upload material or paste notes for instant lighting-fast structured explanations and quizzes.</p>
+          <p style="max-width:380px">Upload material or paste notes for comprehensive, thorough page-by-page explanations.</p>
         </div>
       </div>
 
@@ -298,6 +298,17 @@ const $=id=>document.getElementById(id);
 const state = { fileText:'', pages:[], currentPage:0, history:[], ready:false, tab:'exp' };
 
 function toast(m){const e=$('toast');e.textContent=m;e.className='show';setTimeout(()=>e.className='',3000)}
+
+// Load saved API Key on startup
+window.addEventListener('DOMContentLoaded', () => {
+  const savedKey = localStorage.getItem('aurastudy_gemini_key');
+  if (savedKey) $('key').value = savedKey;
+});
+
+// Save API key whenever it changes
+$('key').oninput = () => {
+  localStorage.setItem('aurastudy_gemini_key', $('key').value.trim());
+};
 
 // Theme Switcher
 $('themes').onclick=e=>{
@@ -343,7 +354,7 @@ $('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};
 $('rmFile').onclick=()=>{state.fileText='';$('chip').classList.remove('show')};
 
 // Multi-page Splitter
-function paginateContent(text, chunkSize=2200){
+function paginateContent(text, chunkSize=2400){
   const paragraphs=text.split(/\n\s*\n/);
   const pages=[];
   let current='';
@@ -384,7 +395,7 @@ function md2html(src){
     .replace(/\n\n/g, '<p></p>');
 }
 
-// Ultra-Fast Gemini API Integration
+// Comprehensive Deep Explanation Integration
 async function runExplain(){
   const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
   const key=$('key').value.trim();
@@ -393,14 +404,16 @@ async function runExplain(){
 
   const btn=$('expBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">GENERATING LIGHTNING FAST EXPLANATION...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING THOROUGH COMPREHENSIVE EXPLANATION...</div></div>';
 
-  const prompt=`Explain clearly and concisely with Markdown headings (##) for pages.
-Language: ${document.querySelector('input[name=xl]:checked').value}
-Depth: ${document.querySelector('input[name=dp]:checked').value}
-Focus: ${$('topic').value||'Entire Material'}
+  const prompt=`أنت معلم ذكي وخبير متخصص. مطلوب منك قراءة وفهم **كل جزء وكل سطر** في المادة الدراسية المرفقة بالأسفل بالتفصيل الكامل وبدون ترك أي تفصيلة أو قانون أو فكرة.
+اشرح المادة كلها بشكل معمق وشامل جداً ومبسط، وقسّم الشرح باستخدام عناوين Markdown فرعية (##) لكي يتم عرضها في صفحات متسلسلة.
 
-Material:
+لغة الشرح: ${document.querySelector('input[name=xl]:checked').value}
+مستوى العمق: ${document.querySelector('input[name=dp]:checked').value}
+التركيز الأساسي: ${$('topic').value||'شرح المادة كاملة بالتفصيل بدون إغفال أي جزء'}
+
+المادة الدراسية الكاملة:
 ${text}`;
 
   try{
@@ -439,7 +452,7 @@ async function runQuiz(){
   btn.disabled=true; btn.classList.add('loading');
   $('out').innerHTML='<div class="idle"><div class="t">GENERATING PRACTICE QUIZ...</div></div>';
 
-  const prompt=`Generate ${count} practice questions of type ${qType} based on this material. Format clearly with questions, options (if MCQ), and correct answers.
+  const prompt=`Generate ${count} comprehensive practice questions of type ${qType} covering all parts of this material. Format clearly.
 
 Material:
 ${text}`;
@@ -484,7 +497,7 @@ async function sendChat(msg){
     const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:`Context:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`}]}]})
+      body:JSON.stringify({contents:[{parts:[{text:`Full Material Context:\n${state.fileText || state.pages.join('\n')}\n\nCurrent Page:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`}]}]})
     });
     const data=await res.json();
     botEl.innerHTML=md2html(data.candidates[0].content.parts[0].text);
