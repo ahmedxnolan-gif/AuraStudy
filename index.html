@@ -171,7 +171,7 @@ textarea.field{min-height:140px;resize:vertical}
 
 <div class="app">
   <header>
-    <div class="logo">AURA STUDY <span>by NOLAN</span><small>STABLE FAST EDITION</small></div>
+    <div class="logo">AURA STUDY <span>by NOLAN</span><small>TUTOR EXPLANATION EDITION</small></div>
     <div class="themes" id="themes">
       <button class="sw on" data-t="babyblue" title="Baby Blue & Graphite"></button>
       <button class="sw" data-t="sapphire" title="Deep Sapphire"></button>
@@ -220,7 +220,7 @@ textarea.field{min-height:140px;resize:vertical}
           <label class="lbl" for="key">Gemini API Key</label>
           <input id="key" type="password" class="field" placeholder="Paste Key Here" dir="ltr">
         </details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material</span></button>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material as a Tutor</span></button>
       </section>
 
       <section class="card">
@@ -264,7 +264,7 @@ textarea.field{min-height:140px;resize:vertical}
       <div id="out" class="out">
         <div class="idle">
           <div class="t">AURA STUDY BY NOLAN</div>
-          <p style="max-width:380px">Upload material or paste notes for instant, stable explanations.</p>
+          <p style="max-width:380px">Upload material for deep, clear tutor explanations instead of simple outlines.</p>
         </div>
       </div>
 
@@ -321,7 +321,7 @@ async function handleFile(f){
     let text='';
     if(ext==='pdf'){
       const pdf=await pdfjsLib.getDocument({data:await rd(f,'readAsArrayBuffer')}).promise;
-      for(let i=1;i<=Math.min(pdf.numPages, 30);i++){ // Limit to first 30 pages for speed and stability
+      for(let i=1;i<=Math.min(pdf.numPages, 30);i++){
         const c=await(await pdf.getPage(i)).getTextContent();
         text+=c.items.map(it=>it.str).join(' ')+'\n\n';
       }
@@ -344,7 +344,6 @@ $('text').oninput=()=>{$('cc').textContent=$('text').value.length+' chars'};
 $('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};
 $('rmFile').onclick=()=>{state.fileText='';$('chip').classList.remove('show')};
 
-// Pagination helper
 function paginateContent(text, chunkSize=2000){
   const paragraphs=text.split(/\n\s*\n/);
   const pages=[];
@@ -385,14 +384,13 @@ function md2html(src){
     .replace(/\n\n/g, '<p></p>');
 }
 
-// Stable AI Request with Timeout Controller
 async function callGemini(promptText){
   const key=$('key').value.trim();
   if(!key)throw new Error('API Key is missing');
   
   const model=$('model').value;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 seconds timeout
+  const timeoutId = setTimeout(() => controller.abort(), 35000);
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{
@@ -425,15 +423,17 @@ async function runExplain(){
 
   const btn=$('expBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">GENERATING EXPLANATION...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">EXPLAINING CONTENT DEEPLY...</div></div>';
 
-  const prompt=`شرح تعليمي مفصل وواضح للمادة التالية، مقسم باستخدام عناوين Markdown (##).
+  const prompt=`أنت مدرس خبير وشرحك مبسط ومفصل للغاية. لا تكتفِ نهائياً بذكر محتويات الملف أو سرد العناوين فقط، بل اشرح كل فكرة وقانون ومفهوم موجود في النص أدناه بأسلوب تعليمي سلس، كأنك تشرح لطالب قاعد قدامك تفهمه كل تفصيلة كأنها حصة درس خصوصي.
+قسّم الشرح باستخدام عناوين Markdown فرعية (##).
+
 اللغة المطلوبة: ${document.querySelector('input[name=xl]:checked').value}
-العمق: ${document.querySelector('input[name=dp]:checked').value}
-التركيز: ${$('topic').value||'شرح المادة كاملة'}
+مستوى العمق: ${document.querySelector('input[name=dp]:checked').value}
+التركيز: ${$('topic').value||'شرح وتفسير كل جزء في المادة'}
 
-المادة:
-${text.substring(0, 15000)}`; // Trim to safe window size for lightning speed
+النص الدراسي:
+${text.substring(0, 15000)}`;
 
   try{
     const resultText = await callGemini(prompt);
