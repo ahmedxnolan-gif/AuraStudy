@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraStudy - Premium Dark Edition</title>
+<title>AuraStudy by NOLAN</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
@@ -12,9 +12,9 @@
 <style>
 :root{
   --bg:#0b0d12; 
-  --card:rgba(18, 22, 32, 0.75); 
-  --card-hover:rgba(25, 31, 45, 0.85);
-  --card-border:rgba(96, 165, 250, 0.22);
+  --card:rgba(18, 22, 32, 0.78); 
+  --card-hover:rgba(25, 31, 45, 0.9);
+  --card-border:rgba(96, 165, 250, 0.25);
   --tx:#f1f5f9; 
   --mu:#94a3b8; 
   --a:#60a5fa; 
@@ -23,29 +23,29 @@
   --ok:#10b981; 
   --bad:#ef4444; 
   --on:#0b0d12;
-  --glow:0 0 25px rgba(59, 130, 246, 0.18);
+  --glow:0 0 30px rgba(59, 130, 246, 0.2);
   --fs:1rem;
 }
 
 [data-theme=sapphire]{
-  --bg:#080b14; --card:rgba(15, 23, 42, 0.75); --card-hover:rgba(23, 33, 58, 0.85);
-  --card-border:rgba(59, 130, 246, 0.25);
-  --a:#3b82f6; --b:#1d4ed8; --c:#0284c7; --glow:0 0 25px rgba(59, 130, 246, 0.2);
+  --bg:#080b14; --card:rgba(15, 23, 42, 0.78); --card-hover:rgba(23, 33, 58, 0.9);
+  --card-border:rgba(59, 130, 246, 0.28);
+  --a:#3b82f6; --b:#1d4ed8; --c:#0284c7; --glow:0 0 30px rgba(59, 130, 246, 0.22);
 }
 [data-theme=emerald]{
-  --bg:#060f0d; --card:rgba(12, 28, 24, 0.75); --card-hover:rgba(18, 40, 34, 0.85);
-  --card-border:rgba(16, 185, 129, 0.22);
-  --a:#10b981; --b:#059669; --c:#34d399; --glow:0 0 25px rgba(16, 185, 129, 0.2);
+  --bg:#060f0d; --card:rgba(12, 28, 24, 0.78); --card-hover:rgba(18, 40, 34, 0.9);
+  --card-border:rgba(16, 185, 129, 0.25);
+  --a:#10b981; --b:#059669; --c:#34d399; --glow:0 0 30px rgba(16, 185, 129, 0.22);
 }
 [data-theme=purple]{
-  --bg:#0e0814; --card:rgba(24, 16, 36, 0.75); --card-hover:rgba(35, 24, 52, 0.85);
-  --card-border:rgba(168, 85, 247, 0.22);
-  --a:#a855f7; --b:#7c3aed; --c:#c084fc; --glow:0 0 25px rgba(168, 85, 247, 0.2);
+  --bg:#0e0814; --card:rgba(24, 16, 36, 0.78); --card-hover:rgba(35, 24, 52, 0.9);
+  --card-border:rgba(168, 85, 247, 0.25);
+  --a:#a855f7; --b:#7c3aed; --c:#c084fc; --glow:0 0 30px rgba(168, 85, 247, 0.22);
 }
 [data-theme=crimson]{
-  --bg:#12070a; --card:rgba(30, 15, 22, 0.75); --card-hover:rgba(44, 22, 32, 0.85);
-  --card-border:rgba(244, 63, 94, 0.22);
-  --a:#f43f5e; --b:#e11d48; --c:#fb7185; --glow:0 0 25px rgba(244, 63, 94, 0.2);
+  --bg:#12070a; --card:rgba(30, 15, 22, 0.78); --card-hover:rgba(44, 22, 32, 0.9);
+  --card-border:rgba(244, 63, 94, 0.25);
+  --a:#f43f5e; --b:#e11d48; --c:#fb7185; --glow:0 0 30px rgba(244, 63, 94, 0.22);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -79,7 +79,7 @@ header{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:s
 
 .col{display:grid;gap:1.4rem}
 .card{position:relative;padding:1.6rem;border-radius:20px;background:var(--card);backdrop-filter:blur(18px);border:1px solid var(--card-border);box-shadow:var(--glow);transition:all .3s ease}
-.card:hover{background:var(--card-hover);border-color:var(--a);box-shadow:0 0 32px rgba(0,0,0,.9)}
+.card:hover{background:var(--card-hover);border-color:var(--a);box-shadow:0 0 35px rgba(0,0,0,.9)}
 
 h2{display:flex;align-items:center;gap:.7rem;font-size:1rem;font-family:'Space Grotesk',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--tx);margin-bottom:1.2rem}
 h2 b{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);color:var(--a);font-size:.85rem;border:1px solid var(--card-border)}
@@ -178,7 +178,7 @@ textarea.field{min-height:140px;resize:vertical}
 
 <div class="app">
   <header>
-    <div class="logo">AURA<span>STUDY</span><small>GRAPHITE & BABY BLUE EDITION</small></div>
+    <div class="logo">AURA STUDY <span>by NOLAN</span><small>ULTRA-FAST LIGHTNING ENGINE</small></div>
     <div class="themes" id="themes">
       <button class="sw on" data-t="babyblue" title="Baby Blue & Graphite"></button>
       <button class="sw" data-t="sapphire" title="Deep Sapphire"></button>
@@ -217,17 +217,17 @@ textarea.field{min-height:140px;resize:vertical}
         </div>
         <label class="lbl" for="topic">Focus Topic (Optional)</label>
         <input id="topic" class="field" dir="auto" placeholder="e.g. Chapter 3, Organic Reactions...">
-        <details class="set"><summary>Gemini AI Config</summary>
+        <details class="set"><summary>Gemini AI Config (Turbo)</summary>
           <label class="lbl" for="model">Model Engine</label>
           <select id="model" class="field">
-            <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended)</option>
+            <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (Lightning Fast)</option>
             <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash (Standard)</option>
           </select>
           <label class="lbl" for="key">Gemini API Key</label>
           <input id="key" type="password" class="field" placeholder="Paste Key Here" dir="ltr">
         </details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material</span></button>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material (Fast)</span></button>
       </section>
 
       <section class="card">
@@ -270,8 +270,8 @@ textarea.field{min-height:140px;resize:vertical}
 
       <div id="out" class="out">
         <div class="idle">
-          <div class="t">AURA STUDY WORKSPACE</div>
-          <p style="max-width:380px">Upload material or paste notes to generate page-by-page structured explanations and interactive quizzes.</p>
+          <div class="t">AURA STUDY BY NOLAN</div>
+          <p style="max-width:380px">Upload material or paste notes for instant lighting-fast structured explanations and quizzes.</p>
         </div>
       </div>
 
@@ -384,7 +384,7 @@ function md2html(src){
     .replace(/\n\n/g, '<p></p>');
 }
 
-// Gemini API Integration
+// Ultra-Fast Gemini API Integration
 async function runExplain(){
   const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
   const key=$('key').value.trim();
@@ -393,9 +393,9 @@ async function runExplain(){
 
   const btn=$('expBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">GENERATING PAGE-BY-PAGE EXPLANATION...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING LIGHTNING FAST EXPLANATION...</div></div>';
 
-  const prompt=`Explain the study material comprehensively. Organize clearly with Markdown headings (##) to allow structured pagination.
+  const prompt=`Explain clearly and concisely with Markdown headings (##) for pages.
 Language: ${document.querySelector('input[name=xl]:checked').value}
 Depth: ${document.querySelector('input[name=dp]:checked').value}
 Focus: ${$('topic').value||'Entire Material'}
@@ -426,6 +426,46 @@ ${text}`;
 
 $('expBtn').onclick=runExplain;
 
+// Quiz Generator
+async function runQuiz(){
+  const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
+  const key=$('key').value.trim();
+  const count=$('num').value||5;
+  const qType=document.querySelector('input[name=qt]:checked').value;
+  if(!text)return toast('Please paste text or upload a file first.');
+  if(!key)return toast('Gemini API Key is required.');
+
+  const btn=$('quizBtn');
+  btn.disabled=true; btn.classList.add('loading');
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING PRACTICE QUIZ...</div></div>';
+
+  const prompt=`Generate ${count} practice questions of type ${qType} based on this material. Format clearly with questions, options (if MCQ), and correct answers.
+
+Material:
+${text}`;
+
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    });
+    const data=await res.json();
+    const resultText=data.candidates[0].content.parts[0].text;
+    state.pages=[resultText];
+    state.currentPage=0;
+    renderCurrentPage();
+    $('pageNav').classList.add('hidden');
+    toast('Quiz generated successfully!');
+  }catch(e){
+    toast('API Connection Failed');
+    console.error(e);
+  }finally{
+    btn.disabled=false; btn.classList.remove('loading');
+  }
+}
+$('quizBtn').onclick=runQuiz;
+
 // Interactive Chat System
 async function sendChat(msg){
   const text=msg||$('q').value.trim();
@@ -444,7 +484,7 @@ async function sendChat(msg){
     const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:`Current Page Context:\n${state.pages[state.currentPage]}\n\nUser Question: ${text}`}]}]})
+      body:JSON.stringify({contents:[{parts:[{text:`Context:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`}]}]})
     });
     const data=await res.json();
     botEl.innerHTML=md2html(data.candidates[0].content.parts[0].text);
