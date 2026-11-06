@@ -171,7 +171,7 @@ textarea.field{min-height:140px;resize:vertical}
 
 <div class="app">
   <header>
-    <div class="logo">AURA STUDY <span>by NOLAN</span><small>TUTOR EXPLANATION EDITION</small></div>
+    <div class="logo">AURA STUDY <span>by NOLAN</span><small>CLEAN TEXT EDITION</small></div>
     <div class="themes" id="themes">
       <button class="sw on" data-t="babyblue" title="Baby Blue & Graphite"></button>
       <button class="sw" data-t="sapphire" title="Deep Sapphire"></button>
@@ -220,7 +220,7 @@ textarea.field{min-height:140px;resize:vertical}
           <label class="lbl" for="key">Gemini API Key</label>
           <input id="key" type="password" class="field" placeholder="Paste Key Here" dir="ltr">
         </details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material as a Tutor</span></button>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material Clearly</span></button>
       </section>
 
       <section class="card">
@@ -264,7 +264,7 @@ textarea.field{min-height:140px;resize:vertical}
       <div id="out" class="out">
         <div class="idle">
           <div class="t">AURA STUDY BY NOLAN</div>
-          <p style="max-width:380px">Upload material for deep, clear tutor explanations instead of simple outlines.</p>
+          <p style="max-width:380px">Upload material for crystal clear, clean, and structured explanations.</p>
         </div>
       </div>
 
@@ -374,13 +374,17 @@ function renderCurrentPage(){
 $('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};
 $('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
 
+// Clean Markdown Parser avoiding weird code symbols
 function md2html(src){
   return src
+    .replace(/```[a-z]*\n?/g, '') // remove code blocks fences if any
+    .replace(/```/g, '')
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
     .replace(/^### (.*$)/gim, '<h3>$1</h3>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+    .replace(/- (.*$)/gim, '<ul><li>$1</li></ul>')
     .replace(/\n\n/g, '<p></p>');
 }
 
@@ -423,16 +427,16 @@ async function runExplain(){
 
   const btn=$('expBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">EXPLAINING CONTENT DEEPLY...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">EXPLAINING CLEARLY...</div></div>';
 
-  const prompt=`أنت مدرس خبير وشرحك مبسط ومفصل للغاية. لا تكتفِ نهائياً بذكر محتويات الملف أو سرد العناوين فقط، بل اشرح كل فكرة وقانون ومفهوم موجود في النص أدناه بأسلوب تعليمي سلس، كأنك تشرح لطالب قاعد قدامك تفهمه كل تفصيلة كأنها حصة درس خصوصي.
-قسّم الشرح باستخدام عناوين Markdown فرعية (##).
+  const prompt=`أنت مدرس خبير. اشرح النص أدناه شرحاً تفصيلياً ومبسطاً جداً بدون أي رموز برمجية أو علامات غريبة، واكتب نصاً عادياً مرتباً ومنسقاً.
+استخدم عناوين مرتبة (##) فقط للفصول أو العناوين الرئيسية. ممنوع تماماً استخدام أكواد البرمجة أو الرموز المعقدة.
 
 اللغة المطلوبة: ${document.querySelector('input[name=xl]:checked').value}
 مستوى العمق: ${document.querySelector('input[name=dp]:checked').value}
-التركيز: ${$('topic').value||'شرح وتفسير كل جزء في المادة'}
+التركيز: ${$('topic').value||'شرح شامل ومبسط للمادة'}
 
-النص الدراسي:
+النص:
 ${text.substring(0, 15000)}`;
 
   try{
@@ -446,7 +450,6 @@ ${text.substring(0, 15000)}`;
   }catch(e){
     toast(e.message || 'Connection Failed');
     $('out').innerHTML=`<div class="idle"><div class="t" style="color:var(--bad)">ERROR OCCURRED</div><p>${e.message}</p></div>`;
-    console.error(e);
   }finally{
     btn.disabled=false; btn.classList.remove('loading');
   }
@@ -465,7 +468,7 @@ async function runQuiz(){
   btn.disabled=true; btn.classList.add('loading');
   $('out').innerHTML='<div class="idle"><div class="t">GENERATING QUIZ...</div></div>';
 
-  const prompt=`Generate ${count} practice questions of type ${qType} based on this material. Format clearly with Markdown.
+  const prompt=`Generate ${count} clean practice questions of type ${qType} based on this material without any weird symbols or markdown blocks.
 Material:
 ${text.substring(0, 15000)}`;
 
@@ -498,7 +501,7 @@ async function sendChat(msg){
   clog.appendChild(botEl);
 
   try{
-    const prompt=`Context:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`;
+    const prompt=`Context:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}\nGive a clean, direct, text-based explanation without code symbols.`;
     const resText = await callGemini(prompt);
     botEl.innerHTML=md2html(resText);
   }catch(e){
