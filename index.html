@@ -420,7 +420,7 @@ $('q').onkeydown=e=>{if(e.key==='Enter')sendChat()};
 document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
 
 // Focus Mode & Copy
-$('fm').onclick=()=>document.querySelector('.app').classList.toggle('focus');
+$('fm').onclick=()=>document.querySelector('.app').classList.focus ? document.querySelector('.app').classList.toggle('focus') : document.querySelector('.app').classList.toggle('focus');
 $('copy').onclick=()=>{
   if(!state.pages.length)return;
   navigator.clipboard.writeText(state.pages[state.currentPage]);
