@@ -156,13 +156,6 @@ textarea.field{min-height:140px;resize:vertical}
 .msg.bot{padding:.7rem 1.1rem;border-inline-start:3px solid var(--a);min-width:0;background:rgba(0,0,0,.35);border-radius:0 12px 12px 0}
 .ask{display:flex;gap:.6rem}.ask .field{flex:1}
 
-.qc{padding:1.4rem;margin-bottom:1.1rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.35)}
-.qn{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--a);margin-bottom:.5rem}
-.opt{display:block;width:100%;text-align:start;margin-top:.6rem;padding:.75rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.45);cursor:pointer;transition:.2s}
-.opt:hover:not(:disabled){border-color:var(--a);background:rgba(255,255,255,.04)}
-.opt.ok{border-color:var(--ok);background:rgba(16,185,129,.15);color:var(--ok)}.opt.no{border-color:var(--bad);background:rgba(239,68,68,.15);color:var(--bad)}
-.ans{display:none;margin-top:.9rem;padding:.9rem;border-radius:10px;border:1px dashed rgba(255,255,255,.15);background:rgba(0,0,0,.55);font-size:.9rem}.ans.show{display:block}
-
 #toast{position:fixed;left:50%;bottom:1.8rem;transform:translate(-50%,160%);z-index:50;padding:.8rem 1.4rem;border-radius:12px;background:#0f172a;border:1px solid var(--a);box-shadow:0 0 25px rgba(96,165,250,.25);transition:transform .3s;color:var(--tx)}
 #toast.show{transform:translate(-50%,0)}
 
@@ -178,7 +171,7 @@ textarea.field{min-height:140px;resize:vertical}
 
 <div class="app">
   <header>
-    <div class="logo">AURA STUDY <span>by NOLAN</span><small>SAVED API KEY EDITION</small></div>
+    <div class="logo">AURA STUDY <span>by NOLAN</span><small>STABLE FAST EDITION</small></div>
     <div class="themes" id="themes">
       <button class="sw on" data-t="babyblue" title="Baby Blue & Graphite"></button>
       <button class="sw" data-t="sapphire" title="Deep Sapphire"></button>
@@ -220,14 +213,14 @@ textarea.field{min-height:140px;resize:vertical}
         <details class="set" open><summary>Gemini AI Config (Auto-saved)</summary>
           <label class="lbl" for="model">Model Engine</label>
           <select id="model" class="field">
-            <option value="gemini-3.8-flash" selected>gemini-3.8-flash (Recommended)</option>
+            <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (Fastest)</option>
             <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash</option>
           </select>
           <label class="lbl" for="key">Gemini API Key</label>
-          <input id="key" type="password" class="field" placeholder="Paste Key Here (Saved Automatically)" dir="ltr">
+          <input id="key" type="password" class="field" placeholder="Paste Key Here" dir="ltr">
         </details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material Thoroughly</span></button>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Material</span></button>
       </section>
 
       <section class="card">
@@ -271,7 +264,7 @@ textarea.field{min-height:140px;resize:vertical}
       <div id="out" class="out">
         <div class="idle">
           <div class="t">AURA STUDY BY NOLAN</div>
-          <p style="max-width:380px">Upload material or paste notes for comprehensive, thorough page-by-page explanations.</p>
+          <p style="max-width:380px">Upload material or paste notes for instant, stable explanations.</p>
         </div>
       </div>
 
@@ -295,17 +288,15 @@ textarea.field{min-height:140px;resize:vertical}
 
 <script>
 const $=id=>document.getElementById(id);
-const state = { fileText:'', pages:[], currentPage:0, history:[], ready:false, tab:'exp' };
+const state = { fileText:'', pages:[], currentPage:0, ready:false };
 
 function toast(m){const e=$('toast');e.textContent=m;e.className='show';setTimeout(()=>e.className='',3000)}
 
-// Load saved API Key on startup
+// API Key Persistence
 window.addEventListener('DOMContentLoaded', () => {
   const savedKey = localStorage.getItem('aurastudy_gemini_key');
   if (savedKey) $('key').value = savedKey;
 });
-
-// Save API key whenever it changes
 $('key').oninput = () => {
   localStorage.setItem('aurastudy_gemini_key', $('key').value.trim());
 };
@@ -330,7 +321,7 @@ async function handleFile(f){
     let text='';
     if(ext==='pdf'){
       const pdf=await pdfjsLib.getDocument({data:await rd(f,'readAsArrayBuffer')}).promise;
-      for(let i=1;i<=pdf.numPages;i++){
+      for(let i=1;i<=Math.min(pdf.numPages, 30);i++){ // Limit to first 30 pages for speed and stability
         const c=await(await pdf.getPage(i)).getTextContent();
         text+=c.items.map(it=>it.str).join(' ')+'\n\n';
       }
@@ -353,8 +344,8 @@ $('text').oninput=()=>{$('cc').textContent=$('text').value.length+' chars'};
 $('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};
 $('rmFile').onclick=()=>{state.fileText='';$('chip').classList.remove('show')};
 
-// Multi-page Splitter
-function paginateContent(text, chunkSize=2400){
+// Pagination helper
+function paginateContent(text, chunkSize=2000){
   const paragraphs=text.split(/\n\s*\n/);
   const pages=[];
   let current='';
@@ -384,7 +375,6 @@ function renderCurrentPage(){
 $('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};
 $('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
 
-// Markdown Rendering
 function md2html(src){
   return src
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -395,42 +385,67 @@ function md2html(src){
     .replace(/\n\n/g, '<p></p>');
 }
 
-// Comprehensive Deep Explanation Integration
+// Stable AI Request with Timeout Controller
+async function callGemini(promptText){
+  const key=$('key').value.trim();
+  if(!key)throw new Error('API Key is missing');
+  
+  const model=$('model').value;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 seconds timeout
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:promptText}]}]}),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if(!res.ok) {
+      const errData = await res.json().catch(()=>({}));
+      throw new Error(errData.error?.message || `API Error: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (err) {
+    if(err.name === 'AbortError') {
+      throw new Error('Request timed out. The text might be too large or server is busy.');
+    }
+    throw err;
+  }
+}
+
 async function runExplain(){
   const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
-  const key=$('key').value.trim();
   if(!text)return toast('Please paste text or upload a file first.');
-  if(!key)return toast('Gemini API Key is required.');
+  if(!$('key').value.trim())return toast('Gemini API Key is required.');
 
   const btn=$('expBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">GENERATING THOROUGH COMPREHENSIVE EXPLANATION...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING EXPLANATION...</div></div>';
 
-  const prompt=`أنت معلم ذكي وخبير متخصص. مطلوب منك قراءة وفهم **كل جزء وكل سطر** في المادة الدراسية المرفقة بالأسفل بالتفصيل الكامل وبدون ترك أي تفصيلة أو قانون أو فكرة.
-اشرح المادة كلها بشكل معمق وشامل جداً ومبسط، وقسّم الشرح باستخدام عناوين Markdown فرعية (##) لكي يتم عرضها في صفحات متسلسلة.
+  const prompt=`شرح تعليمي مفصل وواضح للمادة التالية، مقسم باستخدام عناوين Markdown (##).
+اللغة المطلوبة: ${document.querySelector('input[name=xl]:checked').value}
+العمق: ${document.querySelector('input[name=dp]:checked').value}
+التركيز: ${$('topic').value||'شرح المادة كاملة'}
 
-لغة الشرح: ${document.querySelector('input[name=xl]:checked').value}
-مستوى العمق: ${document.querySelector('input[name=dp]:checked').value}
-التركيز الأساسي: ${$('topic').value||'شرح المادة كاملة بالتفصيل بدون إغفال أي جزء'}
-
-المادة الدراسية الكاملة:
-${text}`;
+المادة:
+${text.substring(0, 15000)}`; // Trim to safe window size for lightning speed
 
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    });
-    const data=await res.json();
-    const resultText=data.candidates[0].content.parts[0].text;
+    const resultText = await callGemini(prompt);
     state.pages=paginateContent(resultText);
     state.currentPage=0;
     renderCurrentPage();
     $('chat').classList.remove('hidden');
     state.ready=true;
+    toast('Explanation generated successfully!');
   }catch(e){
-    toast('API Connection Failed');
+    toast(e.message || 'Connection Failed');
+    $('out').innerHTML=`<div class="idle"><div class="t" style="color:var(--bad)">ERROR OCCURRED</div><p>${e.message}</p></div>`;
     console.error(e);
   }finally{
     btn.disabled=false; btn.classList.remove('loading');
@@ -439,51 +454,40 @@ ${text}`;
 
 $('expBtn').onclick=runExplain;
 
-// Quiz Generator
 async function runQuiz(){
   const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
-  const key=$('key').value.trim();
   const count=$('num').value||5;
   const qType=document.querySelector('input[name=qt]:checked').value;
   if(!text)return toast('Please paste text or upload a file first.');
-  if(!key)return toast('Gemini API Key is required.');
+  if(!$('key').value.trim())return toast('Gemini API Key is required.');
 
   const btn=$('quizBtn');
   btn.disabled=true; btn.classList.add('loading');
-  $('out').innerHTML='<div class="idle"><div class="t">GENERATING PRACTICE QUIZ...</div></div>';
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING QUIZ...</div></div>';
 
-  const prompt=`Generate ${count} comprehensive practice questions of type ${qType} covering all parts of this material. Format clearly.
-
+  const prompt=`Generate ${count} practice questions of type ${qType} based on this material. Format clearly with Markdown.
 Material:
-${text}`;
+${text.substring(0, 15000)}`;
 
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
-    });
-    const data=await res.json();
-    const resultText=data.candidates[0].content.parts[0].text;
+    const resultText = await callGemini(prompt);
     state.pages=[resultText];
     state.currentPage=0;
     renderCurrentPage();
     $('pageNav').classList.add('hidden');
     toast('Quiz generated successfully!');
   }catch(e){
-    toast('API Connection Failed');
-    console.error(e);
+    toast(e.message || 'Connection Failed');
+    $('out').innerHTML=`<div class="idle"><div class="t" style="color:var(--bad)">ERROR OCCURRED</div><p>${e.message}</p></div>`;
   }finally{
     btn.disabled=false; btn.classList.remove('loading');
   }
 }
 $('quizBtn').onclick=runQuiz;
 
-// Interactive Chat System
 async function sendChat(msg){
   const text=msg||$('q').value.trim();
-  const key=$('key').value.trim();
-  if(!text||!key)return;
+  if(!text||!$('key').value.trim())return;
   $('q').value='';
   
   const clog=$('clog');
@@ -494,15 +498,11 @@ async function sendChat(msg){
   clog.appendChild(botEl);
 
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:`Full Material Context:\n${state.fileText || state.pages.join('\n')}\n\nCurrent Page:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`}]}]})
-    });
-    const data=await res.json();
-    botEl.innerHTML=md2html(data.candidates[0].content.parts[0].text);
+    const prompt=`Context:\n${state.pages[state.currentPage]}\n\nQuestion: ${text}`;
+    const resText = await callGemini(prompt);
+    botEl.innerHTML=md2html(resText);
   }catch(e){
-    botEl.textContent='Sorry, could not generate a response.';
+    botEl.textContent='Sorry, request failed: ' + e.message;
   }
 }
 
@@ -510,7 +510,6 @@ $('send').onclick=()=>sendChat();
 $('q').onkeydown=e=>{if(e.key==='Enter')sendChat()};
 document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
 
-// Focus Mode & Copy Utility
 $('fm').onclick=()=>document.querySelector('.app').classList.toggle('focus');
 $('copy').onclick=()=>{
   if(!state.pages.length)return;
