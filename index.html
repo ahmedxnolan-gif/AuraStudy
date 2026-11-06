@@ -1,604 +1,431 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cyber">
+<html lang="en" data-theme="charcoal">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AuraStudy</title>
+<title>AuraStudy - Minimalist AI Tutor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--a:#00f3ff;--b:#9d4edd;--c:#ff007f;--bg:#06060d;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.12);--tx:#eef0ff;--mu:#9096c0;--ok:#3dffa0;--bad:#ff4d7d;--g:linear-gradient(120deg,var(--a),var(--b),var(--c))}
-[data-theme=aurora]{--a:#00ffa3;--b:#00c8ff;--c:#b6ff3c}
-[data-theme=sunset]{--a:#ff8a00;--b:#ff2d6f;--c:#ffd200}
-[data-theme=ocean]{--a:#3d7bff;--b:#00e5ff;--c:#00ffc6}
-[data-theme=toxic]{--a:#b6ff3c;--b:#ffe14d;--c:#ff8a00}
-[data-theme=royal]{--a:#7b61ff;--b:#d94bff;--c:#4de1ff}
-*{box-sizing:border-box;margin:0}
-body{min-height:100vh;color:var(--tx);background:var(--bg);font:500 17px/1.55 'Space Grotesk','Cairo',system-ui,sans-serif;overflow-x:hidden}
-.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.aurora i{position:absolute;width:55vmax;height:55vmax;border-radius:50%;filter:blur(90px);opacity:.28;animation:drift 22s ease-in-out infinite alternate;transition:background 1s}
-.aurora i:nth-child(1){background:var(--a);top:-20vmax;left:-15vmax}
-.aurora i:nth-child(2){background:var(--b);top:10vmax;right:-20vmax;animation-delay:-7s}
-.aurora i:nth-child(3){background:var(--c);bottom:-25vmax;left:20vw;animation-delay:-14s}
-@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
-button,input,textarea{font:inherit;color:inherit}
-.app{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:1.2rem clamp(1rem,3vw,2rem) 3rem}
-header{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;margin-bottom:1.6rem}
-.logo{font:700 1.6rem 'Space Grotesk';letter-spacing:.08em;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200%;animation:flow 6s linear infinite}
-.logo small{display:block;font-size:.75rem;letter-spacing:.25em;color:var(--mu);-webkit-text-fill-color:var(--mu)}
-@keyframes flow{to{background-position:200% 0}}
-.themes{display:flex;gap:.5rem;align-items:center;padding:.4rem .6rem;border:1px solid var(--line);border-radius:99px;background:var(--card);backdrop-filter:blur(14px)}
-.sw{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.25s}
-.sw:hover{transform:scale(1.2)}.sw.on{border-color:#fff;box-shadow:0 0 12px currentColor}
-.sw[data-t=cyber]{background:linear-gradient(135deg,#00f3ff,#ff007f);color:#00f3ff}.sw[data-t=aurora]{background:linear-gradient(135deg,#00ffa3,#b6ff3c);color:#00ffa3}
-.sw[data-t=sunset]{background:linear-gradient(135deg,#ff8a00,#ff2d6f);color:#ff8a00}.sw[data-t=ocean]{background:linear-gradient(135deg,#3d7bff,#00ffc6);color:#3d7bff}
-.sw[data-t=toxic]{background:linear-gradient(135deg,#b6ff3c,#ff8a00);color:#b6ff3c}.sw[data-t=royal]{background:linear-gradient(135deg,#7b61ff,#4de1ff);color:#7b61ff}
-.grid{display:grid;gap:1.2rem;grid-template-columns:minmax(0,1fr)}
-@media(min-width:960px){.grid{grid-template-columns:minmax(340px,.9fr) minmax(0,1.3fr);align-items:start}.stick{position:sticky;top:1rem}}
+:root{
+  --bg:#121417; --card:#1a1d21; --card-hover:#22262b;
+  --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.16);
+  --tx:#e3e5e8; --mu:#8c929b; --a:#64b5f6; --b:#90caf9; --c:#81c784;
+  --ok:#66bb6a; --bad:#ef5350; --on:#0d1117;
+  --fs:1rem;
+}
+[data-theme=navy]{--bg:#0f141c; --card:#161d27; --card-hover:#1f2835; --a:#7986cb; --b:#9fa8da; --c:#4dd0e1}
+[data-theme=slate]{--bg:#14171a; --card:#1e2226; --card-hover:#272c31; --a:#90a4ae; --b:#b0bec5; --c:#80cbc4}
+[data-theme=midnight]{--bg:#0a0e17; --card:#121824; --card-hover:#1a2232; --a:#5c6bc0; --b:#7986cb; --c:#26a69a}
+[data-theme=ash]{--bg:#181716; --card:#211f1e; --card-hover:#2b2927; --a:#d4a373; --b:#e6ccb2; --c:#a3b18a}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;color:var(--tx);background:var(--bg);font:500 16px/1.6 'Plus Jakarta Sans','Cairo',system-ui,sans-serif;overflow-x:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+
+.app{max-width:1380px;margin:0 auto;padding:1.5rem clamp(1rem,3vw,2.5rem) 4rem}
+header{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.logo{font:700 1.5rem 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:var(--tx)}
+.logo span{color:var(--a)}
+.logo small{display:block;font-size:.72rem;letter-spacing:.15em;color:var(--mu);font-family:'Plus Jakarta Sans',sans-serif;font-weight:500}
+
+.themes{display:flex;gap:.5rem;align-items:center;padding:.35rem .6rem;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.sw{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}
+.sw:hover{transform:scale(1.15)}.sw.on{border-color:var(--tx)}
+.sw[data-t=charcoal]{background:#22262b}
+.sw[data-t=navy]{background:#1f2835}
+.sw[data-t=slate]{background:#272c31}
+.sw[data-t=midnight]{background:#1a2232}
+.sw[data-t=ash]{background:#2b2927}
+
+.grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1024px){.grid{grid-template-columns:380px minmax(0,1fr);align-items:start}}
+
 .col{display:grid;gap:1.2rem}
-.card{position:relative;padding:1.3rem;border-radius:22px;background:var(--card);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);box-shadow:0 20px 50px rgba(0,0,0,.4);transition:transform .3s}
-.card::before{content:"";position:absolute;inset:0;padding:1px;border-radius:inherit;background:linear-gradient(135deg,var(--a),transparent 40%,transparent 60%,var(--c));opacity:.55;transition:opacity .3s;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.card:hover::before{opacity:1}
-h2{display:flex;align-items:center;gap:.7rem;font-size:1rem;margin-bottom:1rem}
-h2 b{display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--g);color:var(--on);font-size:.8rem}
-.lbl{display:block;margin:.9rem 0 .4rem;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
-.drop{border:2px dashed var(--line);border-radius:16px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:.25s}
-.drop:hover,.drop.drag,.drop:focus-visible{outline:none;border-color:var(--a);background:rgba(255,255,255,.05);box-shadow:0 0 30px -6px var(--a)}
-.drop .ico{display:block;font-size:1.8rem;color:var(--a)}.drop small{color:var(--mu)}
-.chip{display:none;margin-top:.8rem;padding:.6rem .9rem;border-radius:14px;border:1px solid var(--b);background:rgba(255,255,255,.05);justify-content:space-between;align-items:center;gap:.8rem}
-.chip.show{display:flex}.chip div{min-width:0}.chip .n{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chip small{color:var(--mu)}
-.field{width:100%;padding:.75rem 1rem;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.35);outline:none;transition:.25s}
-.field:focus{border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 25%,transparent)}
-textarea.field{min-height:150px;resize:vertical}
-.row{display:flex;justify-content:space-between;margin-top:.4rem;font-size:.82rem;color:var(--mu)}
-.row button{background:none;border:0;cursor:pointer;text-decoration:underline;color:var(--mu)}.row button:hover{color:var(--c)}
-.seg{display:grid;gap:.5rem}.seg.c2{grid-template-columns:1fr 1fr}.seg.c3{grid-template-columns:repeat(3,1fr)}
+.card{position:relative;padding:1.4rem;border-radius:16px;background:var(--card);border:1px solid var(--line);transition:border-color .2s}
+.card:hover{border-color:var(--line-strong)}
+
+h2{display:flex;align-items:center;gap:.6rem;font-size:.95rem;font-family:'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--mu);margin-bottom:1.1rem}
+h2 b{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--a);font-size:.75rem}
+
+.lbl{display:block;margin:1rem 0 .4rem;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.drop{border:1px dashed var(--line-strong);border-radius:12px;padding:1.5rem 1rem;text-align:center;cursor:pointer;background:rgba(0,0,0,.15);transition:.2s}
+.drop:hover,.drop.drag{border-color:var(--a);background:rgba(255,255,255,.02)}
+.drop .ico{display:block;font-size:1.5rem;margin-bottom:.3rem;color:var(--a)}
+.drop small{color:var(--mu);font-size:.8rem}
+
+.chip{display:none;margin-top:.8rem;padding:.6rem .8rem;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.2);justify-content:space-between;align-items:center;gap:.8rem}
+.chip.show{display:flex}.chip div{min-width:0}.chip .n{font-weight:600;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chip small{color:var(--mu);font-size:.75rem}
+
+.field{width:100%;padding:.7rem .9rem;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.25);outline:none;transition:.2s}
+.field:focus{border-color:var(--a);background:rgba(0,0,0,.4)}
+textarea.field{min-height:130px;resize:vertical}
+.row{display:flex;justify-content:space-between;margin-top:.4rem;font-size:.8rem;color:var(--mu)}
+.row button{background:none;border:0;cursor:pointer;color:var(--mu)}.row button:hover{color:var(--tx)}
+
+.seg{display:grid;gap:.4rem}.seg.c2{grid-template-columns:1fr 1fr}.seg.c3{grid-template-columns:repeat(3,1fr)}
 .seg input{position:absolute;opacity:0;pointer-events:none}
-.seg label{display:flex;flex-direction:column;align-items:center;gap:.1rem;padding:.65rem .3rem;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.25);cursor:pointer;text-align:center;font-size:.85rem;transition:.25s}
-.seg label span{font:600 .85rem 'Cairo';color:var(--mu)}
-.seg label:hover{transform:translateY(-2px);border-color:var(--a)}
-.seg input:checked+label{background:var(--g);border-color:transparent;color:var(--on);font-weight:700;box-shadow:0 8px 24px -8px var(--b)}
-.seg input:checked+label span{color:var(--on)}.seg input:focus-visible+label{outline:2px solid #fff}
-.stepper{display:flex;flex-wrap:wrap;gap:.5rem}
-.stepper .field{width:76px;text-align:center;font-weight:700;padding:.5rem}.stepper input::-webkit-inner-spin-button{display:none}
-.sq,.pre button{border:1px solid var(--line);background:rgba(0,0,0,.3);border-radius:12px;cursor:pointer;transition:.2s;color:var(--mu)}
-.sq{width:42px;font-size:1.2rem}.pre{display:flex;gap:.4rem}.pre button{padding:0 .9rem}
-.sq:hover,.pre button:hover,.pre button.on{border-color:var(--c);color:#fff;background:color-mix(in srgb,var(--c) 22%,transparent)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;width:100%;margin-top:1.1rem;padding:.9rem 1.2rem;border:0;border-radius:14px;cursor:pointer;font-weight:700;letter-spacing:.06em;color:var(--on);background:var(--g);background-size:200%;transition:.3s;box-shadow:0 10px 30px -10px var(--b)}
-.btn:hover:not(:disabled){transform:translateY(-2px);background-position:100% 0;box-shadow:0 14px 36px -8px var(--c)}
-.btn:active:not(:disabled){transform:scale(.98)}.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.alt{background:linear-gradient(120deg,var(--c),var(--b));color:#fff}
-.btn.ghost{width:auto;margin:0;padding:.45rem .9rem;font-size:.8rem;background:transparent;color:var(--tx);border:1px solid var(--line);box-shadow:none}
-.btn.ghost:hover:not(:disabled){border-color:var(--a)}
-.sp{width:14px;height:14px;border:2px solid rgba(0,0,0,.25);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;display:none}.loading .sp{display:inline-block}
+.seg label{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.6rem .3rem;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.15);cursor:pointer;text-align:center;font-size:.82rem;transition:.2s;color:var(--mu)}
+.seg label span{font-size:.75rem;color:var(--mu)}
+.seg label:hover{border-color:var(--line-strong);color:var(--tx)}
+.seg input:checked+label{background:rgba(255,255,255,.08);border-color:var(--a);color:var(--tx);font-weight:600}
+.seg input:checked+label span{color:var(--tx)}
+
+.stepper{display:flex;gap:.4rem;align-items:center}
+.stepper .field{width:70px;text-align:center;font-weight:600}.stepper input::-webkit-inner-spin-button{display:none}
+.sq,.pre button{border:1px solid var(--line);background:rgba(0,0,0,.2);border-radius:8px;cursor:pointer;transition:.2s;color:var(--mu)}
+.sq{width:38px;height:38px;font-size:1.1rem}.pre{display:flex;gap:.3rem}.pre button{padding:0 .8rem;height:38px}
+.sq:hover,.pre button:hover,.pre button.on{border-color:var(--a);color:var(--tx);background:rgba(255,255,255,.05)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;margin-top:1.2rem;padding:.85rem 1.2rem;border:0;border-radius:10px;cursor:pointer;font-weight:600;color:var(--on);background:var(--a);transition:.2s}
+.btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.alt{background:var(--c);color:var(--on)}
+.btn.ghost{width:auto;margin:0;padding:.4rem .8rem;font-size:.8rem;background:transparent;color:var(--tx);border:1px solid var(--line)}
+.btn.ghost:hover:not(:disabled){border-color:var(--line-strong);background:rgba(255,255,255,.04)}
+
+.sp{width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;display:none}.loading .sp{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.head{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:center;margin-bottom:.9rem}
-.tabs{display:flex;padding:.25rem;border-radius:99px;background:rgba(0,0,0,.35);border:1px solid var(--line)}
-.tab{padding:.4rem 1.1rem;border:0;border-radius:99px;background:none;cursor:pointer;color:var(--mu);transition:.25s}.tab.on{background:var(--g);color:var(--on);font-weight:700}
-.tools{display:flex;gap:.4rem}
-.stats{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem}
-.stat{flex:1;min-width:80px;padding:.4rem .7rem;border-radius:12px;background:rgba(0,0,0,.3);border:1px solid var(--line)}
-.stat b{display:block;font-size:1.1rem;background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}.stat span{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
-.out{min-height:420px;max-height:68vh;overflow-y:auto;padding:1.1rem;border-radius:16px;background:rgba(0,0,0,.4);border:1px solid var(--line)}
-.idle{min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;text-align:center;color:var(--mu)}
-.core{width:76px;height:76px;border-radius:50%;background:conic-gradient(var(--a),var(--b),var(--c),var(--a));-webkit-mask:radial-gradient(circle,transparent 54%,#000 56%);mask:radial-gradient(circle,transparent 54%,#000 56%);animation:spin 4s linear infinite}
-.idle .t{font-weight:700;letter-spacing:.2em;color:var(--tx)}
-.bar{height:4px;margin-top:.8rem;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--g);transition:width .4s}
-.log{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:.6rem;font-size:.82rem;color:var(--mu)}
-.fade{animation:fade .4s both}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.tag{display:inline-block;padding:.1rem .7rem;border-radius:99px;border:1px solid currentColor;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
-.pt{display:flex;gap:.8rem;padding:.8rem .9rem;margin-bottom:.6rem;border-radius:14px;border-left:4px solid var(--k);background:color-mix(in srgb,var(--k) 10%,transparent)}
-.pt b{color:var(--k);min-width:1.7rem}
-.pt:nth-child(3n+1){--k:var(--a)}.pt:nth-child(3n+2){--k:var(--b)}.pt:nth-child(3n){--k:var(--c)}
-.qc{padding:1rem;margin-bottom:1rem;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
-.qn{font-size:.75rem;font-weight:700;letter-spacing:.15em;color:var(--c);margin-bottom:.3rem}
-.opt{display:block;width:100%;text-align:start;margin-top:.5rem;padding:.65rem .9rem;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.35);cursor:pointer;transition:.2s}
-.opt:hover:not(:disabled){border-color:var(--a);transform:translateX(4px)}
-.opt.ok{border-color:var(--ok);background:rgba(61,255,160,.14)}.opt.no{border-color:var(--bad);background:rgba(255,77,125,.14)}
-.ans{display:none;margin-top:.7rem;padding:.7rem .9rem;border-radius:12px;border:1px dashed var(--b);background:rgba(255,255,255,.05)}.ans.show{display:block}
-.score{display:flex;justify-content:space-between;padding:.8rem 1rem;margin-bottom:1rem;border-radius:14px;font-weight:700;border:1px solid var(--a);background:rgba(255,255,255,.05)}
-.ec{padding:1rem;margin-bottom:1rem;border-radius:16px;border:1px solid var(--line);border-top:3px solid var(--k,var(--a));background:rgba(255,255,255,.04)}
-.ec:nth-child(3n+2){--k:var(--b)}.ec:nth-child(3n){--k:var(--c)}
-.ec h3{font-size:1.1rem;margin:.1rem 0 .5rem}
-.ec p,.ec ol{margin:.4rem 0}.ec ol{padding-inline-start:1.3rem}
-.kt{display:inline-block;margin:.2rem .3rem 0 0;padding:.1rem .7rem;border-radius:99px;background:color-mix(in srgb,var(--a) 20%,transparent);border:1px solid var(--a);font-size:.85rem}
-.note{padding:.6rem .9rem;margin-bottom:.9rem;border-radius:12px;border:1px dashed var(--c);color:var(--mu);font-size:.9rem}
-.md h4.mh{margin:1.2rem 0 .5rem;padding:.4rem .8rem;border-radius:10px;font-size:1rem;border-inline-start:4px solid var(--k,var(--a));background:color-mix(in srgb,var(--k,var(--a)) 16%,transparent)}
-.md h4.mh:nth-of-type(3n+2){--k:var(--b)}.md h4.mh:nth-of-type(3n){--k:var(--c)}
-.md p{margin:.45rem 0}.md ul,.md ol{margin:.45rem 0;padding-inline-start:1.5rem}.md li{margin:.3rem 0}
-.md code{padding:.05rem .4rem;border-radius:6px;background:rgba(255,255,255,.1)}.md hr{border:0;border-top:1px dashed var(--line);margin:1.4rem 0}
-.md .cur::after{content:"▍";color:var(--a);animation:spin 1s steps(2) infinite;display:inline-block;animation-name:blinkc}
-@keyframes blinkc{50%{opacity:0}}
-.set{margin-top:.9rem;padding:.6rem .9rem;border-radius:14px;border:1px solid var(--line)}.set summary{cursor:pointer;color:var(--mu)}
+
+.head{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:center;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.tabs{display:flex;padding:.2rem;border-radius:10px;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.tab{padding:.4rem 1rem;border:0;border-radius:8px;background:none;cursor:pointer;color:var(--mu);font-size:.85rem;transition:.2s}.tab.on{background:rgba(255,255,255,.08);color:var(--tx);font-weight:600}
+.tools{display:flex;gap:.3rem}
+
+.page-nav{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;margin-bottom:1.2rem;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid var(--line);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+.page-info{font-size:.85rem;color:var(--mu);font-weight:600}
+
+.out{min-height:480px;max-height:72vh;overflow-y:auto;padding:1.2rem;border-radius:12px;background:rgba(0,0,0,.2);border:1px solid var(--line)}
+.idle{min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;text-align:center;color:var(--mu)}
+.idle .t{font:600 1.1rem 'Space Grotesk',sans-serif;color:var(--tx)}
+
+.md{font-size:calc(1rem*var(--fs));line-height:1.7}
+.md h2{font-size:1.25rem;color:var(--a);margin:1.6rem 0 .8rem;padding-bottom:.3rem;border-bottom:1px solid var(--line);text-transform:none;letter-spacing:0}
+.md h3{font-size:1.05rem;color:var(--tx);margin:1.2rem 0 .5rem}
+.md p{margin:.8rem 0;color:var(--tx)}
+.md ul,.md ol{margin:.8rem 0;padding-inline-start:1.4rem}.md li{margin:.3rem 0}
+.md code{padding:.15rem .4rem;border-radius:5px;background:rgba(255,255,255,.06);font-size:.9em}
+.md pre{padding:1rem;border-radius:10px;background:rgba(0,0,0,.4);border:1px solid var(--line);overflow-x:auto;margin:1rem 0}
+.md table{border-collapse:collapse;width:100%;margin:1rem 0}.md th,.md td{border:1px solid var(--line);padding:.6rem .8rem;text-align:start}.md th{background:rgba(255,255,255,.04)}
+.md blockquote{border-inline-start:3px solid var(--a);padding-inline-start:1rem;color:var(--mu);margin:1rem 0}
+
+.set{margin-top:1rem;padding:.8rem;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.15)}.set summary{cursor:pointer;color:var(--mu);font-size:.85rem}
 .hidden{display:none!important}
-.chat{margin-top:1.4rem;padding-top:1rem;border-top:1px dashed var(--line)}
-.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 1rem}.chips button{padding:.35rem .8rem;border-radius:99px;border:1px solid var(--line);background:rgba(0,0,0,.3);cursor:pointer;font-size:.85rem;transition:.2s}.chips button:hover{border-color:var(--a);transform:translateY(-2px)}
-.clog{display:grid;gap:.9rem;margin-bottom:1rem}
-.msg.user{justify-self:end;max-width:85%;padding:.5rem .9rem;border-radius:16px 16px 4px 16px;background:var(--g);color:var(--on);font-weight:600}
-.msg.bot{padding:.4rem .9rem;border-inline-start:3px solid var(--b);min-width:0}.msg.err{border-color:var(--bad);color:var(--bad)}
+
+.chat{margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.8rem 0 1rem}.chips button{padding:.35rem .75rem;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.2);cursor:pointer;font-size:.8rem;color:var(--mu);transition:.2s}.chips button:hover{border-color:var(--line-strong);color:var(--tx)}
+.clog{display:grid;gap:.8rem;margin-bottom:1rem}
+.msg.user{justify-self:end;max-width:85%;padding:.6rem 1rem;border-radius:12px 12px 2px 12px;background:rgba(255,255,255,.08);color:var(--tx);font-weight:500}
+.msg.bot{padding:.6rem 1rem;border-inline-start:2px solid var(--a);min-width:0;background:rgba(0,0,0,.15);border-radius:0 10px 10px 0}
 .ask{display:flex;gap:.5rem}.ask .field{flex:1}
-.md h2,.md h3{margin:1.2rem 0 .5rem;font-size:1.15rem}.md h2{padding:.4rem .8rem;border-radius:10px;border-inline-start:4px solid var(--a);background:color-mix(in srgb,var(--a) 16%,transparent)}.md h3{color:var(--a)}
-.md strong{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--c) 40%,transparent) 60%)}
-.md pre{padding:.8rem;border-radius:12px;background:rgba(0,0,0,.5);overflow-x:auto;direction:ltr}
-.md table{border-collapse:collapse;width:100%;margin:.6rem 0}.md th,.md td{border:1px solid var(--line);padding:.4rem .6rem;text-align:start}.md th{background:rgba(255,255,255,.07)}
-.md blockquote{border-inline-start:3px solid var(--c);padding-inline-start:1rem;color:var(--mu);margin:.6rem 0}
-mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
-:root{--on:#06060d}
-[data-theme=midnight]{--bg:#05070f;--a:#3b5bdb;--b:#7048e8;--c:#0ca678;--on:#fff}
-[data-theme=ember]{--bg:#0d0605;--a:#c2410c;--b:#9f1239;--c:#b7791f;--on:#fff}
-[data-theme=forest]{--bg:#050b08;--a:#0f766e;--b:#15803d;--c:#4d7c0f;--on:#fff}
-[data-theme=abyss]{--bg:#03050c;--a:#1e40af;--b:#6d28d9;--c:#be185d;--on:#fff}
-[data-theme=plum]{--bg:#0b050c;--a:#86198f;--b:#be123c;--c:#b45309;--on:#fff}
-.card{animation:fade .5s both}.card:hover{transform:translateY(-2px)}
-#expBtn{padding:1.1rem;font-size:1rem}
-.md{font-size:calc(1rem*var(--fs,1))}
-.tools{flex-wrap:wrap}.tools .btn.ghost{padding:.4rem .7rem}
-.toc{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px dashed var(--line);position:sticky;top:-1.1rem;z-index:3;padding-top:.5rem;background:rgba(8,8,16,.88);backdrop-filter:blur(10px)}
-.toc button{padding:.3rem .8rem;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;font-size:.8rem;transition:.2s}.toc button:hover{border-color:var(--a);background:color-mix(in srgb,var(--a) 20%,transparent)}
+
+.qc{padding:1.2rem;margin-bottom:1rem;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
+.qn{font-size:.75rem;font-weight:700;letter-spacing:.1em;color:var(--a);margin-bottom:.4rem}
+.opt{display:block;width:100%;text-align:start;margin-top:.5rem;padding:.7rem .9rem;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.2);cursor:pointer;transition:.2s}
+.opt:hover:not(:disabled){border-color:var(--line-strong);background:rgba(255,255,255,.03)}
+.opt.ok{border-color:var(--ok);background:rgba(102,187,106,.15)}.opt.no{border-color:var(--bad);background:rgba(239,83,80,.15)}
+.ans{display:none;margin-top:.8rem;padding:.8rem;border-radius:8px;border:1px dashed var(--line);background:rgba(0,0,0,.3);font-size:.9rem}.ans.show{display:block}
+
+#toast{position:fixed;left:50%;bottom:1.5rem;transform:translate(-50%,160%);z-index:50;padding:.7rem 1.2rem;border-radius:10px;background:#1e2227;border:1px solid var(--line-strong);box-shadow:0 10px 30px rgba(0,0,0,.5);transition:transform .3s}
+#toast.show{transform:translate(-50%,0)}
+
 .app.focus .col{display:none}.app.focus .grid{grid-template-columns:minmax(0,1fr)}.app.focus .out{max-height:none}
-.md h3{padding-bottom:.2rem;border-bottom:1px solid var(--line)}
-.md li::marker{color:var(--a)}
-#toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,160%);z-index:50;padding:.8rem 1.3rem;max-width:92vw;border-radius:14px;background:rgba(10,10,20,.95);border:1px solid var(--c);transition:transform .35s}
-#toast.show{transform:translate(-50%,0)}#toast.info{border-color:var(--a)}
-*{scrollbar-width:thin;scrollbar-color:var(--b) transparent}
-::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:linear-gradient(var(--a),var(--c));border-radius:9px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="aurora"><i></i><i></i><i></i></div>
+
 <div class="app">
   <header>
-    <div class="logo">AURASTUDY<small>ذاكر بذكاء · STUDY SMARTER</small></div>
-    <div class="themes" id="themes" role="group" aria-label="Color theme">
-      <button class="sw on" data-t="cyber" title="Cyber" aria-label="Cyber theme"></button><button class="sw" data-t="aurora" title="Aurora" aria-label="Aurora theme"></button><button class="sw" data-t="sunset" title="Sunset" aria-label="Sunset theme"></button><button class="sw" data-t="ocean" title="Ocean" aria-label="Ocean theme"></button><button class="sw" data-t="toxic" title="Toxic" aria-label="Toxic theme"></button><button class="sw" data-t="royal" title="Royal" aria-label="Royal theme"></button><button class="sw" data-t="midnight" title="Midnight" aria-label="Midnight theme" style="background:linear-gradient(135deg,#3b5bdb,#0ca678);color:#3b5bdb"></button><button class="sw" data-t="ember" title="Ember" aria-label="Ember theme" style="background:linear-gradient(135deg,#c2410c,#9f1239);color:#c2410c"></button><button class="sw" data-t="forest" title="Forest" aria-label="Forest theme" style="background:linear-gradient(135deg,#0f766e,#4d7c0f);color:#0f766e"></button><button class="sw" data-t="abyss" title="Abyss" aria-label="Abyss theme" style="background:linear-gradient(135deg,#1e40af,#be185d);color:#1e40af"></button><button class="sw" data-t="plum" title="Plum" aria-label="Plum theme" style="background:linear-gradient(135deg,#86198f,#b45309);color:#86198f"></button>
+    <div class="logo">AURA<span>STUDY</span><small>MINIMALIST AI TUTOR</small></div>
+    <div class="themes" id="themes">
+      <button class="sw on" data-t="charcoal" title="Deep Charcoal"></button>
+      <button class="sw" data-t="navy" title="Muted Navy"></button>
+      <button class="sw" data-t="slate" title="Slate Gray"></button>
+      <button class="sw" data-t="midnight" title="Subtle Midnight"></button>
+      <button class="sw" data-t="ash" title="Warm Ash"></button>
     </div>
   </header>
 
   <div class="grid">
     <div class="col">
       <section class="card">
-        <h2><b>1</b>Upload Study Material</h2>
-        <div id="drop" class="drop" tabindex="0" role="button" aria-label="Upload a file">
-          <span class="ico">⬆</span><b>Drop a file or click to browse</b><br><small>PDF · TXT · DOCX</small>
+        <h2><b>1</b> Material Upload</h2>
+        <div id="drop" class="drop">
+          <span class="ico">📄</span><b>Drop document or click</b><br><small>PDF · TXT · DOCX</small>
           <input type="file" id="file" accept=".pdf,.txt,.docx" hidden>
         </div>
         <div id="chip" class="chip"><div><div class="n" id="fName"></div><small id="fMeta"></small></div><button id="rmFile" class="btn ghost" type="button">Remove</button></div>
-        <label class="lbl" for="text">Or paste text / notes</label>
-        <textarea id="text" class="field" dir="auto" placeholder="Paste your notes here… / الصق ملاحظاتك هنا"></textarea>
-        <div class="row"><span id="cc">0 characters</span><button id="clr" type="button">Clear</button></div>
+        <label class="lbl" for="text">Or paste text</label>
+        <textarea id="text" class="field" dir="auto" placeholder="Paste notes or study text here..."></textarea>
+        <div class="row"><span id="cc">0 chars</span><button id="clr" type="button">Clear</button></div>
       </section>
 
       <section class="card">
-        <h2><b>2</b>Explain Simply · اشرح بالتبسيط</h2>
-        <span class="lbl" style="margin-top:0">Language</span>
-        <div class="seg c3"><input type="radio" name="xl" id="x1" value="egy" checked><label for="x1">Egyptian<span>عامية مصرية</span></label><input type="radio" name="xl" id="x3" value="msa"><label for="x3">Simple MSA<span>فصحى مبسطة</span></label><input type="radio" name="xl" id="x2" value="en"><label for="x2">English<span>Simple</span></label></div>
-        <span class="lbl">Depth · العمق</span><div class="seg c2"><input type="radio" name="dp" id="d1" value="quick"><label for="d1">Quick<span>نظرة سريعة</span></label><input type="radio" name="dp" id="d2" value="deep" checked><label for="d2">Deep dive<span>شرح معمّق</span></label></div><label class="lbl" for="topic">Focus (optional) · ركّز على</label><input id="topic" class="field" dir="auto" placeholder="e.g. chapter 3 / مثلاً: الفصل التالت"><span class="lbl">Level · المستوى</span>
+        <h2><b>2</b> Explanation System</h2>
+        <span class="lbl">Language</span>
         <div class="seg c3">
-          <input type="radio" name="lv" id="l1" value="kid"><label for="l1">Beginner<span>مبتدئ</span></label>
-          <input type="radio" name="lv" id="l2" value="mid" checked><label for="l2">Normal<span>عادي</span></label>
-          <input type="radio" name="lv" id="l3" value="adv"><label for="l3">Advanced<span>متقدم</span></label>
+          <input type="radio" name="xl" id="x1" value="egy" checked><label for="x1">Egyptian<span>عامية</span></label>
+          <input type="radio" name="xl" id="x3" value="msa"><label for="x3">MSA<span>فصحى</span></label>
+          <input type="radio" name="xl" id="x2" value="en"><label for="x2">English<span>Simple</span></label>
         </div>
-        <details class="set" open><summary>Gemini AI settings · إعدادات الذكاء الاصطناعي</summary><label class="lbl" for="model">Model</label><select id="model" class="field"><option value="gemini-3.8-flash">gemini-3.8-flash (recommended)</option><option value="gemini-3.6-flash">gemini-3.6-flash</option><option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (fastest)</option></select><label class="lbl" for="key">Gemini API key</label><input id="key" type="password" autocomplete="off" class="field" placeholder="Paste your key" dir="ltr"><p class="note" style="margin-top:.8rem">The key stays in this browser and is sent only to Google. Get a free key from Google AI Studio.</p></details>
-        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Simply</span></button>
+        <span class="lbl">Depth</span>
+        <div class="seg c2">
+          <input type="radio" name="dp" id="d1" value="quick"><label for="d1">Overview</label>
+          <input type="radio" name="dp" id="d2" value="deep" checked><label for="d2">Deep Dive</label>
+        </div>
+        <label class="lbl" for="topic">Focus Topic (Optional)</label>
+        <input id="topic" class="field" dir="auto" placeholder="e.g. Chapter 2, Derivatives...">
+        <details class="set"><summary>Gemini AI Config</summary>
+          <label class="lbl" for="model">Model</label>
+          <select id="model" class="field">
+            <option value="gemini-3.8-flash">gemini-3.8-flash (recommended)</option>
+            <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite</option>
+          </select>
+          <label class="lbl" for="key">Gemini API Key</label>
+          <input id="key" type="password" class="field" placeholder="Paste Key" dir="ltr">
+        </details>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span class="lb">Explain Entire Material</span></button>
       </section>
 
       <section class="card">
-        <h2><b>3</b>Generate Quiz</h2>
-        <span class="lbl" style="margin-top:0">Quiz type</span>
+        <h2><b>3</b> Practice Generator</h2>
+        <span class="lbl">Format</span>
         <div class="seg c3">
-          <input type="radio" name="qt" id="q1" value="mcq" checked><label for="q1">MCQ<span>اختياري</span></label>
-          <input type="radio" name="qt" id="q2" value="essay"><label for="q2">Essay<span>مقالي</span></label>
-          <input type="radio" name="qt" id="q3" value="tf"><label for="q3">True/False<span>صح وغلط</span></label>
+          <input type="radio" name="qt" id="q1" value="mcq" checked><label for="q1">MCQ</label>
+          <input type="radio" name="qt" id="q2" value="essay"><label for="q2">Essay</label>
+          <input type="radio" name="qt" id="q3" value="tf"><label for="q3">T / F</label>
         </div>
-        <span class="lbl">Number of questions</span>
+        <span class="lbl">Questions</span>
         <div class="stepper">
-          <button class="sq" id="minus" type="button" aria-label="Fewer">−</button>
-          <input id="num" class="field" type="number" min="1" max="30" value="5">
-          <button class="sq" id="plus" type="button" aria-label="More">+</button>
-          <div class="pre" id="pre"><button type="button" data-n="5" class="on">5</button><button type="button" data-n="10">10</button><button type="button" data-n="15">15</button></div>
+          <button class="sq" id="minus" type="button">−</button>
+          <input id="num" class="field" type="number" min="1" max="25" value="5">
+          <button class="sq" id="plus" type="button">+</button>
+          <div class="pre" id="pre"><button type="button" data-n="5" class="on">5</button><button type="button" data-n="10">10</button></div>
         </div>
-        <button id="quizBtn" class="btn alt" type="button"><i class="sp"></i><span class="lb">Generate Quiz</span></button>
+        <button id="quizBtn" class="btn alt" type="button"><i class="sp"></i><span class="lb">Generate Practice</span></button>
       </section>
     </div>
 
     <section class="card">
-      <h2><b>4</b>Output Workspace</h2>
-      <div class="stats">
-        <div class="stat"><b id="stWords">0</b><span>Words</span></div>
-        <div class="stat"><b id="stChars">0</b><span>Chars</span></div>
-        <div class="stat"><b id="stRead">0m</b><span>Read</span></div>
-      </div>
       <div class="head">
-        <div class="tabs"><button class="tab on" data-t="exp" type="button">Explain</button><button class="tab" data-t="quiz" type="button">Quiz</button></div>
-        <div class="tools"><button class="btn ghost" id="fsm" type="button" title="Smaller text">A−</button><button class="btn ghost" id="fsp" type="button" title="Bigger text">A+</button><button class="btn ghost" id="fm" type="button" title="Focus mode">Focus</button><button class="btn ghost" id="dl" type="button">.md</button><button class="btn ghost" id="copy" type="button">Copy</button><button class="btn ghost" id="reset" type="button">Reset</button></div>
+        <div class="tabs">
+          <button class="tab on" data-t="exp" type="button">Explanation</button>
+          <button class="tab" data-t="quiz" type="button">Quiz</button>
+        </div>
+        <div class="tools">
+          <button class="btn ghost" id="fm" type="button">Focus Mode</button>
+          <button class="btn ghost" id="copy" type="button">Copy</button>
+        </div>
       </div>
-      <div id="out" class="out" aria-live="polite"></div>
-      <div class="bar"><i id="prog"></i></div>
-      <div class="log"><span id="status">Ready.</span><span id="badge">Idle</span></div>
-    <div id="chat" class="chat hidden"><h2><b>💬</b>Ask your tutor · اسأل المدرّس</h2><div class="chips" id="chips"><button type="button" data-q="Explain it even simpler, like I'm 10 years old.">Simpler · أبسط</button><button type="button" data-q="Give me a real-life example that makes this clear.">Real example · مثال</button><button type="button" data-q="Test me: ask me ONE question at a time, wait for my answer, then correct me kindly.">Test me · اختبرني</button><button type="button" data-q="Make 10 flashcards (Question → Answer) from this material.">Flashcards · كروت</button><button type="button" data-q="What are the most likely exam questions on this material, with model answers?">Exam questions · أسئلة امتحان</button><button type="button" data-q="Which parts are hardest, and what tricks help me remember them?">Memory tips · حيل حفظ</button></div><div id="clog" class="clog"></div><div class="ask"><input id="q" class="field" type="text" aria-label="Ask your tutor" placeholder="Ask anything about the material… / اسأل أي حاجة"><button id="send" class="btn" type="button" style="width:auto;margin:0">Send</button></div></div>
-    
+
+      <!-- Page Navigation Header -->
+      <div id="pageNav" class="page-nav hidden">
+        <button id="prevPage" class="btn ghost" type="button">← Previous Page</button>
+        <span id="pageInfo" class="page-info">Page 1 of 1</span>
+        <button id="nextPage" class="btn ghost" type="button">Next Page →</button>
+      </div>
+
+      <div id="out" class="out">
+        <div class="idle">
+          <div class="t">AURA STUDY SYSTEM</div>
+          <p style="max-width:360px">Upload material or paste notes to generate page-by-page structured study guides.</p>
+        </div>
+      </div>
+
+      <div id="chat" class="chat hidden">
+        <h2><b>💬</b> Interactive Tutor</h2>
+        <div class="chips" id="chips">
+          <button type="button" data-q="Explain this page simpler with an analogy.">Simpler Analogy</button>
+          <button type="button" data-q="Give me 3 common exam traps on this.">Exam Traps</button>
+          <button type="button" data-q="Summarize this section into 3 bullet points.">Quick Summary</button>
+        </div>
+        <div id="clog" class="clog"></div>
+        <div class="ask">
+          <input id="q" class="field" type="text" placeholder="Ask a question about this page..." dir="auto">
+          <button id="send" class="btn" style="width:auto;margin:0" type="button">Send</button>
+        </div>
+      </div>
     </section>
   </div>
 </div>
-<div id="toast" role="status"></div>
+<div id="toast"></div>
 
 <script>
-/* CONFIG: set USE_API true when your /api or Ollama proxy is live */
-const CONFIG={USE_API:false,FALLBACK_TO_MOCK:true,ENDPOINTS:{quiz:'/api/quiz',explain:'/api/explain'},TIMEOUT_MS:60000,MAX_CHARS:200000};
 const $=id=>document.getElementById(id);
-const state={pdf:'',history:[],ready:false,xl:'en',fileText:'',plain:'',views:{exp:'',quiz:''},plains:{exp:'',quiz:''},tab:'exp',score:0,answered:0};
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const val=n=>document.querySelector(`input[name=${n}]:checked`).value;
-const fmt=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(2)+' MB';
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-let tt;function toast(m,t){const e=$('toast');e.textContent=m;e.className='show '+(t||'');clearTimeout(tt);tt=setTimeout(()=>e.className='',3800)}
-const status=m=>$('status').textContent=m, prog=p=>$('prog').style.width=p+'%';
-function badge(t,c){const b=$('badge');b.textContent=t;b.style.color=c||'var(--mu)'}
-function busy(btn,on,label){[$('expBtn'),$('quizBtn')].forEach(b=>b.disabled=on);btn.classList.toggle('loading',on);btn.querySelector('.lb').textContent=label}
+const state = { fileText:'', pages:[], currentPage:0, history:[], ready:false, tab:'exp' };
 
-/* Themes (6 mixed palettes) */
-function setTheme(t,silent){document.documentElement.dataset.theme=t;document.querySelectorAll('.sw').forEach(s=>s.classList.toggle('on',s.dataset.t===t));if(!silent)try{localStorage.setItem('aura-theme',t)}catch(e){}}
-$('themes').onclick=e=>{const b=e.target.closest('.sw');if(b)setTheme(b.dataset.t)};
-try{const t=localStorage.getItem('aura-theme');if(t)setTheme(t,true)}catch(e){}
+function toast(m){const e=$('toast');e.textContent=m;e.className='show';setTimeout(()=>e.className='',3000)}
 
-/* Workspace */
-const idleHTML=`<div class="idle"><div class="core"></div><div class="t">READY TO TEACH</div><p style="max-width:340px">Upload a file or paste text, then press <b>Explain Simply</b>. Afterwards you can ask the tutor anything about it.</p></div>`;
-function show(h){$('out').innerHTML=`<div class="fade">${h}</div>`;$('out').scrollTop=0}
-function loading(m){$('out').innerHTML=`<div class="idle"><div class="core"></div><div class="t">${esc(m)}</div></div>`}
-function markTab(t){state.tab=t;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t))}
-function setTab(t){markTab(t);if(state.views[t]){$('out').innerHTML=`<div>${state.views[t]}</div>`;state.plain=state.plains[t];if(t==='quiz')bindQuiz()}else{$('out').innerHTML=idleHTML;state.plain=''}}
-function save(t,h,p){state.views[t]=h;state.plains[t]=p;state.plain=p;markTab(t)}
-const src=()=>[state.fileText,$('text').value].map(s=>s.trim()).filter(Boolean).join('\n\n').slice(0,CONFIG.MAX_CHARS);
-function stats(){const t=src(),w=(t.match(/\S+/g)||[]).length;$('stWords').textContent=w.toLocaleString();$('stChars').textContent=t.length.toLocaleString();$('stRead').textContent=(w?Math.max(1,Math.round(w/220)):0)+'m'}
+// Theme Switcher
+$('themes').onclick=e=>{
+  const b=e.target.closest('.sw');
+  if(!b)return;
+  document.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));
+  b.classList.add('on');
+  document.documentElement.dataset.theme=b.dataset.t;
+};
 
-/* File reading */
+// File Parsing
 if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const rd=(f,m)=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r[m](f)});
-async function readPdf(f){
-  if(!window.pdfjsLib)throw new Error('PDF library failed to load. Check your internet connection.');
-  const pdf=await pdfjsLib.getDocument({data:await rd(f,'readAsArrayBuffer')}).promise;let out='';
-  for(let i=1;i<=pdf.numPages;i++){const c=await(await pdf.getPage(i)).getTextContent();let l='';c.items.forEach(it=>l+=it.str+(it.hasEOL?'\n':' '));out+=l+'\n';status(`Reading PDF… page ${i}/${pdf.numPages}`);prog(i/pdf.numPages*100)}
-  if(out.trim().length<20)throw new Error('No selectable text found. This PDF looks scanned (OCR needed).');
-  return{text:out,pages:pdf.numPages}}
-async function readDocx(f){
-  if(!window.mammoth)throw new Error('DOCX library failed to load. Check your internet connection.');
-  return{text:(await mammoth.extractRawText({arrayBuffer:await rd(f,'readAsArrayBuffer')})).value}}
+
 async function handleFile(f){
-  if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
-  if(!['pdf','txt','docx'].includes(ext))return toast('Unsupported file. Use PDF, TXT or DOCX.');
-  if(f.size>25*1048576)return toast('File too large (max 25 MB).');
-  status('Reading file…');badge('Reading','var(--a)');
+  if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
   try{
-    state.pdf=ext==='pdf'&&f.size<=14*1048576?(await rd(f,'readAsDataURL')).split(',')[1]:'';let r;try{r=ext==='pdf'?await readPdf(f):ext==='docx'?await readDocx(f):{text:await rd(f,'readAsText')}}catch(e){if(state.pdf&&/No selectable/.test(e.message))r={text:'',pages:0};else throw e}
-    state.fileText=r.text.slice(0,CONFIG.MAX_CHARS);
-    $('fName').textContent=f.name;$('fMeta').textContent=`${fmt(f.size)} · ${state.fileText.length.toLocaleString()} chars`+(r.pages?` · ${r.pages} pages`:'');
-    $('chip').classList.add('show');status('File ready. Summarize or generate a quiz.');badge('Loaded','var(--ok)');toast('File loaded','info')
-  }catch(e){console.error(e);clearFile(true);status('File read failed.');badge('Error','var(--bad)');toast(e.message||'Could not read file.')}
-  prog(0);$('file').value='';stats()}
-function clearFile(silent){state.pdf='';state.fileText='';$('file').value='';$('chip').classList.remove('show');if(!silent){status('File removed.');badge('Idle')}stats()}
-
-/* API wrappers */
-async function api(url,body){const c=new AbortController(),t=setTimeout(()=>c.abort(),CONFIG.TIMEOUT_MS);
-  try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:c.signal});if(!r.ok)throw new Error('Server responded '+r.status);return await r.json()}finally{clearTimeout(t)}}
-const apiQuiz=(text,type,count)=>api(CONFIG.ENDPOINTS.quiz,{text,type,count}); /* -> {questions:[{type,question,options,answerIndex|answer,explanation|modelAnswer}]} */
-
-/* Mock engine */
-const STOP=new Set(('the and for are but not you all can had her was one our out has have this that with from they will been were what when your said each which their there about would these other into more some than them then also only over such being very just like how its may any who did get use في من على إلى عن هذا هذه ذلك التي الذي اللي انه كان كانت يكون هو هي هم ما لا لم لن قد كل أو او ثم مع بعد قبل بين حتى عند كما إذا اذا أن ان إن').split(' '));
-const words=t=>t.toLowerCase().match(/[\p{L}\p{N}]+/gu)||[];
-const sents=t=>t.replace(/\r/g,'').split(/(?<=[.!?؟])\s+|\n+/).map(s=>s.replace(/\s+/g,' ').trim()).filter(s=>s.length>25);
-function freqOf(t){const f={};words(t).forEach(w=>{if(w.length>3&&!STOP.has(w)&&!/^\d+$/.test(w))f[w]=(f[w]||0)+1});return f}
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const isAr=t=>(t.match(/[\u0600-\u06FF]/g)||[]).length>t.replace(/\s/g,'').length*.3;
-function mockSummary(t){
-  const s=sents(t);if(!s.length)return[t.trim().slice(0,400)];const f=freqOf(t);
-  const sc=s.map((x,i)=>{const w=words(x);return{x,i,v:w.reduce((a,b)=>a+(f[b]||0),0)/Math.sqrt(w.length||1)}});
-  const n=Math.max(3,Math.min(8,Math.ceil(s.length*.25)));return sc.sort((a,b)=>b.v-a.v).slice(0,n).sort((a,b)=>a.i-b.i).map(o=>o.x)}
-function mockQuiz(t,type,count){
-  const pool=shuffle(sents(t).filter(s=>s.length>=40&&s.length<=260));if(!pool.length)return[];
-  const f=freqOf(t),kws=Object.entries(f).sort((a,b)=>b[1]-a[1]).slice(0,40).map(e=>e[0]),qs=[];
-  for(let i=0;qs.length<count&&i<count*3;i++){
-    const s=pool[i%pool.length],key=words(s).filter(w=>f[w]).sort((a,b)=>f[b]-f[a])[0];
-    if(type==='essay'){qs.push({type,question:isAr(s)?`اشرح بأسلوبك: ${s.slice(0,120)}…`:`Explain in your own words and discuss: "${s.length>110?s.slice(0,110)+'…':s}"`,modelAnswer:s});continue}
-    if(!key)continue;const re=new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'iu');
-    if(type==='tf'){const bad=qs.length%2===1&&kws.length>3;const o=kws.filter(k=>k!==key)[Math.random()*Math.min(kws.length-1,15)|0];
-      qs.push({type,question:bad?s.replace(re,o):s,answer:!bad,explanation:bad?`The original text says: "${s}"`:'This statement appears in your material.'})}
-    else{const d=shuffle(kws.filter(k=>k!==key)).slice(0,3);while(d.length<3)d.push(['none','other','unknown'][d.length]);const o=shuffle([key,...d]);
-      qs.push({type:'mcq',question:s.replace(re,'_____'),options:o,answerIndex:o.indexOf(key)})}}
-  return qs}
-
-/* Controllers */
-
-async function genQuiz(){
-  const text=src(),type=val('qt');let n=parseInt($('num').value,10);
-  if(!text)return toast('Upload a file or paste some text first.');
-  if(isNaN(n)||n<1)return toast('Enter a valid number of questions (1–30).');
-  n=Math.min(n,30);setNum(n);busy($('quizBtn'),true,'Generating…');badge('Working','var(--c)');loading('BUILDING QUIZ');status('Generating quiz…');prog(40);
-  try{
-    let qs,from='Local mock engine';
-    if(CONFIG.USE_API){try{qs=(await apiQuiz(text,type,n)).questions;from='API'}catch(e){if(!CONFIG.FALLBACK_TO_MOCK)throw e;toast('API unavailable. Using local engine.','info')}}
-    if(!qs){await wait(500);qs=mockQuiz(text,type,n)}
-    if(!qs||!qs.length)throw new Error('Not enough text to build questions. Add more material.');
-    renderQuiz(qs,type);status(`Quiz ready · ${qs.length} ${type.toUpperCase()} question(s) · ${from}.`);badge('Quiz','var(--c)')
-  }catch(e){console.error(e);toast(e.message||'Quiz generation failed.');status('Quiz generation failed.');badge('Error','var(--bad)');setTab(state.tab)}
-  finally{busy($('quizBtn'),false,'Generate Quiz');prog(0)}}
-
-/* Explain Simply (tutor mode) */
-const TUTOR_PROMPT='You are a patient personal tutor. Explain the material comprehensively and simply. For each concept give: a plain-language explanation, a step-by-step breakdown, a concrete everyday example, key terms, and a common mistake. Reply in the requested language and stay faithful to the material.';
-const apiExplain=(text,language)=>api(CONFIG.ENDPOINTS.explain,{text,language,system:TUTOR_PROMPT}); /* -> {concepts:[{title,simple,steps[],example,keyTerms[],mistake}]} */
-function mockExplain(t){
-  const f=freqOf(t);
-  return mockSummary(t).slice(0,6).map(x=>{const k=[...new Set(words(x).filter(w=>f[w]))].sort((a,b)=>f[b]-f[a]).slice(0,3);
-    return{title:k[0]||x.slice(0,30),simple:x,keyTerms:k,check:k.slice(0,2)}})}
-async function explain(){
-  const text=src(),lang=val('xl');if(!text&&!state.pdf)return toast('Upload a file or paste some text first.');
-  if(await explainGem(lang))return;busy($('expBtn'),true,'Explaining…');badge('Working','var(--a)');loading('EXPLAINING');status('Building explanation…');prog(40);
-  try{
-    let cs,from='Local mock engine';
-    if(CONFIG.USE_API){try{cs=(await apiExplain(text,lang)).concepts;from='API'}catch(e){if(!CONFIG.FALLBACK_TO_MOCK)throw e;toast('API unavailable. Using local engine.','info')}}
-    if(!cs){await wait(500);cs=mockExplain(text)}
-    if(!cs||!cs.length)throw new Error('Not enough text to explain. Add more material.');
-    const ar=lang==='egy',T=ar?{c:'المفهوم',s:'الشرح بالبسيط',st:'خطوة بخطوة',ex:'مثال',kt:'كلمات مهمة',m:'غلطة شائعة',q:'اسأل نفسك',n:'ده تنظيم محلي للمادة. الشرح الكامل بالأمثلة والخطوات بيشتغل لما توصّل الـ API. ضيف مفتاح Gemini في إعدادات الذكاء الاصطناعي.'}:{c:'Concept',s:'Simple explanation',st:'Step by step',ex:'Example',kt:'Key terms',m:'Common mistake',q:'Ask yourself',n:'This is a local breakdown of your material. Full explanations with examples and steps need an AI engine. Add your Gemini API key in the AI settings.'};
-    const html=`<div dir="${ar?'rtl':'ltr'}" ${ar?"style=\"font-family:'Cairo',sans-serif\"":''}><div style="margin-bottom:.8rem"><span class="tag" style="color:var(--a)">${ar?'Egyptian Arabic':'English'}</span> <span class="tag" style="color:var(--c)">${cs.length} concepts</span></div>
-      ${from!=='API'?`<div class="note">${T.n}</div>`:''}
-      ${cs.map((c,i)=>`<div class="ec"><div class="qn">${T.c} ${i+1}</div><h3>${esc(c.title)}</h3>
-        <p><b>${T.s}:</b> ${esc(c.simple)}</p>
-        ${c.steps&&c.steps.length?`<p><b>${T.st}:</b></p><ol>${c.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}
-        ${c.example?`<p><b>${T.ex}:</b> ${esc(c.example)}</p>`:''}
-        ${c.keyTerms&&c.keyTerms.length?`<p><b>${T.kt}:</b> ${c.keyTerms.map(k=>`<span class="kt">${esc(k)}</span>`).join('')}</p>`:''}
-        ${c.mistake?`<p><b>${T.m}:</b> ${esc(c.mistake)}</p>`:''}
-        ${c.check&&c.check.length?`<p><b>${T.q}:</b> ${ar?`إيه المقصود بـ «${esc(c.check[0])}»؟`+(c.check[1]?` وإزاي بيرتبط بـ «${esc(c.check[1])}»؟`:''):`What does "${esc(c.check[0])}" mean?`+(c.check[1]?` How does it relate to "${esc(c.check[1])}"?`:'')}</p>`:''}
-      </div>`).join('')}</div>`;
-    save('exp',html,cs.map((c,i)=>`${i+1}. ${c.title}\n${c.simple}`+(c.steps?'\n'+c.steps.map((s,j)=>`  ${j+1}) ${s}`).join('\n'):'')+(c.example?`\n${T.ex}: ${c.example}`:'')).join('\n\n'));
-    show(html);status(`Explanation ready · ${cs.length} concepts · ${from}.`);badge('Explain','var(--ok)')
-  }catch(e){console.error(e);toast(e.message||'Explanation failed.');status('Explanation failed.');badge('Error','var(--bad)');setTab(state.tab)}
-  finally{busy($('expBtn'),false,'Explain Simply');prog(0)}}
-
-/* ===== Gemini tutor (explanation engine taken from the original file) ===== */
-const LS={key:'gemini_key',model:'gemini_model'};
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const LANGS={egy:'Egyptian Arabic colloquial (العامية المصرية), friendly and easy, keeping technical terms in English in brackets next to the Arabic',msa:'Simplified Modern Standard Arabic (فصحى مبسطة), clear and easy, keeping technical terms in English in brackets next to the Arabic',en:'English'};
-const LEVELS={kid:'Assume a complete beginner (ELI5): very short sentences, everyday words, a simple definition for every technical term.',mid:'Assume a high-school student: clear and friendly, define each technical term the first time.',adv:'Assume a university student: precise and deeper, explain the why and how and edge cases, but stay clear.'};
-const tutorSystem=(lang,lv)=>`You are a friendly, patient personal tutor helping a student study. Explain things simply, like a kind teacher, using short sentences, concrete examples and everyday analogies; build every idea up from the basics, bold each key term the first time it appears, and use tables to compare things. ${LEVELS[lv]} Stay faithful to the provided material; if something is not in it, say so before adding outside knowledge. Write all of your answers in ${LANGS[lang]}. Use clean Markdown. Write every math expression in LaTeX: inline as $...$ and display equations as $$...$$ (never inside code blocks).`;
-const dirOf=l=>(l||state.xl)==='en'?'ltr':'rtl';
-let pend=null,raf=0;
-const setStatus=m=>status(m);
-function typeset(el){if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})}
-function render(el,t){cancelAnimationFrame(raf);raf=0;pend=null;el.innerHTML=md2html(t);el.dir=dirOf();typeset(el)}
-function live(el,t){pend=[el,t];if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!pend)return;pend[0].innerHTML=md2html(pend[1]);pend[0].dir=dirOf()})}
-function md2html(src){
-  const maths = [];
-  src = src.replace(/\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\)|\$(?!\s)[^$\n]*[^$\s]\$/g, m => { maths.push(m); return '\u0000' + (maths.length - 1) + '\u0001'; });
-  const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const inline = t => esc(t).replace(/`([^`]+)`/g,'<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
-    .replace(/(^|[^*])\*([^*\s][^*]*)\*/g,'$1<em>$2</em>');
-  const isRow = l => /^\s*\|.*\|\s*$/.test(l);
-  const cells = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim());
-  const lines = src.replace(/\r/g,'').split('\n');
-  let out = '', i = 0, para = [], stack = [];
-  const flushP = () => { if (para.length) { out += '<p>' + inline(para.join(' ')) + '</p>'; para = []; } };
-  const closeL = () => { while (stack.length) out += '</li></' + stack.pop().type + '>'; };
-  const indentOf = s => s.match(/^\s*/)[0].replace(/\t/g, '    ').length;
-  const addItem = (type, line, text, num) => {
-    flushP(); const ind = indentOf(line);
-    while (stack.length && ind < stack[stack.length - 1].indent) out += '</li></' + stack.pop().type + '>';
-    let top = stack[stack.length - 1];
-    if (top && ind === top.indent && top.type !== type) { out += '</li></' + stack.pop().type + '>'; top = stack[stack.length - 1]; }
-    if (top && ind === top.indent) out += '</li><li>';
-    else { out += (type === 'ol' ? '<ol start="' + (num || 1) + '">' : '<ul>') + '<li>'; stack.push({ type, indent: ind }); }
-    out += inline(text);
-  };
-  while (i < lines.length) {
-    const l = lines[i]; let m;
-    if (/^```/.test(l)) {
-      flushP(); closeL(); const code = []; i++;
-      while (i < lines.length && !/^```/.test(lines[i])) code.push(lines[i++]);
-      out += '<pre><code>' + esc(code.join('\n')) + '</code></pre>';
-    } else if ((m = l.match(/^(#{1,6})\s+(.*)/))) {
-      flushP(); closeL(); const n = Math.min(m[1].length, 3); out += '<h' + n + '>' + inline(m[2]) + '</h' + n + '>';
-    } else if (/^\s*(-{3,}|\*{3,})\s*$/.test(l)) {
-      flushP(); closeL(); out += '<hr>';
-    } else if ((m = l.match(/^\s*[-*+]\s+(.*)/))) {
-      addItem('ul', l, m[1]);
-    } else if ((m = l.match(/^\s*(\d+)[.)]\s+(.*)/))) {
-      addItem('ol', l, m[2], m[1]);
-    } else if (/^\s*>/.test(l)) {
-      flushP(); closeL(); out += '<blockquote>' + inline(l.replace(/^\s*>\s?/,'')) + '</blockquote>';
-    } else if (isRow(l)) {
-      flushP(); closeL(); const rows = [];
-      while (i < lines.length && isRow(lines[i])) rows.push(lines[i++]);
-      i--;
-      const body = rows.slice(/^[\s|:-]+$/.test(rows[1] || '') ? 2 : 1);
-      out += '<table><thead><tr>' + cells(rows[0]).map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>'
-        + body.map(r => '<tr>' + cells(r).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
-    } else if (!l.trim()) {
-      flushP(); let j = i + 1; while (j < lines.length && !lines[j].trim()) j++;
-      if (!(stack.length && j < lines.length && /^\s*([-*+]|\d+[.)])\s+/.test(lines[j]))) closeL();   // blank line inside a loose list keeps it open
+    let text='';
+    if(ext==='pdf'){
+      const pdf=await pdfjsLib.getDocument({data:await rd(f,'readAsArrayBuffer')}).promise;
+      for(let i=1;i<=pdf.numPages;i++){
+        const c=await(await pdf.getPage(i)).getTextContent();
+        text+=c.items.map(it=>it.str).join(' ')+'\n\n';
+      }
+    } else if(ext==='docx'){
+      text=(await mammoth.extractRawText({arrayBuffer:await rd(f,'readAsArrayBuffer')})).value;
+    } else {
+      text=await rd(f,'readAsText');
     }
-    else { closeL(); para.push(l.trim()); }
-    i++;
-  }
-  flushP(); closeL();
-  return out.replace(/\u0000(\d+)\u0001/g, (_, k) => esc(maths[+k]));
+    state.fileText=text;
+    $('fName').textContent=f.name;
+    $('fMeta').textContent=`${(f.size/1024).toFixed(1)} KB · ${text.length} chars`;
+    $('chip').classList.add('show');
+    toast('File loaded successfully');
+  }catch(e){toast('Error reading file');console.error(e)}
 }
 
-const NETERR = 'Could not reach Gemini ("Failed to fetch"). Check your internet connection, turn off any ad-blocker or VPN for this page, and make sure your API key is saved.';
-function friendly(s, msg){
-  const m = (msg || '').toLowerCase();
-  if (s === 400 && m.includes('api key')) return 'Your API key looks invalid. Check it at the top and save it again.';
-  if (s === 400) return 'Gemini rejected the request: ' + (msg || 'bad request') + (/size|large/.test(m) ? ' Try a smaller PDF.' : '');
-  if (s === 401 || s === 403) return 'Your API key was not accepted (or this model is not allowed for it). Check the key.';
-  if (s === 404) return 'That model is not available for your key. Pick another one from the model dropdown.';
-  if (s === 413) return 'The file is too large. Try a smaller PDF or paste the text.';
-  if (s === 429) return 'Rate limit reached. Wait a minute and try again, or switch to gemini-3.5-flash-lite.';
-  if (s >= 500) return 'Gemini is busy right now. Please try again in a moment.';
-  return msg || ('Request failed (' + s + ')');
-}
-async function gem(contents, opts = {}, onText){
-  const key = ($('key').value || store.get(LS.key) || '').trim();
-  if (!key) throw new Error('Add your Gemini API key at the top first.');
-  if (!navigator.onLine) throw new Error('You appear to be offline. Check your connection.');
-  const stream = !!onText, tried = new Set([$('model').value]);
-  const body = JSON.stringify({ systemInstruction:{ parts:[{ text: opts.system || systemPrompt() }] }, contents, ...(opts.gen ? { generationConfig: opts.gen } : {}) });
-  let err;
-  for (let a = 0; a < 3; a++) {
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + $('model').value + (stream ? ':streamGenerateContent?alt=sse' : ':generateContent');
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 180000); let full = '';
-    try {
-      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key': key }, body, signal: ctrl.signal });
-      if (!res.ok) {
-        let m = ''; try { m = (await res.json()).error?.message || ''; } catch (_) {}
-        const e = new Error(friendly(res.status, m)); e.retry = [500,502,503,504].includes(res.status);
-        e.modelMissing = res.status === 404 || (res.status === 400 && /model/i.test(m) && /not found|not supported|unsupported/i.test(m)); throw e;
-      }
-      if (!stream) {
-        const d = await res.json();
-        const t = d.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('');
-        if (!t) throw new Error('The model returned no text' + (d.promptFeedback?.blockReason ? ' (blocked: ' + d.promptFeedback.blockReason + ')' : '. Try again.'));
-        return t;
-      }
-      const rd = res.body.getReader(), dec = new TextDecoder(); let buf = '';
-      for (;;) {
-        const { done, value } = await rd.read(); if (done) break;
-        buf += dec.decode(value, { stream:true }); const ls = buf.split('\n'); buf = ls.pop();
-        for (const l of ls) {
-          if (!l.startsWith('data:')) continue;
-          try { const j = JSON.parse(l.slice(5)); const t = j.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || ''; if (t) { full += t; onText(full); } } catch (_) {}
-        }
-      }
-      if (!full) throw new Error('The model returned no text. Try again.');
-      return full;
-    } catch (e) {
-      const net = e instanceof TypeError;
-      err = e.name === 'AbortError' ? new Error('The request took too long and was stopped. Try again, or use a smaller file.') : net ? new Error(NETERR) : e;
-      if (e.modelMissing && !full) {   // model unavailable for this key: automatically try the next current model
-        const next = [...$('model').options].map(o => o.value).find(v => !tried.has(v));
-        if (next) { tried.add(next); $('model').value = next; store.set(LS.model, next); setStatus('That model is unavailable for your key. Switched to ' + next + '…'); a--; continue; }
-      }
-      if (full || !(net || e.retry) || a === 2) throw err;
-      setStatus('Connection hiccup, retrying…'); await new Promise(r => setTimeout(r, 1200 * (a + 1)));
-    } finally { clearTimeout(timer); }
-  }
-  throw err;
-}
-
-
-const GUIDE_PROMPT = `Read the study material and write a study guide with exactly these sections as "##" headings:
-## Executive Summary
-(5-8 sentences, the big picture in plain language)
-## Key Terms
-(a list of important terms, each with a simple definition)
-## Lecture Breakdown
-(the lecture split into logical parts with "###" sub-headings; explain each part simply and use bullet points)
-## Core Formulas & Concepts
-(formulas, rules, laws or core ideas, each with a one-line explanation; write formulas in LaTeX. If there are none, list the 3-5 most important concepts instead)
-Start with one short, warm sentence greeting the student.`;
-const explainPrompt=(deep,focus)=>`Teach me this material like the best personal tutor, so I truly understand it. Do NOT just summarize. ${focus?`Focus especially on: ${focus}.`:'Cover the whole material and never skip an important concept.'}
-Write these sections as "##" headings (translate the heading text into the answer language, keep the emoji):
-## 🎯 Big Picture
-(What this is about, why it matters, and the 3-5 core ideas everything else builds on. Max 8 sentences.)
-## 🗺️ Roadmap
-(A numbered list of the topics in a sensible learning order, one line each.)
-## 🔑 Key Terms
-(A table: term | simple definition | tiny example.)
-## 📚 Concept by Concept
-(For EVERY important concept write a "###" heading, then these bold labels, each starting on its own line: **In one sentence:** / **Explained from scratch:** ${deep?'(build it up step by step, assume nothing, 2-4 short paragraphs)':'(2-3 sentences)'} / **Step by step:** (numbered steps for any process, calculation, proof or formula; skip only if truly not applicable) / **Example:** (a concrete worked example with real numbers or a real situation) / **Analogy:** (compare it to something from daily life) / **Common mistake:** / **Check yourself:** (one question, then **Answer:** on a new line))
-## 🔗 How It All Connects
-(Show how the concepts relate: a short chain or a comparison table.)
-## 📝 Exam Cheat Sheet
-(8-12 must-remember facts or formulas, using LaTeX for math, then 3 likely exam questions with short model answers.)
-## ✅ Final Self-Test
-(${deep?'6':'4'} mixed questions, each followed by **Answer:** on a new line.)
-Start with one short, warm sentence greeting the student. Use plain words, short sentences, and Markdown tables where they help.`;
-function toc(box){const hs=[...box.querySelectorAll('h2')];if(hs.length<2)return;const n=document.createElement('nav');n.className='toc';n.innerHTML=hs.map((h,i)=>`<button type="button" data-i="${i}">${esc(h.textContent)}</button>`).join('');box.prepend(n)}
-async function explainGem(lang){
-  const key=($('key').value||'').trim();if(!key)return false;
-  const text=src(),parts=text?[{text:'STUDY MATERIAL:\n\n'+text}]:state.pdf?[{inlineData:{mimeType:'application/pdf',data:state.pdf}}]:null;
-  if(!parts)return false;
-  state.xl=lang;store.set(LS.key,key);store.set(LS.model,$('model').value);
-  busy($('expBtn'),true,'Teaching…');badge('Streaming','var(--a)');status('Reading the material…');prog(30);setTab('exp');
-  $('out').innerHTML='<div class="fade md" id="mdBox"></div>';const box=$('mdBox');box.dir=dirOf();
-  try{
-    const first={role:'user',parts:[...parts,{text:explainPrompt(val('dp')==='deep',$('topic').value.trim())}]};
-    const out=await gem([first],{system:tutorSystem(lang,val('lv')),gen:{temperature:.4,maxOutputTokens:16384}},t=>{prog(70);live(box,t)});
-    state.history=[first,{role:'model',parts:[{text:out}]}];state.ready=true;
-    render(box,out);toc(box);save('exp',`<div class="md" dir="${dirOf()}">${box.innerHTML}</div>`,out);
-    $('clog').innerHTML='';$('chat').classList.remove('hidden');prog(100);
-    status('Study guide ready. You can now ask your tutor questions below.');badge('Explain','var(--ok)')
-  }catch(e){toast(e.message);status(e.message);badge('Error','var(--bad)');setTab('exp')}
-  finally{busy($('expBtn'),false,'Explain Simply');setTimeout(()=>prog(0),600)}
-  return true}
-function bubble(role,text){const d=document.createElement('div');d.className=role==='user'?'msg user':'msg bot md';
-  if(role==='user'){d.textContent=text;d.dir='auto'}else{d.innerHTML=md2html(text);d.dir=dirOf()}
-  $('clog').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});return d}
-async function ask(text){
-  const q=(text??$('q').value).trim();if(!q||!state.ready||$('send').disabled)return;
-  $('q').value='';$('send').disabled=true;bubble('user',q);const b=bubble('bot','…');
-  const turn={role:'user',parts:[{text:q}]};
-  try{const out=await gem([...state.history,turn],{system:tutorSystem(state.xl,val('lv'))},t=>live(b,t));
-    state.history.push(turn,{role:'model',parts:[{text:out}]});render(b,out)}
-  catch(e){b.textContent=e.message;b.className='msg bot err'}
-  $('send').disabled=false;$('q').focus()}
-
-/* Quiz */
-let QS=[];
-function renderQuiz(qs,type){
-  QS=qs;state.score=0;state.answered=0;const names={mcq:'Multiple Choice',tf:'True / False',essay:'Essay'};
-  const body=qs.map((q,i)=>{const h=`<div class="qn">Q${String(i+1).padStart(2,'0')} / ${qs.length}</div><div dir="auto">${esc(q.question)}</div>`;
-    if(q.type==='mcq')return`<div class="qc" data-i="${i}">${h}${q.options.map((o,j)=>`<button class="opt" type="button" data-j="${j}" dir="auto">${String.fromCharCode(65+j)}. ${esc(o)}</button>`).join('')}</div>`;
-    if(q.type==='tf')return`<div class="qc" data-i="${i}">${h}<div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem"><button class="opt" type="button" data-v="true">True / صح</button><button class="opt" type="button" data-v="false">False / غلط</button></div><div class="ans" dir="auto"></div></div>`;
-    return`<div class="qc" data-i="${i}">${h}<textarea class="field" style="margin-top:.6rem;min-height:80px" dir="auto" placeholder="Write your answer… / اكتب إجابتك"></textarea><button class="btn ghost reveal" style="margin-top:.6rem" type="button">Show model answer</button><div class="ans" dir="auto"><b>Model answer:</b> ${esc(q.modelAnswer)}</div></div>`}).join('');
-  const html=`<div style="margin-bottom:.8rem"><span class="tag" style="color:var(--c)">${names[type]}</span></div>${type!=='essay'?`<div class="score"><span id="score">Score 0 / 0</span><span style="color:var(--mu)">of ${qs.length}</span></div>`:''}${body}<button id="again" class="btn ghost" type="button">Regenerate</button>`;
-  save('quiz',html,qs.map((q,i)=>`Q${i+1}. ${q.question}`+(q.options?'\n'+q.options.map((o,j)=>`  ${String.fromCharCode(65+j)}. ${o}`).join('\n'):'')).join('\n\n'));
-  show(html);bindQuiz()}
-function bindQuiz(){
-  $('out').querySelectorAll('.qc').forEach(card=>{const q=QS[+card.dataset.i];
-    card.onclick=e=>{const b=e.target.closest('button');if(!b)return;
-      if(b.classList.contains('reveal')){card.querySelector('.ans').classList.toggle('show');return}
-      if(!b.classList.contains('opt')||card.dataset.done)return;card.dataset.done=1;state.answered++;
-      const bs=[...card.querySelectorAll('.opt')];bs.forEach(x=>x.disabled=true);
-      if(q.type==='mcq'){const ok=+b.dataset.j===q.answerIndex;if(ok)state.score++;bs[q.answerIndex].classList.add('ok');if(!ok)b.classList.add('no')}
-      else{const ok=(b.dataset.v==='true')===q.answer;if(ok)state.score++;b.classList.add(ok?'ok':'no');const a=card.querySelector('.ans');a.textContent=`${q.answer?'True':'False'} — ${q.explanation}`;a.classList.add('show')}
-      const s=$('score');if(s)s.textContent=`Score ${state.score} / ${state.answered}`;prog(state.answered/QS.length*100);
-      state.views.quiz=$('out').firstElementChild.innerHTML}});
-  const a=$('again');if(a)a.onclick=genQuiz}
-
-/* Utilities + events */
-function resetAll(){state.history=[];state.ready=false;$('chat').classList.add('hidden');$('clog').innerHTML='';state.views={exp:'',quiz:''};state.plains={exp:'',quiz:''};state.plain='';state.score=state.answered=0;markTab('exp');$('out').innerHTML=idleHTML;status('Ready.');badge('Idle');prog(0)}
-async function copyOut(){const t=state.plain;if(!t)return toast('Nothing to copy yet.');
-  try{await navigator.clipboard.writeText(t)}catch{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}toast('Copied to clipboard','info')}
-function setNum(n){n=Math.max(1,Math.min(30,n||1));$('num').value=n;document.querySelectorAll('#pre button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n))}
-const dz=$('drop');
-dz.onclick=()=>$('file').click();
-dz.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click()}};
+$('drop').onclick=()=>$('file').click();
 $('file').onchange=()=>handleFile($('file').files[0]);
-['dragenter','dragover'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.add('drag')}));
-['dragleave','drop'].forEach(v=>dz.addEventListener(v,e=>{e.preventDefault();dz.classList.remove('drag')}));
-dz.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
-$('rmFile').onclick=()=>clearFile();
-$('text').oninput=()=>{$('cc').textContent=$('text').value.length.toLocaleString()+' characters';stats()};
-$('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 characters';stats()};
-$('expBtn').onclick=explain;$('quizBtn').onclick=genQuiz;
-$('minus').onclick=()=>setNum((+$('num').value||5)-1);$('plus').onclick=()=>setNum((+$('num').value||5)+1);
-$('num').onchange=()=>setNum(+$('num').value);
-$('pre').onclick=e=>{const b=e.target.closest('button');if(b)setNum(+b.dataset.n)};
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
-try{$('key').value=store.get(LS.key)||'';const m=store.get(LS.model);if(m&&[...$('model').options].some(o=>o.value===m))$('model').value=m;const c=JSON.parse(localStorage.getItem('aura-cfg')||'{}');if(c.lv){const r=document.querySelector(`input[name=lv][value=${c.lv}]`);if(r)r.checked=true}}catch(e){}
-const saveCfg=()=>{store.set(LS.key,$('key').value.trim());store.set(LS.model,$('model').value);try{localStorage.setItem('aura-cfg',JSON.stringify({lv:val('lv')}))}catch(e){}};
-['key','model'].forEach(k=>$(k).addEventListener('change',saveCfg));document.querySelectorAll('input[name=lv]').forEach(r=>r.addEventListener('change',saveCfg));
-$('send').onclick=()=>ask();$('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)ask()});document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>ask(b.dataset.q));
-$('out').addEventListener('click',e=>{const b=e.target.closest('.toc button');if(!b)return;const h=$('out').querySelectorAll('.md h2')[+b.dataset.i];if(h)h.scrollIntoView({behavior:'smooth',block:'start'})});
-let fs=+store.get('aura-fs')||1;const setFs=v=>{fs=Math.max(.8,Math.min(1.5,v));document.documentElement.style.setProperty('--fs',fs);store.set('aura-fs',fs)};setFs(fs);
-$('fsm').onclick=()=>setFs(fs-.1);$('fsp').onclick=()=>setFs(fs+.1);
+$('text').oninput=()=>{$('cc').textContent=$('text').value.length+' chars'};
+$('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};
+$('rmFile').onclick=()=>{state.fileText='';$('chip').classList.remove('show')};
+
+// Simple Content Pagination Splitter
+function paginateContent(text, chunkSize=2200){
+  const paragraphs=text.split(/\n\s*\n/);
+  const pages=[];
+  let current='';
+  for(let p of paragraphs){
+    if((current+p).length > chunkSize && current.length>0){
+      pages.push(current.trim());
+      current=p+'\n\n';
+    } else {
+      current+=p+'\n\n';
+    }
+  }
+  if(current.trim())pages.push(current.trim());
+  return pages.length?pages:[text];
+}
+
+function renderCurrentPage(){
+  if(!state.pages.length)return;
+  const content=state.pages[state.currentPage];
+  $('out').innerHTML=`<div class="md">${md2html(content)}</div>`;
+  $('pageInfo').textContent=`Page ${state.currentPage+1} of ${state.pages.length}`;
+  $('pageNav').classList.remove('hidden');
+  $('prevPage').disabled=state.currentPage===0;
+  $('nextPage').disabled=state.currentPage===state.pages.length-1;
+  if(window.MathJax)MathJax.typesetPromise([$('out')]);
+}
+
+$('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};
+$('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
+
+// Markdown Converter
+function md2html(src){
+  return src
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+    .replace(/\n\n/g, '<p></p>');
+}
+
+// Gemini API Streaming
+async function runExplain(){
+  const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
+  const key=$('key').value.trim();
+  if(!text)return toast('Please enter text or upload a document');
+  if(!key)return toast('Gemini API Key is required');
+
+  const btn=$('expBtn');
+  btn.disabled=true; btn.classList.add('loading');
+  $('out').innerHTML='<div class="idle"><div class="t">GENERATING EXPLANATION...</div></div>';
+
+  const prompt=`Explain the following study material thoroughly and simply. Split the output clearly with Markdown headings (##) so it can be paginated. 
+Language: ${document.querySelector('input[name=xl]:checked').value}
+Depth: ${document.querySelector('input[name=dp]:checked').value}
+Focus: ${$('topic').value||'Entire text'}
+
+Material:
+${text}`;
+
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    });
+    const data=await res.json();
+    const resultText=data.candidates[0].content.parts[0].text;
+    state.pages=paginateContent(resultText);
+    state.currentPage=0;
+    renderCurrentPage();
+    $('chat').classList.remove('hidden');
+    state.ready=true;
+  }catch(e){
+    toast('API Request Failed');
+    console.error(e);
+  }finally{
+    btn.disabled=false; btn.classList.remove('loading');
+  }
+}
+
+$('expBtn').onclick=runExplain;
+
+// Interactive Chat
+async function sendChat(msg){
+  const text=msg||$('q').value.trim();
+  const key=$('key').value.trim();
+  if(!text||!key)return;
+  $('q').value='';
+  
+  const clog=$('clog');
+  clog.innerHTML+=`<div class="msg user">${text}</div>`;
+  const botEl=document.createElement('div');
+  botEl.className='msg bot md';
+  botEl.textContent='...';
+  clog.appendChild(botEl);
+
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:`Context Page:\n${state.pages[state.currentPage]}\n\nUser Question: ${text}`}]}]})
+    });
+    const data=await res.json();
+    botEl.innerHTML=md2html(data.candidates[0].content.parts[0].text);
+  }catch(e){
+    botEl.textContent='Failed to respond.';
+  }
+}
+
+$('send').onclick=()=>sendChat();
+$('q').onkeydown=e=>{if(e.key==='Enter')sendChat()};
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
+
+// Focus Mode & Copy
 $('fm').onclick=()=>document.querySelector('.app').classList.toggle('focus');
-$('dl').onclick=()=>{if(!state.plain)return toast('Nothing to download yet.');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([state.plain],{type:'text/markdown'}));a.download='aurastudy-'+state.tab+'.md';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)};
-$('text').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')explain()});
-$('copy').onclick=copyOut;$('reset').onclick=resetAll;
-resetAll();
+$('copy').onclick=()=>{
+  if(!state.pages.length)return;
+  navigator.clipboard.writeText(state.pages[state.currentPage]);
+  toast('Page text copied!');
+};
 </script>
 </body>
 </html>
