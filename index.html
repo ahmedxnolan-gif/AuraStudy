@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Theme: Deep Baby Blue + Charcoal Black */
   --bg:#0b0d12; 
   --card:rgba(18, 22, 32, 0.75); 
   --card-hover:rgba(25, 31, 45, 0.85);
@@ -53,7 +52,6 @@
 body{min-height:100vh;color:var(--tx);background:var(--bg);font:500 16px/1.65 'Plus Jakarta Sans','Cairo',system-ui,sans-serif;overflow-x:hidden}
 button,input,textarea,select{font:inherit;color:inherit}
 
-/* Floating Ambient Neon Orbs */
 .neon-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .neon-orb{position:absolute;width:55vmax;height:55vmax;border-radius:50%;filter:blur(140px);opacity:.18;animation:orbFloat 22s ease-in-out infinite alternate}
 .neon-orb:nth-child(1){background:var(--a);top:-20vmax;left:-15vmax}
@@ -301,7 +299,7 @@ const state = { fileText:'', pages:[], currentPage:0, history:[], ready:false, t
 
 function toast(m){const e=$('toast');e.textContent=m;e.className='show';setTimeout(()=>e.className='',3000)}
 
-// Theme Switcher (Dark Neon & Baby Blue Tones)
+// Theme Switcher
 $('themes').onclick=e=>{
   const b=e.target.closest('.sw');
   if(!b)return;
@@ -310,7 +308,7 @@ $('themes').onclick=e=>{
   document.documentElement.dataset.theme=b.dataset.t;
 };
 
-// File Parsing (PDF, DOCX, TXT)
+// File Parsing
 if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const rd=(f,m)=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r[m](f)});
 
