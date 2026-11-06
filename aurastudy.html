@@ -6,7 +6,7 @@
 <title>AuraStudy by NOLAN</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['[',']']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -404,12 +404,9 @@ $('themes').onclick=e=>{
 };
 try{const t=localStorage.getItem('aurastudy_theme'),b=t&&document.querySelector(`.sw[data-t=${t}]`);if(b)b.click()}catch(e){}
 
-// Question count stepper (was missing: +/- and presets did nothing)
+// Question count stepper
 const setNum=n=>{n=Math.max(1,Math.min(25,parseInt(n)||5));$('num').value=n;document.querySelectorAll('#pre button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n))};
-$('minus').onclick=()=>setNum(+$('num').value-1);
-$('plus').onclick=()=>setNum(+$('num').value+1);
-$('num').onchange=()=>setNum($('num').value);
-$('pre').onclick=e=>{const b=e.target.closest('button');if(b)setNum(b.dataset.n)};
+$('minus').onclick=()=>setNum(+$('num').value-1);$('plus').onclick=()=>setNum(+$('num').value+1);$('num').onchange=()=>setNum($('num').value);$('pre').onclick=e=>{const b=e.target.closest('button');if(b)setNum(b.dataset.n)};
 
 // File parsing
 if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -438,11 +435,8 @@ async function handleFile(f){
     toast('File loaded successfully');
   }catch(e){toast('Error reading file');console.error(e)}
 }
-$('drop').onclick=()=>$('file').click();
-$('file').onchange=()=>handleFile($('file').files[0]);
-$('text').oninput=()=>{$('cc').textContent=$('text').value.length+' chars'};
-$('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};
-$('rmFile').onclick=()=>{state.fileText='';$('file').value='';$('chip').classList.remove('show')};
+$('drop').onclick=()=>$('file').click();$('file').onchange=()=>handleFile($('file').files[0]);$('text').oninput=()=>{$('cc').textContent=$('text').value.length+' chars'};
+$('clr').onclick=()=>{$('text').value='';$('cc').textContent='0 chars'};$('rmFile').onclick=()=>{state.fileText='';$('file').value='';$('chip').classList.remove('show')};
 
 function paginateContent(text,chunkSize=2000){
   const paragraphs=text.split(/\n\s*\n/);const pages=[];let current='';
@@ -460,15 +454,12 @@ function renderCurrentPage(){
   if(!state.pages.length)return;
   $('out').innerHTML=`<div class="md">${md2html(state.pages[state.currentPage])}</div>`;
   $('pageInfo').textContent=`Page ${state.currentPage+1} of ${state.pages.length}`;
-  $('pageNav').classList.remove('hidden');
-  $('prevPage').disabled=state.currentPage===0;
+  $('pageNav').classList.remove('hidden');$('prevPage').disabled=state.currentPage===0;
   $('nextPage').disabled=state.currentPage===state.pages.length-1;
   typeset($('out'));
 }
-$('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};
-$('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
+$('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};$('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
 
-// Markdown: escapes HTML first, then groups list items properly
 function md2html(src){
   const inline=s=>s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
   const out=[];let list=false;
@@ -484,7 +475,6 @@ function md2html(src){
   return out.join('');
 }
 
-// Tabs (were not wired before, so the quiz replaced the explanation)
 function showTab(t){
   state.tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
@@ -499,7 +489,6 @@ function showTab(t){
 }
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 
-// Gemini
 async function callGemini(promptText,{json=false,timeout=35000}={}){
   const key=$('key').value.trim();
   if(!key)throw new Error('API Key is missing');
@@ -509,7 +498,7 @@ async function callGemini(promptText,{json=false,timeout=35000}={}){
   const body={contents:[{parts:[{text:promptText}]}]};
   if(json)body.generationConfig={responseMimeType:'application/json',temperature:0.7};
   try{
-    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
+    const res=await fetch(`[https://generativelanguage.googleapis.com/v1beta/models/$](https://generativelanguage.googleapis.com/v1beta/models/$){model}:generateContent`,{
       method:'POST',
       headers:{'Content-Type':'application/json','x-goog-api-key':key},
       body:JSON.stringify(body),signal:controller.signal
@@ -560,12 +549,12 @@ ${text.substring(0,15000)}`;
 }
 $('expBtn').onclick=runExplain;
 
-/* ---------------- QUIZ ---------------- */
+/* ---------------- QUIZ SYSTEM (IMPROVED & ROBUST) ---------------- */
 const DIFF={
   easy:{label:'Easy',rule:'Basic recall. Ask about definitions, names, facts and statements that appear directly in the material. Wrong options must be clearly wrong. No tricks.'},
   medium:{label:'Medium',rule:'Check understanding and simple application. Mix recall with "why" and "how" questions. Wrong options should be plausible but distinguishable with solid understanding.'},
   hard:{label:'Hard',rule:'Analysis and multi-step reasoning. Require comparing concepts, applying ideas to new scenarios, and inferring consequences. All wrong options must be very plausible and share common misconceptions.'},
-  legendary:{label:'Legendary',rule:'The ultimate, expert-level exam. Combine several parts of the material in one question, test edge cases, exceptions, subtle distinctions and counter-intuitive implications, and require deep multi-step reasoning. Every wrong option must be highly convincing and based on a realistic misconception. For true/false, use statements that are almost true or that hide one subtle error. For essays, demand critical evaluation, synthesis and justification. Even top students should find it difficult.'}
+  legendary:{label:'Legendary Level',rule:'The ultimate, expert-level exam. Combine several parts of the material in one question, test edge cases, exceptions, subtle distinctions and counter-intuitive implications, and require deep multi-step reasoning. Every wrong option must be highly convincing and based on a realistic misconception. For true/false, use statements that are almost true or that hide one subtle error. For essays, demand critical evaluation, synthesis and justification. Even top students should find it difficult.'}
 };
 const LANG={egy:'Egyptian Arabic (colloquial)',msa:'Modern Standard Arabic',en:'English'};
 const TF_LABELS={en:['True','False'],ar:['صح','خطأ']};
@@ -581,7 +570,7 @@ function buildQuizPrompt(text,type,count,diff,lang,topic){
 Difficulty: ${DIFF[diff].label}. ${DIFF[diff].rule}
 Language of all questions, options and explanations: ${LANG[lang]}.
 ${topic?`Focus only on this topic: ${topic}\n`:''}
-Return ONLY a JSON array (no markdown, no code fences, no commentary). ${fmt}
+Return ONLY a valid JSON array. Structure your response starting with [ and ending with ] with no markdown code blocks around it if possible, or standard JSON array. ${fmt}
 Do not number the questions. Do not use information that is not in the material.
 
 STUDY MATERIAL:
@@ -637,7 +626,7 @@ async function runQuiz(){
   const prompt=buildQuizPrompt(text.substring(0,15000),type,count,diff,lang,$('topic').value.trim());
   try{
     let items,lastErr;
-    for(let attempt=0;attempt<2&&!items;attempt++){ // one automatic retry on bad output
+    for(let attempt=0;attempt<2&&!items;attempt++){
       try{items=parseQuiz(await callGemini(prompt,{json:true,timeout:75000}),type,lang)}
       catch(e){lastErr=e;if(/API Key|blocked|API Error|timed out/i.test(e.message))throw e}
     }
