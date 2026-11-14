@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuraStudy by NOLAN</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},svg:{fontCache:'global'},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}}</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Cairo:wght@400;600;700&family=Metal+Mania&display=swap" rel="stylesheet">
+<style>
+/* ===== Design tokens: bg, surface, border, text, accent ===== */
+:root{--r:12px;--fs:1;--bg:#0f172a;--s1:#1e293b;--s2:#172033;--ln:#334155;--tx:#f1f5f9;--mu:#94a3b8;--a:#6366f1;--a2:#a5b4fc;--ok:#34d399;--bad:#f87171;--gold:#d4b36a;--shadow:0 4px 20px rgba(2,6,23,.35);--bg-color-1:#6366f1;--bg-color-2:#14b8a6}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:var(--bg);color:var(--tx);font:400 16px/1.65 'Plus Jakarta Sans','Cairo',system-ui,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+
+.app{max-width:1480px;margin:0 auto;padding:0 clamp(1rem,3vw,2.5rem) 3rem}
+header{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;gap:1rem;box-shadow:0 2px 12px rgba(2,6,23,.3);align-items:center;justify-content:space-between;margin:0 calc(-1*clamp(1rem,3vw,2.5rem)) 1.5rem;padding:.85rem clamp(1rem,3vw,2.5rem);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln)}
+.logo{font-weight:700;font-size:1.3rem;letter-spacing:-.01em}
+.logo span{color:var(--a);font-weight:500}
+
+.grid{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1024px){.grid{grid-template-columns:400px minmax(0,1fr);align-items:start}
+  .col{position:sticky;top:5rem;max-height:calc(100vh - 6rem);overflow-y:auto;padding-right:.3rem;scrollbar-width:thin;scrollbar-color:var(--ln) transparent}}
+.col{display:grid;gap:1.2rem}
+.card{padding:1.5rem;border-radius:var(--r);background:var(--s1);border:1px solid var(--ln);box-shadow:var(--shadow)}
+.card:focus-within{border-color:color-mix(in srgb,var(--a) 55%,var(--ln))}
+h2{display:flex;align-items:center;gap:.6rem;font-size:1rem;font-weight:600;margin-bottom:.9rem}
+h2 b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:.8rem;background:color-mix(in srgb,var(--a) 18%,transparent);color:var(--a)}
+.lbl{display:block;margin:1rem 0 .4rem;font-size:.82rem;font-weight:600;color:var(--mu)}
+
+.drop{border:1px dashed var(--ln);border-radius:var(--r);padding:1.5rem 1rem;text-align:center;cursor:pointer;background:var(--bg);transition:.2s}
+.drop:hover,.drop.drag{border-color:var(--a);background:color-mix(in srgb,var(--a) 6%,var(--bg))}
+.drop .ico{display:block;font-size:1.6rem;margin-bottom:.3rem}
+.drop small{color:var(--mu)}
+.chip{display:none;margin-top:.8rem;padding:.65rem .9rem;border-radius:10px;border:1px solid var(--ln);background:var(--s2);justify-content:space-between;align-items:center;gap:.8rem}
+.chip.show{display:flex}.chip div{min-width:0}
+.chip .n{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip small{color:var(--mu);font-size:.76rem}
+
+.field{width:100%;padding:.7rem .9rem;border-radius:10px;border:1px solid var(--ln);background:var(--bg);outline:none;transition:.2s}
+.field:focus{border-color:var(--a);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 20%,transparent)}
+textarea.field{min-height:130px;resize:vertical}
+select.field option{background:var(--s1)}
+.row{display:flex;justify-content:space-between;margin-top:.4rem;font-size:.82rem;color:var(--mu)}
+.row button{background:none;border:0;cursor:pointer;color:var(--mu)}.row button:hover{color:var(--a)}
+
+.seg{display:grid;gap:.4rem}.seg.c2{grid-template-columns:1fr 1fr}.seg.c3{grid-template-columns:repeat(3,1fr)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;padding:.6rem .4rem;border-radius:10px;border:1px solid var(--ln);background:var(--bg);cursor:pointer;text-align:center;font-size:.84rem;color:var(--mu);transition:.2s}
+.seg label span{font-size:.72rem;opacity:.85}
+.seg label:hover{border-color:var(--a);color:var(--tx)}
+.seg input:checked+label{background:color-mix(in srgb,var(--a) 14%,var(--bg));border-color:var(--a);color:var(--a2);font-weight:600}
+.seg input:focus-visible+label{outline:2px solid var(--a);outline-offset:2px}
+.seg label.leg{border-color:color-mix(in srgb,var(--gold) 40%,var(--ln))}
+.seg input:checked+label.leg{background:color-mix(in srgb,var(--gold) 14%,var(--bg));border-color:var(--gold);color:var(--gold)}
+
+.stepper{display:flex;gap:.5rem;align-items:center}
+.stepper .field{width:70px;text-align:center;font-weight:600}.stepper input::-webkit-inner-spin-button{display:none}
+.sq,.pre button{border:1px solid var(--ln);background:var(--bg);border-radius:10px;cursor:pointer;color:var(--mu);transition:.2s}
+.sq{width:42px;height:42px;font-size:1.2rem}.pre{display:flex;gap:.4rem}.pre button{padding:0 .9rem;height:42px}
+.sq:hover,.pre button:hover,.pre button.on{border-color:var(--a);color:var(--a)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;width:100%;margin-top:1.2rem;padding:.8rem 1.3rem;border:0;border-radius:10px;cursor:pointer;font-weight:600;color:#fff;background:var(--a);transition:.2s;box-shadow:0 2px 10px rgba(99,102,241,.25)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.alt{background:var(--s2);color:var(--a2);border:1px solid var(--a)}
+.btn.alt:hover:not(:disabled){background:color-mix(in srgb,var(--a) 16%,var(--s2))}
+.btn.ghost{width:auto;margin:0;padding:.45rem .9rem;font-size:.82rem;background:transparent;color:var(--tx);border:1px solid var(--ln)}
+.btn.ghost:hover:not(:disabled){border-color:var(--a);color:var(--a);background:transparent}
+.sp{width:15px;height:15px;border:2px solid color-mix(in srgb,currentColor 30%,transparent);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.loading .sp{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.set{margin-top:1rem;padding:.8rem;border-radius:10px;border:1px solid var(--ln);background:var(--bg)}
+.set summary{cursor:pointer;color:var(--mu);font-size:.88rem;font-weight:600}
+
+.head{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--ln)}
+.tabs{display:flex;padding:.2rem;border-radius:10px;background:var(--bg);border:1px solid var(--ln)}
+.tab{padding:.45rem 1.1rem;border:0;border-radius:8px;background:none;cursor:pointer;color:var(--mu);font-size:.88rem}
+.tab.on{background:var(--s2);color:var(--a2);font-weight:600}
+.tools{display:flex;gap:.4rem;flex-wrap:wrap}.fsb{padding:.45rem .65rem!important}
+
+/* Translation bar */
+.tr{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;margin-top:1rem;padding:.7rem .9rem;border-radius:10px;border:1px solid var(--ln);background:var(--s2)}
+.tr label{font-size:.85rem;font-weight:600;color:var(--mu)}
+.tr select{width:auto;min-width:200px;padding:.5rem .8rem}
+.tr .tag{margin-inline-start:auto;font-size:.78rem;color:var(--a2)}
+
+.page-nav{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;margin-bottom:1rem;border-radius:10px;background:var(--s2);border:1px solid var(--ln);position:sticky;top:4.2rem;z-index:10}
+.page-info{font-size:.88rem;color:var(--a2);font-weight:600}
+
+.out{min-height:500px;max-height:calc(100vh - 16rem);overflow-y:auto;padding:1.6rem clamp(1rem,3vw,2.4rem);border-radius:var(--r);background:var(--bg);border:1px solid var(--ln);scrollbar-width:thin;scrollbar-color:var(--ln) transparent}
+.idle{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;text-align:center;color:var(--mu)}
+.idle .t{font-size:1.15rem;font-weight:600;color:var(--a2)}
+.app.focus .col{display:none}.app.focus .grid{grid-template-columns:minmax(0,1fr)}.app.focus .out{max-height:none}
+
+.md{max-width:76ch;margin-inline:auto;font-size:calc(1.04rem*var(--fs));line-height:1.85}
+.md h2{display:block;font-size:1.3rem;color:var(--a2);margin:1.8rem 0 .7rem;padding-bottom:.4rem;border-bottom:1px solid var(--ln)}
+.md h3{font-size:1.08rem;margin:1.2rem 0 .5rem}
+.md p{margin:.8rem 0}
+.md ul{list-style:none;margin:.8rem 0;padding-inline-start:0}
+.md li{position:relative;margin:.3rem 0;padding-inline-start:1.3rem}
+.md li::before{content:"";position:absolute;inset-inline-start:0;top:.8em;width:6px;height:6px;border-radius:50%;background:var(--a)}
+.md strong{color:var(--a2)}
+.md code{padding:.15rem .4rem;border-radius:6px;background:var(--s2);color:var(--a2);font-size:.9em}
+
+.chat{max-width:76ch;margin:1.6rem auto 0;padding-top:1.3rem;border-top:1px solid var(--ln)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0 1.1rem}
+.chips button{padding:.4rem .85rem;border-radius:99px;border:1px solid var(--ln);background:var(--s2);cursor:pointer;font-size:.82rem;color:var(--mu);transition:.2s}
+.chips button:hover{border-color:var(--a);color:var(--a)}
+.clog{display:grid;gap:.8rem;margin-bottom:1.1rem}
+.msg.user{justify-self:end;max-width:85%;padding:.65rem 1rem;border-radius:14px 14px 2px 14px;background:color-mix(in srgb,var(--a) 16%,var(--s1));border:1px solid color-mix(in srgb,var(--a) 50%,var(--ln))}
+.msg.bot{padding:.65rem 1rem;border-inline-start:3px solid var(--a);background:var(--s1);border-radius:0 10px 10px 0;min-width:0}
+.ask{display:flex;gap:.6rem}.ask .field{flex:1}
+
+/* Quiz */
+.qz-top,.qz-bar,.qz-final,.qz-q{max-width:76ch;margin-inline:auto}
+.qz-top{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.qz-badges{display:flex;flex-wrap:wrap;gap:.4rem}
+.badge{padding:.2rem .7rem;border-radius:99px;border:1px solid var(--ln);background:var(--s2);font-size:.78rem;color:var(--a2);font-weight:600}
+.badge.leg{border-color:var(--gold);color:var(--gold)}
+.qz-score{font-weight:600;color:var(--a2)}
+.qz-bar{height:5px;border-radius:99px;background:var(--s2);overflow:hidden;margin-bottom:1.2rem}
+.qz-bar i{display:block;height:100%;background:var(--a);transition:width .4s}
+.qz-q{padding:1.2rem 1.3rem;margin-bottom:1rem;border-radius:var(--r);border:1px solid var(--ln);background:var(--s1);font-size:calc(1rem*var(--fs))}
+.qz-q h3{font-size:1rem;margin-bottom:.8rem;line-height:1.6}
+.qz-opts{display:grid;gap:.5rem}
+.qz-opt{display:flex;gap:.8rem;align-items:flex-start;text-align:start;padding:.7rem 1rem;border-radius:10px;border:1px solid var(--ln);background:var(--bg);cursor:pointer;transition:.2s}
+.qz-opt:hover:not(:disabled){border-color:var(--a);background:color-mix(in srgb,var(--a) 8%,var(--bg))}
+.qz-opt:disabled{cursor:default}
+.qz-opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--bg))}
+.qz-opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--bg))}
+.ol{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:7px;font-size:.78rem;background:var(--s2);color:var(--a2)}
+.qz-opt.right .ol{background:var(--ok);color:#0b1a12}.qz-opt.wrong .ol{background:var(--bad);color:#1c0b0d}
+.qz-exp{margin-top:.8rem;padding:.7rem 1rem;border-inline-start:3px solid var(--a);background:var(--s2);border-radius:0 10px 10px 0;font-size:.92rem}
+.qz-final{padding:1.1rem;border-radius:var(--r);border:1px solid var(--a);text-align:center;font-weight:700;color:var(--a2);background:color-mix(in srgb,var(--a) 8%,var(--s1))}
+
+/* Global animated gradient background + glass panels */
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.bg-fx{position:fixed;inset:0;z-index:-1;opacity:0;transition:opacity .6s;background:linear-gradient(120deg,var(--g1),var(--g2),var(--g1));background-size:300% 300%;animation:gradShift 16s ease infinite}
+.bg-fx::after{content:"";position:absolute;inset:0;background:var(--bgov,rgba(15,23,42,.45))}
+body.bg-on .bg-fx{opacity:1}
+body.bg-still .bg-fx{animation-play-state:paused}
+body.bg-on :is(.card,.pop,.tr,.page-nav,header){background:rgba(30,41,59,.55);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border-color:rgba(255,255,255,.12)}
+body.bg-on :is(.set,.drop,.chip,.tabs,.field,.qz-q,.msg.bot,.sq,.pre button){background:rgba(15,23,42,.4)}
+body.bg-on .seg input:not(:checked)+label{background:rgba(15,23,42,.4)}
+/* Output area: outer card goes clear so the gradient shows around it; the text box itself is the glass */
+body.bg-on .col+.card{background:transparent;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* Output / summary box: real glass, no opaque layers inside it */
+.out{background:rgba(10,15,30,.5);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 32px rgba(2,6,23,.35)}
+.out :is(.md,.idle,.qz-top,.qz-final,.qz-act){background:transparent}
+.out .md{text-shadow:0 1px 2px rgba(2,6,23,.45)}
+.out :is(.qz-q,.qz-exp,.qz-final,.md blockquote,.md code,.badge,.qz-bar,.ol){background:rgba(255,255,255,.06)}
+.out .qz-opt{background:rgba(255,255,255,.05)}
+.out .qz-opt:hover:not(:disabled){background:rgba(99,102,241,.2)}
+.out .qz-opt.right{background:rgba(52,211,153,.18)}
+.out .qz-opt.wrong{background:rgba(248,113,113,.18)}
+.out .qz-opt.right .ol{background:var(--ok)}.out .qz-opt.wrong .ol{background:var(--bad)}
+body.bg-on .chat{padding:1.3rem;border:1px solid rgba(255,255,255,.12);border-radius:var(--r);background:rgba(15,23,42,.65);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body.bg-on .tab.on{background:rgba(255,255,255,.1)}
+.crow input[type=range]{width:130px;accent-color:var(--a)}
+.cust{position:relative}
+.pop{position:absolute;top:calc(100% + .6rem);right:0;z-index:30;width:min(320px,calc(100vw - 2rem));padding:1.2rem;border-radius:var(--r);background:var(--s1);border:1px solid var(--ln);box-shadow:var(--shadow)}
+.pop h3{font-size:.95rem;margin-bottom:.9rem}
+.crow{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem}
+.crow label{flex:1;font-size:.88rem;color:var(--mu)}
+.crow code{font-size:.78rem;color:var(--tx);min-width:4.2rem;text-align:end}
+input[type=color]{-webkit-appearance:none;appearance:none;width:40px;height:40px;padding:0;border:1px solid var(--ln);border-radius:10px;background:none;cursor:pointer}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:0;border-radius:9px}
+input[type=color]::-moz-color-swatch{border:0;border-radius:9px}
+.tgl{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:.6rem 0;font-size:.88rem;cursor:pointer}
+.tgl input{width:38px;height:22px;appearance:none;-webkit-appearance:none;border-radius:99px;background:var(--ln);position:relative;cursor:pointer;transition:.2s;flex:none}
+.tgl input::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.tgl input:checked{background:var(--a)}.tgl input:checked::after{left:19px}
+.pop .btn{margin-top:.9rem}
+.md ol{margin:.8rem 0;padding-inline-start:1.6rem}.md ol li{padding-inline-start:.3rem}.md ol li::before{display:none}
+.md blockquote{margin:1rem 0;padding:.4rem 1rem;border-inline-start:3px solid var(--a);background:var(--s1);border-radius:0 10px 10px 0;color:var(--mu)}
+.md hr{border:0;border-top:1px solid var(--ln);margin:1.4rem 0}
+.qz-act{max-width:76ch;margin:1rem auto 0;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+@media(max-width:640px){.tools .btn.ghost{flex:1}.tabs{width:100%}.tab{flex:1}}
+/* ===== Neon glow: follows the custom colors (--bg-color-1 / --bg-color-2) ===== */
+.logo{color:#fff;text-shadow:0 0 4px rgba(255,255,255,.55),0 0 10px var(--bg-color-1),0 0 22px var(--bg-color-1),0 0 42px var(--bg-color-2);animation:neonPulse 4s ease-in-out infinite}
+.logo span{color:color-mix(in srgb,var(--bg-color-2) 45%,#fff);text-shadow:0 0 8px var(--bg-color-2),0 0 22px var(--bg-color-2),0 0 40px var(--bg-color-1)}
+@keyframes neonPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
+/* explanation separators and borders */
+.md h2{position:relative;border-bottom:0;padding-bottom:.55rem}
+.md h2::after{content:"";position:absolute;inset-inline:0;bottom:0;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--bg-color-1),var(--bg-color-2));box-shadow:0 0 8px var(--bg-color-1),0 0 18px var(--bg-color-2)}
+.md hr{height:2px;border:0;border-radius:2px;background:linear-gradient(90deg,var(--bg-color-1),var(--bg-color-2));box-shadow:0 0 8px var(--bg-color-1),0 0 18px var(--bg-color-2)}
+.md blockquote{border-inline-start-color:var(--bg-color-1);box-shadow:-4px 0 14px -4px var(--bg-color-1)}
+.md[dir=rtl] blockquote{box-shadow:4px 0 14px -4px var(--bg-color-1)}
+.out{border-color:color-mix(in srgb,var(--bg-color-1) 55%,transparent);box-shadow:0 8px 32px rgba(2,6,23,.35),0 0 16px color-mix(in srgb,var(--bg-color-1) 35%,transparent),inset 0 0 26px color-mix(in srgb,var(--bg-color-2) 10%,transparent)}
+/* Flashcards + study timer */
+.hdr-r{display:flex;gap:.6rem;align-items:center}
+#timer{font-variant-numeric:tabular-nums;min-width:5.6rem}
+#timer.run{border-color:var(--bg-color-1);color:var(--a2);box-shadow:0 0 12px color-mix(in srgb,var(--bg-color-1) 40%,transparent)}
+.fc-wrap{max-width:76ch;margin-inline:auto}
+.fc{perspective:1100px;margin:1.2rem 0 .6rem}
+.fc-card{position:relative;min-height:250px;cursor:pointer;transform-style:preserve-3d;transition:transform .5s}
+.fc-card.flip{transform:rotateY(180deg)}
+.fc-card:focus-visible{outline:2px solid var(--a);outline-offset:4px;border-radius:var(--r)}
+.fc-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:1.6rem;border-radius:var(--r);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);-webkit-backface-visibility:hidden;backface-visibility:hidden;font-size:calc(1.15rem*var(--fs));line-height:1.65;overflow:auto}
+.fc-face.back{transform:rotateY(180deg);border-color:var(--bg-color-1);box-shadow:0 0 18px color-mix(in srgb,var(--bg-color-1) 30%,transparent)}
+.fc-hint{text-align:center;color:var(--mu);font-size:.82rem;margin-bottom:.8rem}
+/* ===== Neon headings + dividers (react to --bg-color-1 / --bg-color-2) ===== */
+.out .md h2,.out .md h3,.out .md hr,.out .md blockquote{--neon-line:linear-gradient(90deg,var(--bg-color-1),var(--bg-color-2))}
+.out .md h2,.out .md h3{position:relative;border-bottom:0;color:color-mix(in srgb,var(--bg-color-1) 30%,#fff);text-shadow:0 0 6px var(--bg-color-1),0 0 16px var(--bg-color-1),0 0 30px var(--bg-color-2)}
+.out .md h2{padding-bottom:.6rem}
+.out .md h3{padding-bottom:.4rem;text-shadow:0 0 5px var(--bg-color-1),0 0 14px var(--bg-color-2)}
+.out .md h2::after,.out .md h3::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--neon-line);box-shadow:0 0 6px var(--bg-color-1),0 0 14px var(--bg-color-1),0 0 26px var(--bg-color-2)}
+.out .md h3::after{height:1px;opacity:.85}
+.out .md hr{height:2px;border:0;border-radius:2px;background:var(--neon-line);box-shadow:0 0 6px var(--bg-color-1),0 0 14px var(--bg-color-1),0 0 26px var(--bg-color-2)}
+.out .md blockquote{border-inline-start:3px solid var(--bg-color-1);box-shadow:0 0 14px -4px var(--bg-color-1)}
+.out .md li::before{background:var(--bg-color-1);box-shadow:0 0 8px var(--bg-color-1),0 0 14px var(--bg-color-2)}
+.out .md strong{text-shadow:0 0 10px color-mix(in srgb,var(--bg-color-2) 70%,transparent)}
+.head{border-bottom-color:color-mix(in srgb,var(--bg-color-1) 60%,transparent);box-shadow:0 8px 14px -10px var(--bg-color-1)}
+.chat{border-top-color:color-mix(in srgb,var(--bg-color-1) 60%,transparent)}
+body.bg-on .chat{border-color:color-mix(in srgb,var(--bg-color-1) 50%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--bg-color-1) 28%,transparent)}
+#outline{width:auto;max-width:44%;padding:.4rem .7rem;font-size:.82rem}
+.page-nav{flex-wrap:wrap;gap:.5rem}
+#askSel{position:fixed;z-index:40;width:auto;margin:0;padding:.4rem .85rem;font-size:.8rem;box-shadow:0 6px 20px rgba(2,6,23,.5),0 0 14px color-mix(in srgb,var(--bg-color-1) 45%,transparent)}
+/* ===== Narrative reading layout: airy paragraphs, glowing key terms, takeaway card ===== */
+.out .md p{margin:1.15rem 0;line-height:1.95}
+.out .md>p:first-of-type{font-size:1.08em;color:#fff}
+.out .md h2{margin-top:2.3rem}
+.out .md hr{margin:2.1rem 0}
+.out .md strong{font-weight:700;color:color-mix(in srgb,var(--bg-color-2) 35%,#fff);background:linear-gradient(transparent 62%,color-mix(in srgb,var(--bg-color-1) 30%,transparent) 62%);padding:0 .15em;border-radius:3px;text-shadow:0 0 12px color-mix(in srgb,var(--bg-color-2) 65%,transparent)}
+.out .md hr+p{padding:1rem 1.2rem;border-radius:var(--r);background:rgba(255,255,255,.05);border-inline-start:3px solid var(--bg-color-1);box-shadow:0 0 18px -6px var(--bg-color-1)}
+#toast{position:fixed;left:50%;bottom:1.6rem;transform:translate(-50%,300%);opacity:0;pointer-events:none;z-index:50;padding:.75rem 1.3rem;border-radius:10px;background:var(--s2);border:1px solid var(--a);transition:transform .3s,opacity .3s}
+#toast.show{transform:translate(-50%,0);opacity:1}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== Logo font: Metal Mania (metal / death-metal style) ===== */
+.logo{font-family:'Metal Mania','Plus Jakarta Sans',cursive;font-weight:400;font-size:1.9rem;letter-spacing:.04em;line-height:1.1}
+.logo span{font-weight:400}
+</style>
+</head>
+<body>
+<div class="bg-fx" aria-hidden="true"></div>
+<div class="app">
+  <header>
+    <div class="logo">AuraStudy <span>by NOLAN</span></div>
+    <div class="hdr-r">
+      <button id="timer" class="btn ghost" type="button" title="Focus timer: click to start or pause, double-click to reset">⏱ 25:00</button>
+    <div class="cust">
+      <button id="custBtn" class="btn ghost" type="button" aria-expanded="false" aria-controls="custPop">🎨 Customize</button>
+      <div id="custPop" class="pop hidden" role="dialog" aria-label="Customize background">
+        <h3>Background</h3>
+        <div class="crow"><label for="c1">First color</label><code id="h1"></code><input type="color" id="c1"></div>
+        <div class="crow"><label for="c2">Second color</label><code id="h2"></code><input type="color" id="c2"></div>
+        <div class="crow"><label for="bgInt">Gradient strength</label><input type="range" id="bgInt" min="20" max="80"></div>
+        <label class="tgl">Custom background <input type="checkbox" id="bgOn"></label>
+        <label class="tgl">Animate gradient <input type="checkbox" id="bgAnim"></label>
+        <button id="bgReset" class="btn ghost" type="button" style="width:100%;justify-content:center">Reset to default</button>
+      </div>
+    </div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+      <section class="card">
+        <h2><b>1</b> Upload material</h2>
+        <div id="drop" class="drop">
+          <span class="ico">📄</span><b>Drop a file here or click to upload</b><br><small>PDF, TXT or DOCX</small>
+          <input type="file" id="file" accept=".pdf,.txt,.docx" hidden>
+        </div>
+        <div id="chip" class="chip"><div><div class="n" id="fName"></div><small id="fMeta"></small></div><button id="rmFile" class="btn ghost" type="button">Remove</button></div>
+        <label class="lbl" for="text">Or paste text directly</label>
+        <textarea id="text" class="field" dir="auto" placeholder="Paste notes, transcripts, or study materials here..."></textarea>
+        <div class="row"><span id="cc">0 chars</span><button id="clr" type="button">Clear</button></div>
+      </section>
+
+      <section class="card">
+        <h2><b>2</b> Explanation settings</h2>
+        <span class="lbl">Language</span>
+        <div class="seg c3">
+          <input type="radio" name="xl" id="x1" value="egy" checked><label for="x1">Egyptian<span>عامية</span></label>
+          <input type="radio" name="xl" id="x3" value="msa"><label for="x3">MSA<span>فصحى</span></label>
+          <input type="radio" name="xl" id="x2" value="en"><label for="x2">English<span>Simple</span></label>
+        </div>
+        <span class="lbl">Depth</span>
+        <div class="seg c2">
+          <input type="radio" name="dp" id="d1" value="quick"><label for="d1">Overview</label>
+          <input type="radio" name="dp" id="d2" value="deep" checked><label for="d2">Deep dive</label>
+        </div>
+        <label class="lbl" for="topic">Focus topic (optional)</label>
+        <input id="topic" class="field" dir="auto" placeholder="e.g. Chapter 3, Organic reactions...">
+        <details class="set" open><summary>Gemini settings (saved automatically)</summary>
+          <label class="lbl" for="model">Model</label>
+          <select id="model" class="field">
+            <option value="gemini-3.5-flash-lite" selected>gemini-3.5-flash-lite (fastest)</option>
+            <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+          </select>
+          <label class="lbl" for="key">API key</label>
+          <input id="key" type="password" class="field" placeholder="Paste your key here" dir="ltr">
+        </details>
+        <button id="expBtn" class="btn" type="button"><i class="sp"></i><span>Explain material</span></button>
+      </section>
+
+      <section class="card">
+        <h2><b>3</b> Practice generator</h2>
+        <span class="lbl">Format</span>
+        <div class="seg c3">
+          <input type="radio" name="qt" id="q1" value="mcq" checked><label for="q1">MCQ</label>
+          <input type="radio" name="qt" id="q2" value="essay"><label for="q2">Essay</label>
+          <input type="radio" name="qt" id="q3" value="tf"><label for="q3">True / False</label>
+        </div>
+        <span class="lbl">Difficulty</span>
+        <div class="seg c2">
+          <input type="radio" name="df" id="f1" value="easy"><label for="f1">Easy<span>Recall</span></label>
+          <input type="radio" name="df" id="f2" value="medium" checked><label for="f2">Medium<span>Understanding</span></label>
+          <input type="radio" name="df" id="f3" value="hard"><label for="f3">Hard<span>Analysis</span></label>
+          <input type="radio" name="df" id="f4" value="legendary"><label for="f4" class="leg">👑 Legendary<span>Ultimate challenge</span></label>
+        </div>
+        <span class="lbl">Number of questions</span>
+        <div class="stepper">
+          <button class="sq" id="minus" type="button" aria-label="Fewer">−</button>
+          <input id="num" class="field" type="number" min="1" max="25" value="5">
+          <button class="sq" id="plus" type="button" aria-label="More">+</button>
+          <div class="pre" id="pre"><button type="button" data-n="5" class="on">5</button><button type="button" data-n="10">10</button></div>
+        </div>
+        <button id="quizBtn" class="btn alt" type="button"><i class="sp"></i><span>Generate quiz</span></button>
+        <button id="cardBtn" class="btn alt" type="button"><i class="sp"></i><span>Generate flashcards</span></button>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="head">
+        <div class="tabs">
+          <button class="tab on" data-t="exp" type="button">Explanation</button>
+          <button class="tab" data-t="quiz" type="button">Practice quiz</button>
+          <button class="tab" data-t="cards" type="button">Flashcards</button>
+        </div>
+        <div class="tools">
+          <button class="btn ghost fsb" id="fsm" type="button" title="Smaller text">A−</button>
+          <button class="btn ghost fsb" id="fsp" type="button" title="Larger text">A+</button>
+          <button class="btn ghost" id="fm" type="button">Focus mode</button>
+          <button class="btn ghost" id="tts" type="button">🔊 Listen</button>
+          <button class="btn ghost" id="copy" type="button">Copy page</button>
+          <button class="btn ghost" id="dl" type="button">Export</button>
+          <button class="btn ghost" id="newS" type="button">New session</button>
+        </div>
+      </div>
+
+      <div id="pageNav" class="page-nav hidden">
+        <button id="prevPage" class="btn ghost" type="button">← Previous</button>
+        <select id="outline" class="field hidden" aria-label="Jump to section"></select>
+        <span id="pageInfo" class="page-info">Page 1 of 1</span>
+        <button id="nextPage" class="btn ghost" type="button">Next →</button>
+      </div>
+
+      <div id="out" class="out">
+        <div class="idle"><div class="t">Ready when you are</div><p style="max-width:380px">Upload or paste your material to get a clear, structured explanation.</p></div>
+      </div>
+
+      <!-- Language selector: sits right below the explanation box -->
+      <div id="trBar" class="tr hidden">
+        <label for="trLang">Language</label>
+        <select id="trLang" class="field">
+          <option value="orig">Original (as generated)</option>
+          <option value="en">English</option>
+          <option value="fr">Français (French)</option>
+          <option value="es">Español (Spanish)</option>
+          <option value="de">Deutsch (German)</option>
+          <option value="it">Italiano (Italian)</option>
+          <option value="pt">Português (Portuguese)</option>
+          <option value="tr">Türkçe (Turkish)</option>
+          <option value="ru">Русский (Russian)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="egy">العربية المصرية (Egyptian Arabic)</option>
+        </select>
+        <span id="trTag" class="tag"></span>
+      </div>
+
+      <div id="chat" class="chat hidden">
+        <h2><b>💬</b> Ask your tutor</h2>
+        <div class="chips" id="chips">
+          <button type="button" data-q="Explain this current page using a real-world analogy.">Real-world analogy</button>
+          <button type="button" data-q="What are the 3 most likely exam traps on this page?">Exam traps</button>
+          <button type="button" data-q="Summarize this page into 3 concise bullet points.">Quick summary</button>
+        </div>
+        <div id="clog" class="clog"></div>
+        <div class="ask">
+          <input id="q" class="field" type="text" placeholder="Ask anything about this page..." dir="auto">
+          <button id="send" class="btn" style="width:auto;margin:0" type="button">Send</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<button id="askSel" class="btn hidden" type="button">💬 Ask tutor</button>
+<div id="toast" role="status"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const state={fileText:'',pages:[],orig:null,dir:'rtl',trCache:{},trLang:null,currentPage:0,ready:false,tab:'exp',quiz:null,chat:[],cards:null};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=m=>{const e=$('toast');e.textContent=m;e.className='show';setTimeout(()=>e.className='',3000)};
+const idle=(t,p,color)=>`<div class="idle"><div class="t"${color?` style="color:${color}"`:''}>${esc(t)}</div>${p?`<p>${esc(p)}</p>`:''}</div>`;
+const setTab=t=>{state.tab=t;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t))};
+
+/* ---------- Persistence ---------- */
+try{const k=localStorage.getItem('aurastudy_gemini_key');if(k)$('key').value=k}catch(e){}
+$('key').oninput=()=>{try{localStorage.setItem('aurastudy_gemini_key',$('key').value.trim())}catch(e){}};
+
+/* ---------- Custom gradient background (saved in localStorage) ---------- */
+const BG_KEY='aurastudy_bg',BG_DEF={c1:'#6366f1',c2:'#14b8a6',on:false,anim:true,int:55},HEX=/^#[0-9a-f]{6}$/i;
+let bg={...BG_DEF};
+try{const v=JSON.parse(localStorage.getItem(BG_KEY));if(v&&HEX.test(v.c1)&&HEX.test(v.c2))bg={...BG_DEF,...v,on:!!v.on,anim:v.anim!==false,int:Math.min(80,Math.max(20,+v.int||55))}}catch(e){}
+function applyBg(save){
+  const r=document.documentElement.style;
+  r.setProperty('--g1',bg.c1);r.setProperty('--g2',bg.c2);
+  r.setProperty('--bg-color-1',bg.c1);r.setProperty('--bg-color-2',bg.c2); /* drive the neon effects */
+  r.setProperty('--bgov',`rgba(15,23,42,${(1-bg.int/100).toFixed(2)})`);
+  $('bgInt').value=bg.int;
+  document.body.classList.toggle('bg-on',bg.on);
+  document.body.classList.toggle('bg-still',!bg.anim);
+  $('c1').value=bg.c1;$('c2').value=bg.c2;$('h1').textContent=bg.c1;$('h2').textContent=bg.c2;
+  $('bgOn').checked=bg.on;$('bgAnim').checked=bg.anim;
+  if(save){try{localStorage.setItem(BG_KEY,JSON.stringify(bg))}catch(e){}}
+}
+['c1','c2'].forEach(id=>$(id).oninput=()=>{bg[id]=$(id).value;bg.on=true;applyBg(true)});
+$('bgInt').oninput=()=>{bg.int=+$('bgInt').value;bg.on=true;applyBg(true)};
+$('bgOn').onchange=()=>{bg.on=$('bgOn').checked;applyBg(true)};
+$('bgAnim').onchange=()=>{bg.anim=$('bgAnim').checked;applyBg(true)};
+$('bgReset').onclick=()=>{bg={...BG_DEF};applyBg(true);toast('Background reset')};
+const closePop=()=>{$('custPop').classList.add('hidden');$('custBtn').setAttribute('aria-expanded','false')};
+$('custBtn').onclick=e=>{e.stopPropagation();const open=$('custPop').classList.toggle('hidden')===false;$('custBtn').setAttribute('aria-expanded',open)};
+document.addEventListener('click',e=>{if(!e.target.closest('.cust'))closePop()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePop()});
+applyBg(false);
+
+/* ---------- Question count stepper ---------- */
+const setNum=n=>{n=Math.max(1,Math.min(25,parseInt(n)||5));$('num').value=n;document.querySelectorAll('#pre button').forEach(b=>b.classList.toggle('on',+b.dataset.n===n))};
+$('minus').onclick=()=>setNum(+$('num').value-1);
+$('plus').onclick=()=>setNum(+$('num').value+1);
+$('num').onchange=()=>setNum($('num').value);
+$('pre').onclick=e=>{const b=e.target.closest('button');if(b)setNum(b.dataset.n)};
+
+/* ---------- File handling ---------- */
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const rd=(f,m)=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r[m](f)});
+async function handleFile(f){
+  if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
+  try{
+    let text='';
+    if(ext==='pdf'){
+      const pdf=await pdfjsLib.getDocument({data:await rd(f,'readAsArrayBuffer')}).promise;
+      for(let i=1;i<=Math.min(pdf.numPages,30);i++){
+        const c=await(await pdf.getPage(i)).getTextContent();
+        text+=c.items.map(it=>it.str).join(' ')+'\n\n';
+      }
+    }else if(ext==='docx')text=(await mammoth.extractRawText({arrayBuffer:await rd(f,'readAsArrayBuffer')})).value;
+    else text=await rd(f,'readAsText');
+    state.fileText=text;
+    $('fName').textContent=f.name;
+    $('fMeta').textContent=`${(f.size/1024).toFixed(1)} KB, ${text.length} chars`;
+    $('chip').classList.add('show');updateCount();
+    toast('File loaded');
+  }catch(e){toast('Could not read this file');console.error(e)}
+}
+$('drop').onclick=()=>$('file').click();
+$('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('drag')};
+$('drop').ondragleave=()=>$('drop').classList.remove('drag');
+$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('drag');handleFile(e.dataTransfer.files[0])};
+$('file').onchange=()=>handleFile($('file').files[0]);
+function updateCount(){const n=(state.fileText+$('text').value).length;$('cc').textContent=n.toLocaleString()+' chars'+(n>15000?' · only the first 15,000 are used':'');$('cc').style.color=n>15000?'var(--gold)':''}
+$('text').oninput=updateCount;
+$('clr').onclick=()=>{$('text').value='';updateCount()};
+$('rmFile').onclick=()=>{state.fileText='';$('file').value='';$('chip').classList.remove('show');updateCount()};
+
+/* ---------- Rendering ---------- */
+function paginateContent(text,size=2000){
+  const pages=[];let cur=[],len=0;
+  for(const p of text.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean)){
+    if(len+p.length>size&&cur.length){
+      const tail=[];
+      while(cur.length>1&&/^#{1,3} /.test(cur[cur.length-1]))tail.unshift(cur.pop());
+      pages.push(cur.join('\n\n'));cur=tail;len=cur.join('').length;
+    }
+    cur.push(p);len+=p.length;
+  }
+  if(cur.length)pages.push(cur.join('\n\n'));
+  return pages.length?pages:[text];
+}
+const typeset=el=>{if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise([el]).catch(()=>{})};
+
+function md2html(src){
+  const inline=s=>s.replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+  const out=[];let list=null;
+  const close=()=>{if(list){out.push(`</${list}>`);list=null}};
+  esc(src.replace(/```[a-z]*\n?/g,'')).split('\n').forEach(line=>{
+    const ul=line.match(/^\s*[-*•]\s+(.*)$/),ol=line.match(/^\s*\d+[.)]\s+(.*)$/),m=ul?['ul',ul[1]]:ol?['ol',ol[1]]:null;
+    if(m){if(list!==m[0]){close();out.push(`<${m[0]}>`);list=m[0]}out.push('<li>'+inline(m[1])+'</li>');return}
+    close();
+    if(/^### /.test(line))out.push('<h3>'+inline(line.slice(4))+'</h3>');
+    else if(/^#{1,2} /.test(line))out.push('<h2>'+inline(line.replace(/^#+ /,''))+'</h2>');
+    else if(/^&gt;\s?/.test(line))out.push('<blockquote>'+inline(line.replace(/^&gt;\s?/,''))+'</blockquote>');
+    else if(/^\s*---+\s*$/.test(line))out.push('<hr>');
+    else if(line.trim())out.push('<p>'+inline(line)+'</p>');
+  });
+  close();
+  return out.join('');
+}
+
+function renderCurrentPage(){
+  if(!state.pages.length)return;
+  $('out').innerHTML=`<div class="md" dir="${state.dir}">${md2html(state.pages[state.currentPage])}</div>`;
+  $('pageInfo').textContent=`Page ${state.currentPage+1} of ${state.pages.length}`;
+  $('pageNav').classList.remove('hidden');
+  $('prevPage').disabled=state.currentPage===0;
+  $('nextPage').disabled=state.currentPage===state.pages.length-1;
+  if(window.speechSynthesis)speechSynthesis.cancel();
+  buildOutline();
+  saveSession();
+  typeset($('out'));
+}
+$('prevPage').onclick=()=>{if(state.currentPage>0){state.currentPage--;renderCurrentPage()}};
+$('nextPage').onclick=()=>{if(state.currentPage<state.pages.length-1){state.currentPage++;renderCurrentPage()}};
+
+function showTab(t){
+  setTab(t);
+  const hasExp=state.pages.length>0;
+  $('trBar').classList.toggle('hidden',t!=='exp'||!hasExp);
+  if(t==='exp'){
+    if(hasExp)renderCurrentPage();
+    else{$('pageNav').classList.add('hidden');$('out').innerHTML=idle('Ready when you are','Upload or paste your material to get a clear, structured explanation.')}
+  }else if(t==='cards'){
+    $('pageNav').classList.add('hidden');
+    if(state.cards)renderCards();else $('out').innerHTML=idle('No flashcards yet','Generate flashcards from your material.');
+  }else{
+    $('pageNav').classList.add('hidden');
+    if(state.quiz)renderQuiz();else $('out').innerHTML=idle('No quiz yet','Pick a format and difficulty, then generate a quiz.');
+  }
+}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+
+/* ---------- Gemini ---------- */
+const EXPLAIN_SYSTEM=[
+'Role & Tone:',
+'Act as an exceptional, passionate tutor and mentor. Your goal is to break down complex concepts into crystal-clear, deeply engaging, and effortless explanations—as if explaining to a clever friend.',
+'',
+'Explanation Guidelines:',
+'1. Flow & Structure: Use a rich, fluid narrative style with natural transitions. Avoid repetitive subheadings, rigid exam-style lists, or dry academic summaries.',
+'2. Conceptual Clarity: Start with a brief, high-level intuitive overview, then dive naturally into the core details using clear, well-spaced paragraphs.',
+'3. Smart Formatting: Use subtle bolding (`**term**`) only for critical keywords and core concepts so they catch the eye naturally while maintaining clean readability.',
+'4. No Fluff: Keep the focus 100% on making the material instantly understandable, keeping key details intact without dumping unnecessary technical jargon.'
+].join('\n');
+async function fetchRetry(url,opt,tries=3){
+  for(let i=1;;i++){
+    const r=await fetch(url,opt);
+    if(r.ok||![429,500,503].includes(r.status)||i>=tries)return r;
+    await new Promise(ok=>setTimeout(ok,1200*i));
+  }
+}
+async function callGemini(promptText,{json=false,timeout=35000,system=''}={}){
+  const key=$('key').value.trim();
+  if(!key)throw new Error('API key is missing');
+  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),timeout);
+  const body={contents:[{parts:[{text:promptText}]}]};
+  if(system)body.systemInstruction={parts:[{text:system}]};
+  if(json)body.generationConfig={responseMimeType:'application/json',temperature:0.7};
+  try{
+    const res=await fetchRetry(`https://generativelanguage.googleapis.com/v1beta/models/${$('model').value}:generateContent`,{
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body),signal:ctrl.signal});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error?.message||`API error: ${res.status}`)}
+    const data=await res.json(),parts=data.candidates?.[0]?.content?.parts;
+    if(!parts||!parts.length)throw new Error(data.promptFeedback?.blockReason?`Request blocked: ${data.promptFeedback.blockReason}`:'The model returned an empty response. Try again.');
+    return parts.map(p=>p.text||'').join('');
+  }catch(err){
+    if(err.name==='AbortError')throw new Error('Request timed out. Try shorter material.');
+    throw err;
+  }finally{clearTimeout(timer)}
+}
+
+/* ---------- Explanation ---------- */
+async function runExplain(){
+  const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
+  if(!text)return toast('Paste text or upload a file first.');
+  if(!$('key').value.trim())return toast('Gemini API key is required.');
+  const btn=$('expBtn');btn.disabled=true;btn.classList.add('loading');
+  setTab('exp');$('trBar').classList.add('hidden');$('pageNav').classList.add('hidden');
+  $('out').innerHTML=idle('Explaining...');
+  const lang=document.querySelector('input[name=xl]:checked').value;
+  const deep=document.querySelector('input[name=dp]:checked').value!=='quick';
+  const prompt=`Explain the study material below.
+
+Output language: ${LANG[lang]} (write in the natural tone of that language).
+Depth: ${deep?'thorough, covering every part of the material':'concise, focused on the main ideas only'}.
+Focus: ${$('topic').value||'the whole material'}.
+
+Output rules:
+- Plain text only, with no code blocks. Write any equations in LaTeX between dollar signs.
+- Separate paragraphs with a blank line.
+- Only if the material moves to a major new topic, you may add one short heading written as "## Heading". Use headings sparingly.
+- Do not add information that is not in the material, except a simple analogy or example.
+- Start directly with the explanation, with no greeting.
+
+MATERIAL:
+${text.substring(0,15000)}`;
+  try{
+    state.pages=paginateContent(await callGemini(prompt,{timeout:60000,system:EXPLAIN_SYSTEM}));
+    state.orig={pages:state.pages,dir:lang==='en'?'ltr':'rtl',label:lang==='en'?'English':'Arabic'};
+    state.dir=state.orig.dir;state.trCache={};state.trLang=null;state.currentPage=0;
+    $('trLang').value='orig';$('trTag').textContent='';state.chat=[];$('clog').innerHTML='';
+    $('trBar').classList.remove('hidden');
+    renderCurrentPage();
+    $('chat').classList.remove('hidden');state.ready=true;
+    toast('Explanation ready');
+  }catch(e){
+    toast(e.message||'Connection failed');
+    $('out').innerHTML=idle('Something went wrong',e.message,'var(--bad)');
+  }finally{btn.disabled=false;btn.classList.remove('loading')}
+}
+$('expBtn').onclick=runExplain;
+
+/* ---------- Translation (runs automatically when the language changes) ---------- */
+const RTL_LANGS=['ar','egy'];
+async function changeLang(){
+  if(!state.orig)return;
+  const sel=$('trLang'),code=sel.value,name=sel.selectedOptions[0].textContent;
+  const target=code==='egy'?'colloquial Egyptian Arabic (عامية مصرية), the way Egyptians actually speak, not Modern Standard Arabic':name;
+  const show=(pages,dir,label)=>{state.pages=pages;state.dir=dir;state.currentPage=0;$('trTag').textContent=label;if(state.tab==='exp')renderCurrentPage()};
+  const dirOf=c=>RTL_LANGS.includes(c)?'rtl':'ltr';
+  if(code==='orig')return show(state.orig.pages,state.orig.dir,'');
+  if(state.trCache[code])return show(state.trCache[code],dirOf(code),'Showing: '+name);
+  if(!$('key').value.trim()){toast('Gemini API key is required.');sel.value='orig';return}
+  sel.disabled=true;$('trTag').textContent='Translating...';
+  const prompt=`Translate the following study explanation into ${target}.
+Keep the exact structure: lines starting with "## " or "### " stay headings, lines starting with "- " stay bullets, and **bold** markers stay in place. Leave math (LaTeX), numbers and formulas unchanged. Do not add notes, comments or code fences. Return only the translated text.
+
+TEXT:
+${state.orig.pages.join('\n\n')}`;
+  try{
+    const pages=paginateContent(await callGemini(prompt,{timeout:90000}));
+    state.trCache[code]=pages;show(pages,dirOf(code),'Showing: '+name);toast('Translation ready');
+  }catch(e){
+    toast(e.message||'Translation failed');sel.value='orig';
+    show(state.orig.pages,state.orig.dir,'');
+  }finally{sel.disabled=false}
+}
+$('trLang').onchange=changeLang;
+
+/* ---------- Quiz ---------- */
+const DIFF={
+  easy:{label:'Easy',rule:'Basic recall. Ask about definitions, names, facts and statements that appear directly in the material. Wrong options must be clearly wrong. No tricks.'},
+  medium:{label:'Medium',rule:'Check understanding and simple application. Mix recall with "why" and "how" questions. Wrong options should be plausible but distinguishable with solid understanding.'},
+  hard:{label:'Hard',rule:'Analysis and multi-step reasoning. Require comparing concepts, applying ideas to new scenarios, and inferring consequences. All wrong options must be very plausible and share common misconceptions.'},
+  legendary:{label:'Legendary',rule:'The ultimate, expert-level exam. Combine several parts of the material in one question, test edge cases, exceptions, subtle distinctions and counter-intuitive implications, and require deep multi-step reasoning. Every wrong option must be highly convincing and based on a realistic misconception. For true/false, use statements that are almost true or that hide one subtle error. For essays, demand critical evaluation, synthesis and justification. Even top students should find it difficult.'}
+};
+const LANG={egy:'Egyptian Arabic (colloquial)',msa:'Modern Standard Arabic',en:'English'};
+const TF_LABELS={en:['True','False'],ar:['صح','خطأ']};
+
+function buildQuizPrompt(text,type,count,diff,lang,topic){
+  const fmt={
+    mcq:`Each item: "question" (string), "options" (array of exactly 4 short strings WITHOUT letter prefixes like A/B), "correctIndex" (integer 0-3, vary its position across questions), "explanation" (1-2 sentences why the answer is correct).`,
+    tf:`Each item: "question" (a single statement to judge, string), "correctIndex" (0 if the statement is TRUE, 1 if FALSE; mix both roughly evenly), "explanation" (1-2 sentences).`,
+    essay:`Each item: "question" (string, open-ended), "modelAnswer" (a concise model answer of 2-5 sentences covering the key points a good answer needs).`
+  }[type];
+  return `You are an expert exam writer. Create exactly ${count} ${type==='mcq'?'multiple-choice':type==='tf'?'true/false':'essay'} questions based ONLY on the study material below.
+
+Difficulty: ${DIFF[diff].label}. ${DIFF[diff].rule}
+Language of all questions, options and explanations: ${LANG[lang]}.
+${topic?`Focus only on this topic: ${topic}\n`:''}
+Return ONLY a JSON array (no markdown, no code fences, no commentary). ${fmt}
+Do not number the questions. Do not use information that is not in the material.
+
+STUDY MATERIAL:
+${text}`;
+}
+
+function parseQuiz(raw,type,lang){
+  let s=raw.trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim(),data;
+  try{data=JSON.parse(s)}catch(e){
+    const a=s.indexOf('['),b=s.lastIndexOf(']');
+    if(a<0||b<=a)throw new Error('Could not read the quiz from the model response.');
+    data=JSON.parse(s.slice(a,b+1));
+  }
+  if(!Array.isArray(data))data=data.questions||data.items||[];
+  const tf=TF_LABELS[lang==='en'?'en':'ar'];
+  const items=data.map(d=>{
+    if(!d||typeof d.question!=='string'||!d.question.trim())return null;
+    const it={question:d.question.trim(),explanation:String(d.explanation||'').trim()};
+    if(type==='essay'){it.modelAnswer=String(d.modelAnswer||d.answer||'').trim();return it.modelAnswer?it:null}
+    if(type==='tf'){
+      let ci=d.correctIndex;if(typeof d.correct==='boolean')ci=d.correct?0:1;
+      if(ci!==0&&ci!==1)return null;
+      it.options=tf;it.correctIndex=ci;return it;
+    }
+    const opts=Array.isArray(d.options)?d.options.map(o=>String(o).replace(/^\s*[A-Da-d][\).:\-]\s+/,'').trim()).filter(Boolean):[];
+    const ci=Number.isInteger(d.correctIndex)?d.correctIndex:parseInt(d.correctIndex);
+    if(opts.length<2||!(ci>=0&&ci<opts.length))return null;
+    it.options=opts;it.correctIndex=ci;return it;
+  }).filter(Boolean);
+  if(!items.length)throw new Error('The model returned no valid questions.');
+  return items;
+}
+
+async function runQuiz(){
+  const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
+  if(!text)return toast('Paste text or upload a file first.');
+  if(!$('key').value.trim())return toast('Gemini API key is required.');
+  const count=Math.max(1,Math.min(25,parseInt($('num').value)||5));setNum(count);
+  const type=document.querySelector('input[name=qt]:checked').value;
+  const diff=document.querySelector('input[name=df]:checked').value;
+  const lang=document.querySelector('input[name=xl]:checked').value;
+  const btn=$('quizBtn');btn.disabled=true;btn.classList.add('loading');
+  setTab('quiz');$('pageNav').classList.add('hidden');$('trBar').classList.add('hidden');
+  $('out').innerHTML=idle('Generating quiz...',`${count} ${DIFF[diff].label} questions`);
+  const prompt=buildQuizPrompt(text.substring(0,15000),type,count,diff,lang,$('topic').value.trim());
+  try{
+    let items,lastErr;
+    for(let i=0;i<2&&!items;i++){
+      try{items=parseQuiz(await callGemini(prompt,{json:true,timeout:75000}),type,lang)}
+      catch(e){lastErr=e;if(/API key|blocked|API error|timed out/i.test(e.message))throw e}
+    }
+    if(!items)throw lastErr;
+    state.quiz={items,type,diff,lang,answers:{},revealed:{}};
+    renderQuiz();toast(`Quiz ready: ${items.length} questions`);
+  }catch(e){
+    toast(e.message||'Connection failed');
+    $('out').innerHTML=idle('Something went wrong',e.message,'var(--bad)');
+  }finally{btn.disabled=false;btn.classList.remove('loading')}
+}
+$('quizBtn').onclick=runQuiz;
+
+function renderQuiz(){
+  const z=state.quiz;if(!z)return;
+  const rtl=z.lang!=='en',isEssay=z.type==='essay',answered=Object.keys(z.answers).length;
+  const score=z.items.reduce((n,it,i)=>n+(z.answers[i]===it.correctIndex?1:0),0);
+  let h=`<div dir="${rtl?'rtl':'ltr'}"><div class="qz-top"><div class="qz-badges"><span class="badge${z.diff==='legendary'?' leg':''}">${z.diff==='legendary'?'👑 ':''}${DIFF[z.diff].label}</span><span class="badge">${z.type==='mcq'?'MCQ':z.type==='tf'?'True / False':'Essay'}</span><span class="badge">${z.items.length} questions</span></div>${isEssay?'':`<span class="qz-score">Score: ${score} / ${answered}</span>`}</div>${isEssay?'':`<div class="qz-bar"><i style="width:${answered/z.items.length*100}%"></i></div>`}`;
+  z.items.forEach((it,i)=>{
+    h+=`<div class="qz-q"><h3>${i+1}. ${esc(it.question)}</h3>`;
+    if(isEssay){
+      h+=z.revealed[i]?`<div class="qz-exp"><strong>Model answer:</strong><br>${esc(it.modelAnswer)}</div>`:`<button class="btn ghost" data-reveal="${i}" type="button">Show model answer</button>`;
+    }else{
+      const done=z.answers[i]!==undefined;
+      h+='<div class="qz-opts">';
+      it.options.forEach((o,j)=>{
+        let cls='qz-opt';
+        if(done){if(j===it.correctIndex)cls+=' right';else if(j===z.answers[i])cls+=' wrong'}
+        h+=`<button class="${cls}" data-q="${i}" data-o="${j}" type="button"${done?' disabled':''}>${z.type==='mcq'?`<b class="ol">${String.fromCharCode(65+j)}</b>`:''}<span>${esc(o)}</span></button>`;
+      });
+      h+='</div>';
+      if(done&&it.explanation)h+=`<div class="qz-exp">${esc(it.explanation)}</div>`;
+    }
+    h+='</div>';
+  });
+  if(!isEssay&&answered===z.items.length)h+=`<div class="qz-final">Final score: ${score} / ${z.items.length} (${Math.round(score/z.items.length*100)}%)</div><div class="qz-act"><button class="btn ghost" data-act="retake" type="button">Retake quiz</button>${score<z.items.length?'<button class="btn ghost" data-act="missed" type="button">Retry missed only</button>':''}</div>`;
+  $('out').innerHTML=h+'</div>';
+  saveSession();
+  typeset($('out'));
+}
+$('out').addEventListener('click',e=>{
+  const z=state.quiz;if(!z||state.tab!=='quiz')return;
+  const keep=$('out').scrollTop,o=e.target.closest('[data-o]'),r=e.target.closest('[data-reveal]'),ac=e.target.closest('[data-act]');
+  if(o){const i=+o.dataset.q;if(z.answers[i]===undefined){z.answers[i]=+o.dataset.o;renderQuiz();$('out').scrollTop=keep}}
+  else if(r){z.revealed[+r.dataset.reveal]=true;renderQuiz();$('out').scrollTop=keep}
+  else if(ac){
+    if(ac.dataset.act==='missed')z.items=z.items.filter((it,i)=>z.answers[i]!==it.correctIndex);
+    z.answers={};z.revealed={};renderQuiz();$('out').scrollTop=0;
+  }
+});
+
+/* ---------- Tutor chat ---------- */
+async function sendChat(msg){
+  const text=msg||$('q').value.trim();
+  if(!text)return;
+  if(!$('key').value.trim())return toast('Gemini API key is required.');
+  if(!state.pages.length)return;
+  $('q').value='';
+  const u=document.createElement('div');u.className='msg user';u.textContent=text;$('clog').appendChild(u);
+  const bot=document.createElement('div');bot.className='msg bot md';bot.dir='auto';bot.textContent='Thinking...';$('clog').appendChild(bot);
+  try{
+    const hist=state.chat.slice(-6).map(m=>`${m.r}: ${m.t}`).join('\n');
+    const prompt=`Context:\n${state.pages[state.currentPage]}\n\n${hist?`Conversation so far:\n${hist}\n\n`:''}Question: ${text}\nAnswer like a friendly tutor chatting with a student: natural flowing sentences, no headings, no bullet lists, no code symbols. Answer in the same language as the question.`;
+    const ans=await callGemini(prompt,{timeout:60000});
+    state.chat.push({r:'Student',t:text},{r:'Tutor',t:ans});
+    bot.innerHTML=md2html(ans);
+    typeset(bot);
+  }catch(e){bot.textContent='Request failed: '+e.message}
+}
+$('send').onclick=()=>sendChat();
+$('q').onkeydown=e=>{if(e.key==='Enter')sendChat()};
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>sendChat(b.dataset.q));
+
+/* ---------- Tools ---------- */
+let fsv=1;
+const setFs=d=>{fsv=Math.max(.85,Math.min(1.5,+(fsv+d).toFixed(2)));document.documentElement.style.setProperty('--fs',fsv)};
+$('fsm').onclick=()=>setFs(-.1);$('fsp').onclick=()=>setFs(.1);
+$('fm').onclick=()=>document.querySelector('.app').classList.toggle('focus');
+$('copy').onclick=()=>{
+  let t='';
+  if(state.tab==='quiz'&&state.quiz)t=state.quiz.items.map((it,i)=>`${i+1}. ${it.question}`+(it.options?'\n'+it.options.map((o,j)=>`   ${String.fromCharCode(65+j)}) ${o}`).join('\n'):'')).join('\n\n');
+  else if(state.pages.length)t=state.pages[state.currentPage];
+  if(!t)return;
+  navigator.clipboard.writeText(t).then(()=>toast('Copied to clipboard')).catch(()=>toast('Copy failed'));
+};
+
+/* ---------- Autosave: refresh-proof session ---------- */
+const SES='aurastudy_session';
+function saveSession(){try{localStorage.setItem(SES,JSON.stringify({orig:state.orig,trCache:state.trCache,lang:$('trLang').value,page:state.currentPage,quiz:state.quiz,cards:state.cards}))}catch(e){}}
+function restoreSession(){
+  try{
+    const v=JSON.parse(localStorage.getItem(SES)||'null');if(!v)return;
+    if(v.orig&&v.orig.pages&&v.orig.pages.length){
+      state.orig=v.orig;state.trCache=v.trCache||{};
+      const code=v.lang&&v.lang!=='orig'&&state.trCache[v.lang]?v.lang:'orig';
+      $('trLang').value=code;
+      state.pages=code==='orig'?state.orig.pages:state.trCache[code];
+      state.dir=code==='orig'?state.orig.dir:(RTL_LANGS.includes(code)?'rtl':'ltr');
+      state.currentPage=Math.max(0,Math.min(v.page||0,state.pages.length-1));
+      if(code!=='orig')$('trTag').textContent='Showing: '+$('trLang').selectedOptions[0].textContent;
+      $('trBar').classList.remove('hidden');$('chat').classList.remove('hidden');state.ready=true;
+      renderCurrentPage();
+    }
+    if(v.cards&&v.cards.items)state.cards=v.cards;
+    if(v.quiz&&v.quiz.items){state.quiz=v.quiz;if(!state.orig){setTab('quiz');renderQuiz()}}
+  }catch(e){console.error(e)}
+}
+$('newS').onclick=()=>{if(confirm('Clear the current explanation, quiz and chat?')){try{localStorage.removeItem(SES)}catch(e){}location.reload()}};
+
+/* ---------- Read aloud ---------- */
+const VOICE={en:'en-US',fr:'fr-FR',es:'es-ES',de:'de-DE',it:'it-IT',pt:'pt-PT',tr:'tr-TR',ru:'ru-RU',ar:'ar-SA',egy:'ar-EG'};
+$('tts').onclick=()=>{
+  if(!('speechSynthesis' in window))return toast('Read aloud is not supported in this browser');
+  if(speechSynthesis.speaking){speechSynthesis.cancel();return}
+  if(state.tab!=='exp'||!state.pages.length)return toast('Generate an explanation first.');
+  const code=$('trLang').value,u=new SpeechSynthesisUtterance(state.pages[state.currentPage].replace(/[#*`$>_]+/g,' '));
+  u.lang=code==='orig'?(state.orig.dir==='ltr'?'en-US':'ar-SA'):VOICE[code];
+  speechSynthesis.speak(u);
+};
+
+/* ---------- Export ---------- */
+const quizText=ans=>state.quiz.items.map((it,i)=>`${i+1}. ${it.question}`+(it.options?'\n'+it.options.map((o,j)=>`   ${String.fromCharCode(65+j)}) ${o}`).join('\n'):'')+(ans?`\n   Answer: ${it.options?String.fromCharCode(65+it.correctIndex)+') '+it.options[it.correctIndex]:it.modelAnswer}`+(it.explanation?`\n   ${it.explanation}`:''):'')).join('\n\n');
+$('dl').onclick=()=>{
+  let t,n;
+  if(state.tab==='cards'&&state.cards){t=state.cards.items.map(c=>c.front.replace(/[\t\n]/g,' ')+'\t'+c.back.replace(/[\t\n]/g,' ')).join('\n');n='aurastudy-flashcards.tsv'}
+  else if(state.tab==='quiz'&&state.quiz){t=quizText(true);n='aurastudy-quiz.txt'}
+  else if(state.pages.length){t=state.pages.join('\n\n');n='aurastudy-notes.md'}
+  else return toast('Nothing to export yet.');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([t],{type:'text/plain;charset=utf-8'}));a.download=n;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+/* ---------- Keyboard shortcuts ---------- */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();return runExplain()}
+  if(state.tab==='cards'&&state.cards&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)){
+    const m={ArrowRight:'next',ArrowLeft:'prev',' ':'flip'}[e.key],b=m&&$('out').querySelector(`[data-fc="${m}"]`);
+    if(b){e.preventDefault();b.click()}
+  }
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||state.tab!=='exp')return;
+  if(e.key==='ArrowRight')$('nextPage').click();
+  if(e.key==='ArrowLeft')$('prevPage').click();
+});
+
+/* ---------- Flashcards ---------- */
+function parseCards(raw){
+  let s=raw.trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim(),d;
+  try{d=JSON.parse(s)}catch(e){const a=s.indexOf('['),b=s.lastIndexOf(']');if(a<0||b<=a)throw new Error('Could not read the flashcards from the model response.');d=JSON.parse(s.slice(a,b+1))}
+  if(!Array.isArray(d))d=d.cards||d.items||[];
+  const items=d.map(c=>{
+    const f=c&&String(c.front||c.question||'').trim(),b=c&&String(c.back||c.answer||'').trim();
+    return f&&b?{front:f,back:b,known:null}:null;
+  }).filter(Boolean);
+  if(!items.length)throw new Error('The model returned no valid flashcards.');
+  return items;
+}
+async function runCards(){
+  const text=[state.fileText,$('text').value].filter(Boolean).join('\n\n');
+  if(!text)return toast('Paste text or upload a file first.');
+  if(!$('key').value.trim())return toast('Gemini API key is required.');
+  const count=Math.max(1,Math.min(25,parseInt($('num').value)||5));setNum(count);
+  const lang=document.querySelector('input[name=xl]:checked').value,topic=$('topic').value.trim();
+  const btn=$('cardBtn');btn.disabled=true;btn.classList.add('loading');
+  setTab('cards');$('pageNav').classList.add('hidden');$('trBar').classList.add('hidden');
+  $('out').innerHTML=idle('Making flashcards...',`${count} cards`);
+  const prompt=`You are an expert tutor. Create exactly ${count} study flashcards based ONLY on the material below.
+Language of all cards: ${LANG[lang]}.
+${topic?`Focus only on this topic: ${topic}\n`:''}Return ONLY a JSON array (no markdown, no code fences). Each item: {"front": a short question or term, "back": a concise answer in 1-3 sentences}. Cover the most important ideas and vary the cards.
+
+STUDY MATERIAL:
+${text.substring(0,15000)}`;
+  try{
+    let items,lastErr;
+    for(let i=0;i<2&&!items;i++){
+      try{items=parseCards(await callGemini(prompt,{json:true,timeout:75000}))}
+      catch(e){lastErr=e;if(/API key|blocked|API error|timed out/i.test(e.message))throw e}
+    }
+    if(!items)throw lastErr;
+    state.cards={items,i:0,flip:false,lang};renderCards();toast(`${items.length} flashcards ready`);
+  }catch(e){
+    toast(e.message||'Connection failed');
+    $('out').innerHTML=idle('Something went wrong',e.message,'var(--bad)');
+  }finally{btn.disabled=false;btn.classList.remove('loading')}
+}
+$('cardBtn').onclick=runCards;
+
+function renderCards(){
+  const c=state.cards;if(!c)return;
+  const n=c.items.length,it=c.items[c.i],got=c.items.filter(x=>x.known===true).length,miss=c.items.filter(x=>x.known===false).length,done=got+miss===n;
+  const B=(a,t,x='')=>`<button class="btn ghost" data-fc="${a}" type="button"${x}>${t}</button>`;
+  let h=`<div class="fc-wrap" dir="${c.lang==='en'?'ltr':'rtl'}"><div class="qz-top"><div class="qz-badges"><span class="badge">Card ${c.i+1} / ${n}</span><span class="badge">Known ${got}</span><span class="badge">To review ${miss}</span></div></div><div class="qz-bar"><i style="width:${(got+miss)/n*100}%"></i></div>`;
+  h+=`<div class="fc"><div class="fc-card${c.flip?' flip':''}" data-fc="flip" tabindex="0" role="button" aria-label="Flip card"><div class="fc-face">${esc(it.front)}</div><div class="fc-face back">${esc(it.back)}</div></div></div><p class="fc-hint">Click the card or press Space to flip</p>`;
+  h+=`<div class="qz-act">${B('prev','Previous',c.i===0?' disabled':'')}${B('miss','Review again')}${B('got','I know this')}${B('next','Next',c.i===n-1?' disabled':'')}${B('shuffle','Shuffle')}</div>`;
+  if(done)h+=`<div class="qz-final" style="margin-top:1.2rem">All cards done: ${got} known, ${miss} to review</div><div class="qz-act">${B('restart','Start over')}${miss?B('missed','Study missed only'):''}</div>`;
+  $('out').innerHTML=h+'</div>';
+  saveSession();
+}
+$('out').addEventListener('click',e=>{
+  const c=state.cards,b=e.target.closest('[data-fc]');
+  if(!c||state.tab!=='cards'||!b)return;
+  const a=b.dataset.fc;
+  if(a==='flip'){c.flip=!c.flip;const el=$('out').querySelector('.fc-card');if(el)el.classList.toggle('flip');saveSession();return}
+  if(a==='shuffle'){c.items.sort(()=>Math.random()-.5);c.i=0}
+  else if(a==='restart'){c.items.forEach(x=>x.known=null);c.i=0}
+  else if(a==='missed'){c.items=c.items.filter(x=>x.known!==true);c.items.forEach(x=>x.known=null);c.i=0}
+  else if(a==='prev')c.i=Math.max(0,c.i-1);
+  else{
+    if(a==='got')c.items[c.i].known=true;
+    if(a==='miss')c.items[c.i].known=false;
+    c.i=Math.min(c.items.length-1,c.i+1);
+  }
+  c.flip=false;renderCards();$('out').scrollTop=0;
+});
+
+/* ---------- Focus timer (25 min focus / 5 min break) ---------- */
+let tm={left:1500,run:false,mode:'focus',id:null};
+const mmss=n=>`${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`;
+function drawTimer(){$('timer').textContent=(tm.mode==='focus'?'⏱ ':'☕ ')+mmss(tm.left);$('timer').classList.toggle('run',tm.run)}
+$('timer').onclick=()=>{
+  tm.run=!tm.run;
+  if(tm.run)tm.id=setInterval(()=>{
+    if(--tm.left<=0){
+      tm.mode=tm.mode==='focus'?'break':'focus';tm.left=tm.mode==='focus'?1500:300;
+      toast(tm.mode==='break'?'Focus session done. Take a 5 minute break.':'Break over. Back to it.');
+    }
+    drawTimer();
+  },1000);
+  else clearInterval(tm.id);
+  drawTimer();
+};
+$('timer').ondblclick=()=>{clearInterval(tm.id);tm={left:1500,run:false,mode:'focus',id:null};drawTimer()};
+drawTimer();
+
+/* ---------- Outline: jump to any section across pages ---------- */
+function buildOutline(){
+  const sel=$('outline'),items=[];
+  state.pages.forEach((pg,pi)=>{
+    let k=0;
+    pg.split('\n').forEach(line=>{
+      const m=line.match(/^(#{1,3}) (.*)$/);
+      if(m)items.push({pi,k:k++,lvl:m[1].length,t:m[2].replace(/[*`$]/g,'').trim()});
+    });
+  });
+  sel.classList.toggle('hidden',items.length<2);
+  sel.innerHTML='<option value="">Jump to section…</option>'+items.map(it=>`<option value="${it.pi}|${it.k}">${it.lvl===3?'– ':''}${esc(it.t.slice(0,48))}</option>`).join('');
+}
+$('outline').onchange=e=>{
+  const v=e.target.value;if(!v)return;
+  const [pi,k]=v.split('|').map(Number);
+  if(pi!==state.currentPage){state.currentPage=pi;renderCurrentPage()}
+  const h=$('out').querySelectorAll('.md h2,.md h3')[k];
+  if(h)$('out').scrollTop+=h.getBoundingClientRect().top-$('out').getBoundingClientRect().top-16;
+  $('outline').value='';
+};
+
+/* ---------- Select any text in the explanation, then ask the tutor about it ---------- */
+let selTimer;
+document.addEventListener('selectionchange',()=>{
+  clearTimeout(selTimer);
+  selTimer=setTimeout(()=>{
+    const sel=window.getSelection(),t=sel?sel.toString().trim():'';
+    const n=sel&&sel.anchorNode&&(sel.anchorNode.nodeType===1?sel.anchorNode:sel.anchorNode.parentElement);
+    if(t.length<3||!sel.rangeCount||state.tab!=='exp'||!n||!n.closest('.out .md'))return $('askSel').classList.add('hidden');
+    const r=sel.getRangeAt(0).getBoundingClientRect(),b=$('askSel');
+    b.style.top=Math.max(8,r.top-46)+'px';
+    b.style.left=Math.max(8,Math.min(window.innerWidth-150,r.left))+'px';
+    b.classList.remove('hidden');state.sel=t.slice(0,600);
+  },250);
+});
+$('askSel').onmousedown=e=>e.preventDefault();
+$('askSel').onclick=()=>{
+  $('askSel').classList.add('hidden');
+  sendChat(`Explain this part more simply, with an example if it helps (reply in the same language as the quoted text): "${state.sel}"`);
+  $('chat').scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+restoreSession();
+</script>
+</body>
+</html>
